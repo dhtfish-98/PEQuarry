@@ -28,3 +28,9 @@ The signature component is now a new line parser, atomic bounded trie loader and
 The current `SOURCE_MANIFEST.json` records current bytes. `SYMBOL_MAP.json`/`FILE_MAP.json` preserve the historical renaming provenance; they are not a declaration that newly written routines preserve every old local name. `NAME_AUDIT.json` explicitly excludes the readable signature rewrite from the historical lexical-name criterion while retaining its current source hash.
 
 PE field/layout checks also refer to the [Microsoft PE/COFF specification](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format). That specification distinguishes file offsets from RVAs; it does not prove the complete Windows loader behavior of this implementation.
+
+## 1.0.2 finite directory traversal
+
+`directory_records.py` independently implements relocation and exception traversal, staged unwind slot containment and parent-bounded dynamic/function/BDD parsing. Windows schemas and public result objects remain attributed contracts; opcode classes, optional-chain representation, relocation application and IA64 interpretation retain upstream semantics and remain OPEN. `image_reader.py` exposes compatible API bridges to these routines. Historical naming maps remain historical; both readable rewritten components are source-hash checked.
+
+The additional 149 normal directory comparisons use deterministic synthetic data within the attributed embedded PE headers; no new third-party binary corpus is redistributed. x64 field checks refer to [Microsoft x64 exception handling](https://learn.microsoft.com/en-us/cpp/build/exception-handling-x64), while this implementation still preserves legacy optional-field compatibility and does not claim complete loader equivalence.

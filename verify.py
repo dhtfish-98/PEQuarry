@@ -28,8 +28,9 @@ def source_audit():
 
 def compare_observations(script,original_modules,new_modules,dataset,baseline):
     env=dict(os.environ,PYTHONPATH=str(baseline))
-    first=run([sys.executable,ROOT/'checks'/script,*original_modules,dataset],capture_output=True,env=env).stdout
-    second=run([sys.executable,ROOT/'checks'/script,*new_modules,dataset],capture_output=True).stdout
+    inputs=[] if dataset is None else [dataset]
+    first=run([sys.executable,ROOT/'checks'/script,*original_modules,*inputs],capture_output=True,env=env).stdout
+    second=run([sys.executable,ROOT/'checks'/script,*new_modules,*inputs],capture_output=True).stdout
     old=json.loads(first);new=json.loads(second)
     assert old==new,'Original and rewritten observations differ'
     return len(old)
@@ -65,6 +66,7 @@ def main():
         current_signature=run([sys.executable,ROOT/'checks/signature_observations.py','pequarry.signature_tools'],capture_output=True).stdout
         assert json.loads(original_signature)==json.loads(current_signature),'Bounded ordinary signature observations differ'
         checks['ordinary_signature_observations_equal']=len(json.loads(current_signature))
+        checks['normal_directory_observations_equal']=compare_observations('directory_observations.py',['pefile'],['pequarry.image_reader'],None,baseline)
         original_history=run([sys.executable,ROOT/'checks/legacy_pe_observations.py',baseline/'tests/pefile_test.py',suite/'tests/data','original'],capture_output=True,env=dict(os.environ,PYTHONPATH=str(baseline))).stdout
         rewritten_history=run([sys.executable,ROOT/'checks/legacy_pe_observations.py',ROOT/'historical_checks/legacy_quarry_regression.py',suite/'tests/data','rewritten'],capture_output=True).stdout
         original_history=json.loads(original_history);rewritten_history=json.loads(rewritten_history)
@@ -81,8 +83,10 @@ def main():
     import shutil
     shutil.rmtree(ROOT/'build',ignore_errors=True)
     # Build both directly from this tree: frontend sdist extraction normalizes modes.
-    run([sys.executable,'-m','build','--no-isolation','--sdist','--wheel','--outdir',WORK/'dist'])
-    wheels=list((WORK/'dist').glob('*.whl'));assert len(wheels)==1
+    # Keep earlier generated versions separate from the current artifact gate.
+    distribution_output=WORK/'dist'/json.loads((ROOT/'CURRENT_REVIEW.json').read_text())['version']
+    run([sys.executable,'-m','build','--no-isolation','--sdist','--wheel','--outdir',distribution_output])
+    wheels=list(distribution_output.glob('*.whl'));assert len(wheels)==1
     with zipfile.ZipFile(wheels[0]) as archive:
         for source in (ROOT/'src').rglob('*.py'):
             relative=str(source.relative_to(ROOT/'src'))
@@ -91,7 +95,7 @@ def main():
             members=[path for path in archive.namelist() if path.endswith('/share/'+CONFIG['name']+'/'+document)]
             assert len(members)==1 and archive.read(members[0])==(ROOT/document).read_bytes(),'Wheel provenance differs: '+document
     checks['wheel_source_identity']='PASS'
-    sources=list((WORK/'dist').glob('*.tar.gz'));assert len(sources)==1
+    sources=list(distribution_output.glob('*.tar.gz'));assert len(sources)==1
     with tarfile.open(sources[0]) as source_archive:
         source_members=source_archive.getmembers()
         for relative,record in json.loads((ROOT/'SOURCE_MANIFEST.json').read_text())['files'].items():

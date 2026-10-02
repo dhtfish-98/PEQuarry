@@ -16,6 +16,7 @@ gracefully.
 Copyright (c) 2005-2024 Ero Carrera <ero.carrera@gmail.com>
 """
 import pequarry.api_contract as _name_boundary
+import pequarry.directory_records as _boundary_records
 __author__ = 'Ero Carrera'
 __version__ = '2024.8.26'
 __contact__ = 'ero.carrera@gmail.com'
@@ -1145,41 +1146,7 @@ class quarry_UnwindInfo(quarry_StructureWithBitfields):
 
     @_name_boundary.callable_contract({'self': 'quarry_self_529849c', 'data': 'quarry_data_local_b6090f5'}, 'unpack_in_stages')
     def quarry_unpack_in_stages(quarry_self_529849c, quarry_data_local_b6090f5):
-        """Unpacks the UNWIND_INFO "in two calls", with the first call establishing
-        a full size of the structure and the second, performing the actual unpacking.
-        """
-        if quarry_self_529849c._finished_unpacking:
-            return None
-        super().__unpack__(quarry_data_local_b6090f5)
-        quarry_codes_cnt_max_local_6a0a640 = quarry_self_529849c.CountOfCodes + 1 & ~1
-        quarry_hdlr_offset_local_759742d = _name_boundary.attributes(super())['sizeof']() + quarry_codes_cnt_max_local_6a0a640 * _name_boundary.attributes(quarry_self_529849c._code_info)['sizeof']()
-        quarry_self_529849c._full_size = quarry_hdlr_offset_local_759742d + (0 if quarry_self_529849c.Flags == 0 else quarry_STRUCT_SIZEOF_TYPES['I'])
-        if len(quarry_data_local_b6090f5) < quarry_self_529849c._full_size:
-            return None
-        if quarry_self_529849c.Version != 1 and quarry_self_529849c.Version != 2:
-            return 'Unsupported version of UNWIND_INFO at ' + hex(quarry_self_529849c.__file_offset__)
-        quarry_self_529849c.UnwindCodes = []
-        quarry_ro_local_eb6c53e = _name_boundary.attributes(super())['sizeof']()
-        quarry_codes_left_local_b5bd6c4 = quarry_self_529849c.CountOfCodes
-        while quarry_codes_left_local_b5bd6c4 > 0:
-            quarry_self_529849c._code_info.__unpack__(quarry_data_local_b6090f5[quarry_ro_local_eb6c53e:quarry_ro_local_eb6c53e + _name_boundary.attributes(quarry_self_529849c._code_info)['sizeof']()])
-            quarry_ucode_local_4119f94 = _name_boundary.attributes(quarry_PrologEpilogOpsFactory)['create'](quarry_self_529849c._code_info)
-            if quarry_ucode_local_4119f94 is None:
-                return 'Unknown UNWIND_CODE at ' + hex(quarry_self_529849c.__file_offset__ + quarry_ro_local_eb6c53e)
-            quarry_len_in_codes_local_41de575 = _name_boundary.attributes(quarry_ucode_local_4119f94)['length_in_code_structures'](quarry_self_529849c._code_info, quarry_self_529849c)
-            quarry_opc_size_local_cb4de5c = _name_boundary.attributes(quarry_self_529849c._code_info)['sizeof']() * quarry_len_in_codes_local_41de575
-            _name_boundary.attributes(quarry_ucode_local_4119f94)['initialize'](quarry_self_529849c._code_info, quarry_data_local_b6090f5[quarry_ro_local_eb6c53e:quarry_ro_local_eb6c53e + quarry_opc_size_local_cb4de5c], quarry_self_529849c, quarry_self_529849c.__file_offset__ + quarry_ro_local_eb6c53e)
-            quarry_ro_local_eb6c53e += quarry_opc_size_local_cb4de5c
-            quarry_codes_left_local_b5bd6c4 -= quarry_len_in_codes_local_41de575
-            quarry_self_529849c.UnwindCodes.append(quarry_ucode_local_4119f94)
-        if quarry_self_529849c.UNW_FLAG_EHANDLER or quarry_self_529849c.UNW_FLAG_UHANDLER:
-            quarry_self_529849c._opt_field_name = 'ExceptionHandler'
-        if quarry_self_529849c.UNW_FLAG_CHAININFO:
-            quarry_self_529849c._opt_field_name = 'FunctionEntry'
-        if quarry_self_529849c._opt_field_name is not None:
-            _name_boundary.write_attribute(quarry_self_529849c, quarry_self_529849c._opt_field_name, quarry_struct.unpack('<I', quarry_data_local_b6090f5[quarry_hdlr_offset_local_759742d:quarry_hdlr_offset_local_759742d + quarry_STRUCT_SIZEOF_TYPES['I']])[0])
-        quarry_self_529849c._finished_unpacking = True
-        return None
+        return _boundary_records.unpack_unwind(quarry_self_529849c, quarry_data_local_b6090f5, super().__unpack__)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_6334382', 'indentation': 'quarry_indentation_23c6713'}, 'dump')
     def dump(quarry_self_6334382, quarry_indentation_23c6713=0):
@@ -1638,12 +1605,14 @@ class quarry_PE:
     __IMAGE_BOUND_FORWARDER_REF_format__ = ('IMAGE_BOUND_FORWARDER_REF', ('I,TimeDateStamp', 'H,OffsetModuleName', 'H,Reserved'))
     __RUNTIME_FUNCTION_format__ = ('RUNTIME_FUNCTION', ('I,BeginAddress', 'I,EndAddress', 'I,UnwindData'))
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_e6c9ec5', 'fast_load': 'quarry_fast_load_67d872a', 'max_symbol_exports': 'quarry_max_symbol_exports_4e129d8', 'max_repeated_symbol': 'quarry_max_repeated_symbol_faa7853', 'max_offset': 'quarry_max_offset_d8b6150', 'max_input_size': 'quarry_max_input_size', 'max_mapped_size': 'quarry_max_mapped_size', 'max_structures': 'quarry_max_structures', 'max_data_reads': 'quarry_max_data_reads', 'name': 'quarry_name_local_ba04eb2', 'data': 'quarry_data_local_1465b4c'}, '__init__')
-    def __init__(quarry_self_e6c9ec5, quarry_name_local_ba04eb2=None, quarry_data_local_1465b4c=None, quarry_fast_load_67d872a=None, quarry_max_symbol_exports_4e129d8=quarry_MAX_SYMBOL_EXPORT_COUNT, quarry_max_repeated_symbol_faa7853=120, *, quarry_max_offset_d8b6150=268435456, quarry_max_input_size=quarry_INPUT_LIMIT, quarry_max_mapped_size=quarry_MAPPED_LIMIT, quarry_max_structures=131072, quarry_max_data_reads=1048576):
+    @_name_boundary.callable_contract({'self': 'quarry_self_e6c9ec5', 'fast_load': 'quarry_fast_load_67d872a', 'max_symbol_exports': 'quarry_max_symbol_exports_4e129d8', 'max_repeated_symbol': 'quarry_max_repeated_symbol_faa7853', 'max_offset': 'quarry_max_offset_d8b6150', 'max_input_size': 'quarry_max_input_size', 'max_mapped_size': 'quarry_max_mapped_size', 'max_structures': 'quarry_max_structures', 'max_data_reads': 'quarry_max_data_reads', 'max_directory_records': 'quarry_max_directory_records', 'name': 'quarry_name_local_ba04eb2', 'data': 'quarry_data_local_1465b4c'}, '__init__')
+    def __init__(quarry_self_e6c9ec5, quarry_name_local_ba04eb2=None, quarry_data_local_1465b4c=None, quarry_fast_load_67d872a=None, quarry_max_symbol_exports_4e129d8=quarry_MAX_SYMBOL_EXPORT_COUNT, quarry_max_repeated_symbol_faa7853=120, *, quarry_max_offset_d8b6150=268435456, quarry_max_input_size=quarry_INPUT_LIMIT, quarry_max_mapped_size=quarry_MAPPED_LIMIT, quarry_max_structures=131072, quarry_max_data_reads=1048576, quarry_max_directory_records=1048576):
         quarry_self_e6c9ec5._quarry_input_limit = quarry_positive_limit(quarry_max_input_size, 'max_input_size')
         quarry_self_e6c9ec5._quarry_mapped_limit = quarry_positive_limit(quarry_max_mapped_size, 'max_mapped_size')
         quarry_self_e6c9ec5._quarry_structure_limit = quarry_positive_limit(quarry_max_structures, 'max_structures')
         quarry_self_e6c9ec5._quarry_read_limit = quarry_positive_limit(quarry_max_data_reads, 'max_data_reads')
+        quarry_self_e6c9ec5._quarry_directory_limit = quarry_positive_limit(quarry_max_directory_records, 'max_directory_records')
+        quarry_self_e6c9ec5._quarry_directory_count = 0
         quarry_self_e6c9ec5._quarry_structure_count = 0
         quarry_self_e6c9ec5._quarry_read_count = 0
         _name_boundary.attributes(quarry_self_e6c9ec5)['max_symbol_exports'] = quarry_max_symbol_exports_4e129d8
@@ -2132,56 +2101,7 @@ class quarry_PE:
 
     @_name_boundary.callable_contract({'self': 'quarry_self_826e310', 'rva': 'quarry_rva_1ffb12c', 'size': 'quarry_size_local_c5cc65a'}, 'parse_exceptions_directory')
     def quarry_parse_exceptions_directory(quarry_self_826e310, quarry_rva_1ffb12c, quarry_size_local_c5cc65a):
-        """Parses exception directory
-
-        All the code related to handling exception directories is documented in
-        https://auscitte.github.io/posts/Exception-Directory-pefile#implementation-details
-        """
-        if _name_boundary.attributes(quarry_self_826e310)['FILE_HEADER'].Machine != quarry_MACHINE_TYPE['IMAGE_FILE_MACHINE_AMD64'] and _name_boundary.attributes(quarry_self_826e310)['FILE_HEADER'].Machine != quarry_MACHINE_TYPE['IMAGE_FILE_MACHINE_IA64']:
-            return None
-        quarry_rf_c6b091b = quarry_Structure(quarry_self_826e310.__RUNTIME_FUNCTION_format__)
-        quarry_rf_size_a029d62 = _name_boundary.attributes(quarry_rf_c6b091b)['sizeof']()
-        quarry_rva2rt_e8d67ca = {}
-        quarry_rt_funcs_ea49dfe = []
-        quarry_rva2infos_370721d = {}
-        for quarry___972a358 in range(quarry_size_local_c5cc65a // quarry_rf_size_a029d62):
-            quarry_rf_c6b091b = quarry_self_826e310.__unpack_data__(quarry_self_826e310.__RUNTIME_FUNCTION_format__, _name_boundary.attributes(quarry_self_826e310)['get_data'](quarry_rva_1ffb12c, quarry_rf_size_a029d62), file_offset=_name_boundary.attributes(quarry_self_826e310)['get_offset_from_rva'](quarry_rva_1ffb12c))
-            if quarry_rf_c6b091b is None:
-                break
-            quarry_ui_cece937 = None
-            if quarry_rf_c6b091b.UnwindData & 1 == 0:
-                if quarry_rf_c6b091b.UnwindData in quarry_rva2infos_370721d:
-                    quarry_ui_cece937 = quarry_rva2infos_370721d[quarry_rf_c6b091b.UnwindData]
-                else:
-                    quarry_ui_cece937 = quarry_UnwindInfo(file_offset=_name_boundary.attributes(quarry_self_826e310)['get_offset_from_rva'](quarry_rf_c6b091b.UnwindData))
-                    quarry_rva2infos_370721d[quarry_rf_c6b091b.UnwindData] = quarry_ui_cece937
-                quarry_ws_6b98c97 = _name_boundary.attributes(quarry_ui_cece937)['unpack_in_stages'](_name_boundary.attributes(quarry_self_826e310)['get_data'](quarry_rf_c6b091b.UnwindData, _name_boundary.attributes(quarry_ui_cece937)['sizeof']()))
-                if quarry_ws_6b98c97 is not None:
-                    _name_boundary.attributes(quarry_self_826e310)['__warnings'].append(quarry_ws_6b98c97)
-                    break
-                quarry_ws_6b98c97 = _name_boundary.attributes(quarry_ui_cece937)['unpack_in_stages'](_name_boundary.attributes(quarry_self_826e310)['get_data'](quarry_rf_c6b091b.UnwindData, _name_boundary.attributes(quarry_ui_cece937)['sizeof']()))
-                if quarry_ws_6b98c97 is not None:
-                    _name_boundary.attributes(quarry_self_826e310)['__warnings'].append(quarry_ws_6b98c97)
-                    break
-                quarry_self_826e310.__structures__.append(quarry_ui_cece937)
-            quarry_entry_0f65aa7 = quarry_ExceptionsDirEntryData(struct=quarry_rf_c6b091b, unwindinfo=quarry_ui_cece937)
-            quarry_rt_funcs_ea49dfe.append(quarry_entry_0f65aa7)
-            quarry_rva2rt_e8d67ca[quarry_rf_c6b091b.BeginAddress] = quarry_entry_0f65aa7
-            quarry_rva_1ffb12c += quarry_rf_size_a029d62
-        for quarry_rf_c6b091b in quarry_rt_funcs_ea49dfe:
-            if quarry_rf_c6b091b.unwindinfo is None:
-                continue
-            if not _name_boundary.has_attribute(quarry_rf_c6b091b.unwindinfo, 'FunctionEntry'):
-                continue
-            if quarry_rf_c6b091b.unwindinfo.FunctionEntry not in quarry_rva2rt_e8d67ca:
-                _name_boundary.attributes(quarry_self_826e310)['__warnings'].append(f"FunctionEntry of UNWIND_INFO at {_name_boundary.attributes(_name_boundary.attributes(quarry_rf_c6b091b)['struct'])['get_file_offset']():x} points to an entry that does not exist")
-                continue
-            try:
-                _name_boundary.attributes(quarry_rf_c6b091b.unwindinfo)['set_chained_function_entry'](quarry_rva2rt_e8d67ca[quarry_rf_c6b091b.unwindinfo.FunctionEntry])
-            except quarry_PEFormatError as quarry_excp_88080a2:
-                _name_boundary.attributes(quarry_self_826e310)['__warnings'].append(f"Failed parsing FunctionEntry of UNWIND_INFO at {_name_boundary.attributes(_name_boundary.attributes(quarry_rf_c6b091b)['struct'])['get_file_offset']():x}: {quarry_excp_88080a2}")
-                continue
-        return quarry_rt_funcs_ea49dfe
+        return _boundary_records.RecordReader(quarry_self_826e310).exceptions(quarry_rva_1ffb12c, quarry_size_local_c5cc65a)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_71efb09', 'rva': 'quarry_rva_944bbbc', 'size': 'quarry_size_local_dac19d1'}, 'parse_directory_bound_imports')
     def quarry_parse_directory_bound_imports(quarry_self_71efb09, quarry_rva_944bbbc, quarry_size_local_dac19d1):
@@ -2286,94 +2206,11 @@ class quarry_PE:
 
     @_name_boundary.callable_contract({'self': 'quarry_self_9b853b1', 'dynamic_value_reloc_table_offset': 'quarry_dynamic_value_reloc_table_offset_00c79cb', 'dynamic_value_reloc_table_section': 'quarry_dynamic_value_reloc_table_section_60accba'}, 'parse_dynamic_relocations')
     def quarry_parse_dynamic_relocations(quarry_self_9b853b1, quarry_dynamic_value_reloc_table_offset_00c79cb, quarry_dynamic_value_reloc_table_section_60accba):
-        if not quarry_dynamic_value_reloc_table_offset_00c79cb:
-            return None
-        if not quarry_dynamic_value_reloc_table_section_60accba:
-            return None
-        if quarry_dynamic_value_reloc_table_section_60accba > len(_name_boundary.attributes(quarry_self_9b853b1)['sections']):
-            return None
-        quarry_section_64292a6 = _name_boundary.attributes(quarry_self_9b853b1)['sections'][quarry_dynamic_value_reloc_table_section_60accba - 1]
-        quarry_rva_1c0f84d = quarry_section_64292a6.VirtualAddress + quarry_dynamic_value_reloc_table_offset_00c79cb
-        quarry_reloc_table_size_b29ee47 = _name_boundary.attributes(quarry_Structure(quarry_self_9b853b1.__IMAGE_DYNAMIC_RELOCATION_TABLE_format__))['sizeof']()
-        try:
-            quarry_image_dynamic_reloc_table_struct_60e9bc8 = quarry_self_9b853b1.__unpack_data__(quarry_self_9b853b1.__IMAGE_DYNAMIC_RELOCATION_TABLE_format__, _name_boundary.attributes(quarry_self_9b853b1)['get_data'](quarry_rva_1c0f84d, quarry_reloc_table_size_b29ee47), file_offset=_name_boundary.attributes(quarry_self_9b853b1)['get_offset_from_rva'](quarry_rva_1c0f84d))
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_9b853b1)['__warnings'].append(f"Invalid IMAGE_DYNAMIC_RELOCATION_TABLE information. Can't read data at RVA: {quarry_rva_1c0f84d:#x}")
-            return None
-        if quarry_image_dynamic_reloc_table_struct_60e9bc8.Version != 1:
-            _name_boundary.attributes(quarry_self_9b853b1)['__warnings'].append(f'No parsing available for IMAGE_DYNAMIC_RELOCATION_TABLE.Version = {quarry_image_dynamic_reloc_table_struct_60e9bc8.Version}')
-            return None
-        quarry_rva_1c0f84d += quarry_reloc_table_size_b29ee47
-        quarry_end_local_3458dd7 = quarry_rva_1c0f84d + quarry_image_dynamic_reloc_table_struct_60e9bc8.Size
-        quarry_dynamic_relocations_3ec3051 = []
-        while quarry_rva_1c0f84d < quarry_end_local_3458dd7:
-            quarry_format_38ca3aa = quarry_self_9b853b1.__IMAGE_DYNAMIC_RELOCATION_format__
-            if _name_boundary.attributes(quarry_self_9b853b1)['PE_TYPE'] == quarry_OPTIONAL_HEADER_MAGIC_PE_PLUS:
-                quarry_format_38ca3aa = quarry_self_9b853b1.__IMAGE_DYNAMIC_RELOCATION64_format__
-            quarry_rlc_size_6a86ebc = _name_boundary.attributes(quarry_Structure(quarry_format_38ca3aa))['sizeof']()
-            try:
-                quarry_dynamic_rlc_33b1712 = quarry_self_9b853b1.__unpack_data__(quarry_format_38ca3aa, _name_boundary.attributes(quarry_self_9b853b1)['get_data'](quarry_rva_1c0f84d, quarry_rlc_size_6a86ebc), file_offset=_name_boundary.attributes(quarry_self_9b853b1)['get_offset_from_rva'](quarry_rva_1c0f84d))
-            except quarry_PEFormatError:
-                _name_boundary.attributes(quarry_self_9b853b1)['__warnings'].append(f"Invalid relocation information. Can't read data at RVA: {quarry_rva_1c0f84d:#x}")
-                quarry_dynamic_rlc_33b1712 = None
-            if not quarry_dynamic_rlc_33b1712:
-                break
-            quarry_rva_1c0f84d += quarry_rlc_size_6a86ebc
-            quarry_symbol_716ea28 = quarry_dynamic_rlc_33b1712.Symbol
-            quarry_size_local_29bc1f1 = quarry_dynamic_rlc_33b1712.BaseRelocSize
-            if 3 <= quarry_symbol_716ea28 <= 5:
-                quarry_relocations_b1f8c6b = _name_boundary.attributes(quarry_self_9b853b1)['parse_image_base_relocation_list'](quarry_rva_1c0f84d, quarry_size_local_29bc1f1, _name_boundary.attributes(quarry_self_9b853b1)['dynamic_relocation_format_by_symbol'][quarry_symbol_716ea28])
-                quarry_dynamic_relocations_3ec3051.append(quarry_DynamicRelocationData(struct=quarry_dynamic_rlc_33b1712, symbol=quarry_symbol_716ea28, relocations=quarry_relocations_b1f8c6b))
-            elif quarry_symbol_716ea28 == 7:
-                quarry_func_relocs_9dc52ae, quarry_bdd_relocs_43321b1 = _name_boundary.attributes(quarry_self_9b853b1)['parse_function_override_data'](quarry_rva_1c0f84d)
-                quarry_dynamic_relocations_3ec3051.append(quarry_FunctionOverrideData(struct=quarry_dynamic_rlc_33b1712, symbol=quarry_symbol_716ea28, bdd_relocs=quarry_bdd_relocs_43321b1, func_relocs=quarry_func_relocs_9dc52ae))
-            elif quarry_symbol_716ea28 > 5:
-                quarry_relocations_b1f8c6b = _name_boundary.attributes(quarry_self_9b853b1)['parse_image_base_relocation_list'](quarry_rva_1c0f84d, quarry_size_local_29bc1f1)
-                quarry_dynamic_relocations_3ec3051.append(quarry_DynamicRelocationData(struct=quarry_dynamic_rlc_33b1712, symbol=quarry_symbol_716ea28, relocations=quarry_relocations_b1f8c6b))
-            quarry_rva_1c0f84d += quarry_size_local_29bc1f1
-        return quarry_dynamic_relocations_3ec3051
+        return _boundary_records.RecordReader(quarry_self_9b853b1).dynamic_relocations(quarry_dynamic_value_reloc_table_offset_00c79cb, quarry_dynamic_value_reloc_table_section_60accba)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_dfe7dd5', 'rva': 'quarry_rva_0131963'}, 'parse_function_override_data')
     def quarry_parse_function_override_data(quarry_self_dfe7dd5, quarry_rva_0131963):
-        """Parse function override data."""
-        quarry_func_relocs_b0b7f1d = []
-        quarry_bdd_relocs_214093f = []
-        quarry_format_fd32dfb = quarry_self_dfe7dd5.__IMAGE_FUNCTION_OVERRIDE_HEADER_format__
-        quarry_func_header_a8f3744 = quarry_self_dfe7dd5.__unpack_data__(quarry_format_fd32dfb, _name_boundary.attributes(quarry_self_dfe7dd5)['get_data'](quarry_rva_0131963, _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()), _name_boundary.attributes(quarry_self_dfe7dd5)['get_offset_from_rva'](quarry_rva_0131963))
-        if not quarry_func_header_a8f3744:
-            _name_boundary.attributes(quarry_self_dfe7dd5)['__warnings'].append(f"Invalid function override header. Can't read data at RVA: {quarry_rva_0131963:#x}")
-            return (quarry_func_relocs_b0b7f1d, quarry_bdd_relocs_214093f)
-        quarry_rva_0131963 += _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()
-        quarry_func_end_d67a353 = quarry_rva_0131963 + quarry_func_header_a8f3744.FuncOverrideSize
-        while quarry_rva_0131963 < quarry_func_end_d67a353:
-            quarry_format_fd32dfb = quarry_self_dfe7dd5.__IMAGE_FUNCTION_OVERRIDE_DYNAMIC_RELOCATION_format__
-            quarry_func_info_0a70afb = quarry_self_dfe7dd5.__unpack_data__(quarry_format_fd32dfb, _name_boundary.attributes(quarry_self_dfe7dd5)['get_data'](quarry_rva_0131963, _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()), _name_boundary.attributes(quarry_self_dfe7dd5)['get_offset_from_rva'](quarry_rva_0131963))
-            if not quarry_func_info_0a70afb:
-                _name_boundary.attributes(quarry_self_dfe7dd5)['__warnings'].append(f"Invalid function override info. Can't read data at RVA: {quarry_rva_0131963:#x}")
-                return (quarry_func_relocs_b0b7f1d, quarry_bdd_relocs_214093f)
-            quarry_rva_0131963 += _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()
-            quarry_override_rvas_959435f = []
-            for quarry___ebd5fd9 in range(quarry_func_info_0a70afb.RvaSize // 4):
-                quarry_override_rvas_959435f.append(quarry_struct.unpack('<I', _name_boundary.attributes(quarry_self_dfe7dd5)['get_data'](quarry_rva_0131963, 4))[0])
-                quarry_rva_0131963 += 4
-            quarry_relocations_ff83303 = _name_boundary.attributes(quarry_self_dfe7dd5)['parse_image_base_relocation_list'](quarry_rva_0131963, quarry_func_info_0a70afb.BaseRelocSize)
-            quarry_rva_0131963 += quarry_func_info_0a70afb.BaseRelocSize
-            quarry_func_relocs_b0b7f1d.append(quarry_FunctionOverrideDynamicRelocationData(struct=quarry_func_info_0a70afb, func_rva=quarry_func_info_0a70afb.OriginalRva, override_rvas=quarry_override_rvas_959435f, relocations=quarry_relocations_ff83303))
-        quarry_format_fd32dfb = quarry_self_dfe7dd5.__IMAGE_BDD_INFO_format__
-        quarry_bdd_info_c203c14 = quarry_self_dfe7dd5.__unpack_data__(quarry_format_fd32dfb, _name_boundary.attributes(quarry_self_dfe7dd5)['get_data'](quarry_rva_0131963, _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()), _name_boundary.attributes(quarry_self_dfe7dd5)['get_offset_from_rva'](quarry_rva_0131963))
-        if not quarry_bdd_info_c203c14:
-            _name_boundary.attributes(quarry_self_dfe7dd5)['__warnings'].append(f"Invalid bdd info. Can't read data at RVA: {quarry_rva_0131963:#x}")
-            return (quarry_func_relocs_b0b7f1d, quarry_bdd_relocs_214093f)
-        quarry_rva_0131963 += _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()
-        for quarry___ebd5fd9 in range(quarry_bdd_info_c203c14.BDDSize // 8):
-            quarry_format_fd32dfb = quarry_self_dfe7dd5.__IMAGE_BDD_DYNAMIC_RELOCATION_format__
-            quarry_bdd_reloc_d93406e = quarry_self_dfe7dd5.__unpack_data__(quarry_format_fd32dfb, _name_boundary.attributes(quarry_self_dfe7dd5)['get_data'](quarry_rva_0131963, _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()), _name_boundary.attributes(quarry_self_dfe7dd5)['get_offset_from_rva'](quarry_rva_0131963))
-            if not quarry_bdd_reloc_d93406e:
-                _name_boundary.attributes(quarry_self_dfe7dd5)['__warnings'].append(f"Invalid bdd dynamic relocation. Can't read data at RVA: {quarry_rva_0131963:#x}")
-                return (quarry_func_relocs_b0b7f1d, quarry_bdd_relocs_214093f)
-            quarry_rva_0131963 += _name_boundary.attributes(quarry_Structure(quarry_format_fd32dfb))['sizeof']()
-            quarry_bdd_relocs_214093f.append(quarry_BddDynamicRelocationData(struct=quarry_bdd_reloc_d93406e))
-        return (quarry_func_relocs_b0b7f1d, quarry_bdd_relocs_214093f)
+        return _boundary_records.RecordReader(quarry_self_dfe7dd5).function_overrides(quarry_rva_0131963)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_5a66cf2', 'rva': 'quarry_rva_1e89b20', 'size': 'quarry_size_local_0632a28'}, 'parse_relocations_directory')
     def quarry_parse_relocations_directory(quarry_self_5a66cf2, quarry_rva_1e89b20, quarry_size_local_0632a28):
@@ -2382,87 +2219,15 @@ class quarry_PE:
 
     @_name_boundary.callable_contract({'self': 'quarry_self_d8e9803', 'rva': 'quarry_rva_6ba0b1a', 'fmt': 'quarry_fmt_caec92c', 'size': 'quarry_size_local_7068cfd'}, 'parse_image_base_relocation_list')
     def quarry_parse_image_base_relocation_list(quarry_self_d8e9803, quarry_rva_6ba0b1a, quarry_size_local_7068cfd, quarry_fmt_caec92c=None):
-        quarry_rlc_size_4cb10fd = _name_boundary.attributes(quarry_Structure(quarry_self_d8e9803.__IMAGE_BASE_RELOCATION_format__))['sizeof']()
-        quarry_end_local_f8117d6 = quarry_rva_6ba0b1a + quarry_size_local_7068cfd
-        quarry_relocations_0c61a63 = []
-        while quarry_rva_6ba0b1a < quarry_end_local_f8117d6:
-            try:
-                quarry_rlc_e3e2c3b = quarry_self_d8e9803.__unpack_data__(quarry_self_d8e9803.__IMAGE_BASE_RELOCATION_format__, _name_boundary.attributes(quarry_self_d8e9803)['get_data'](quarry_rva_6ba0b1a, quarry_rlc_size_4cb10fd), file_offset=_name_boundary.attributes(quarry_self_d8e9803)['get_offset_from_rva'](quarry_rva_6ba0b1a))
-            except quarry_PEFormatError:
-                _name_boundary.attributes(quarry_self_d8e9803)['__warnings'].append(f"Invalid relocation information. Can't read data at RVA: {quarry_rva_6ba0b1a:#x}")
-                quarry_rlc_e3e2c3b = None
-            if not quarry_rlc_e3e2c3b:
-                break
-            if quarry_rlc_e3e2c3b.VirtualAddress > _name_boundary.attributes(quarry_self_d8e9803)['OPTIONAL_HEADER'].SizeOfImage:
-                _name_boundary.attributes(quarry_self_d8e9803)['__warnings'].append(f'Invalid relocation information. VirtualAddress outside of Image: {quarry_rlc_e3e2c3b.VirtualAddress:#x}')
-                break
-            if quarry_rlc_e3e2c3b.SizeOfBlock > _name_boundary.attributes(quarry_self_d8e9803)['OPTIONAL_HEADER'].SizeOfImage:
-                _name_boundary.attributes(quarry_self_d8e9803)['__warnings'].append(f'Invalid relocation information. SizeOfBlock too large: {quarry_rlc_e3e2c3b.SizeOfBlock}')
-                break
-            if quarry_rlc_e3e2c3b.SizeOfBlock == 0:
-                # A retained terminal padding block contains no entries; do not
-                # convert its absent payload into a negative data-read length.
-                quarry_reloc_entries_b708412 = []
-            elif quarry_fmt_caec92c is None:
-                quarry_reloc_entries_b708412 = _name_boundary.attributes(quarry_self_d8e9803)['parse_relocations'](quarry_rva_6ba0b1a + quarry_rlc_size_4cb10fd, quarry_rlc_e3e2c3b.VirtualAddress, quarry_rlc_e3e2c3b.SizeOfBlock - quarry_rlc_size_4cb10fd)
-            else:
-                quarry_reloc_entries_b708412 = _name_boundary.attributes(quarry_self_d8e9803)['parse_relocations_with_format'](quarry_rva_6ba0b1a + quarry_rlc_size_4cb10fd, quarry_rlc_e3e2c3b.VirtualAddress, quarry_rlc_e3e2c3b.SizeOfBlock - quarry_rlc_size_4cb10fd, quarry_fmt_caec92c)
-            quarry_relocations_0c61a63.append(quarry_BaseRelocationData(struct=quarry_rlc_e3e2c3b, entries=quarry_reloc_entries_b708412))
-            if not quarry_rlc_e3e2c3b.SizeOfBlock:
-                break
-            quarry_rva_6ba0b1a += quarry_rlc_e3e2c3b.SizeOfBlock
-        return quarry_relocations_0c61a63
+        return _boundary_records.RecordReader(quarry_self_d8e9803).base_relocations(quarry_rva_6ba0b1a, quarry_size_local_7068cfd, quarry_fmt_caec92c)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_f4dd6fc', 'data_rva': 'quarry_data_rva_76afcb3', 'rva': 'quarry_rva_7b1d7a5', 'size': 'quarry_size_local_c783ca5'}, 'parse_relocations')
     def quarry_parse_relocations(quarry_self_f4dd6fc, quarry_data_rva_76afcb3, quarry_rva_7b1d7a5, quarry_size_local_c783ca5):
-        """Parse relocations."""
-        try:
-            quarry_data_local_fa417e9 = _name_boundary.attributes(quarry_self_f4dd6fc)['get_data'](quarry_data_rva_76afcb3, quarry_size_local_c783ca5)
-            quarry_file_offset_d5ed933 = _name_boundary.attributes(quarry_self_f4dd6fc)['get_offset_from_rva'](quarry_data_rva_76afcb3)
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_f4dd6fc)['__warnings'].append(f'Bad RVA in relocation data: {quarry_data_rva_76afcb3:#x}')
-            return []
-        quarry_entries_cc17ed2 = []
-        quarry_offsets_and_type_ed9a2e6 = set()
-        for quarry_idx_a7db56c in range(len(quarry_data_local_fa417e9) // 2):
-            quarry_entry_0ea3fb7 = quarry_self_f4dd6fc.__unpack_data__(quarry_self_f4dd6fc.__IMAGE_BASE_RELOCATION_ENTRY_format__, quarry_data_local_fa417e9[quarry_idx_a7db56c * 2:(quarry_idx_a7db56c + 1) * 2], file_offset=quarry_file_offset_d5ed933)
-            if not quarry_entry_0ea3fb7:
-                break
-            quarry_word_69fa654 = quarry_entry_0ea3fb7.Data
-            quarry_reloc_type_dfdbbf0 = quarry_word_69fa654 >> 12
-            quarry_reloc_offset_cd31acd = quarry_word_69fa654 & 4095
-            if (quarry_reloc_offset_cd31acd, quarry_reloc_type_dfdbbf0) in quarry_offsets_and_type_ed9a2e6:
-                _name_boundary.attributes(quarry_self_f4dd6fc)['__warnings'].append('Overlapping offsets in relocation data at RVA: 0x%x' % (quarry_reloc_offset_cd31acd + quarry_rva_7b1d7a5))
-                break
-            _name_boundary.attributes(quarry_offsets_and_type_ed9a2e6)['add']((quarry_reloc_offset_cd31acd, quarry_reloc_type_dfdbbf0))
-            quarry_entries_cc17ed2.append(quarry_RelocationData(struct=quarry_entry_0ea3fb7, type=quarry_reloc_type_dfdbbf0, base_rva=quarry_rva_7b1d7a5, rva=quarry_reloc_offset_cd31acd + quarry_rva_7b1d7a5))
-            quarry_file_offset_d5ed933 += _name_boundary.attributes(quarry_entry_0ea3fb7)['sizeof']()
-        return quarry_entries_cc17ed2
+        return _boundary_records.RecordReader(quarry_self_f4dd6fc).relocation_entries(quarry_data_rva_76afcb3, quarry_rva_7b1d7a5, quarry_size_local_c783ca5)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_d57a27d', 'data_rva': 'quarry_data_rva_c49228c', 'rva': 'quarry_rva_4b6a2da', 'format': 'quarry_format_f2407af', 'size': 'quarry_size_local_1166c31'}, 'parse_relocations_with_format')
     def quarry_parse_relocations_with_format(quarry_self_d57a27d, quarry_data_rva_c49228c, quarry_rva_4b6a2da, quarry_size_local_1166c31, quarry_format_f2407af):
-        """Parse relocations with format."""
-        try:
-            quarry_data_local_9f3b2aa = _name_boundary.attributes(quarry_self_d57a27d)['get_data'](quarry_data_rva_c49228c, quarry_size_local_1166c31)
-            quarry_file_offset_0c59e86 = _name_boundary.attributes(quarry_self_d57a27d)['get_offset_from_rva'](quarry_data_rva_c49228c)
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_d57a27d)['__warnings'].append(f'Bad RVA in relocation data: {quarry_data_rva_c49228c:#x}')
-            return []
-        quarry_entry_size_ef5520f = _name_boundary.attributes(quarry_StructureWithBitfields(quarry_format_f2407af))['sizeof']()
-        quarry_entries_2811df4 = []
-        quarry_offsets_2756322 = set()
-        for quarry_idx_394dd38 in range(len(quarry_data_local_9f3b2aa) // quarry_entry_size_ef5520f):
-            quarry_entry_01fa406 = quarry_self_d57a27d.__unpack_data_with_bitfields__(quarry_format_f2407af, quarry_data_local_9f3b2aa[quarry_idx_394dd38 * quarry_entry_size_ef5520f:(quarry_idx_394dd38 + 1) * quarry_entry_size_ef5520f], file_offset=quarry_file_offset_0c59e86)
-            if not quarry_entry_01fa406:
-                break
-            quarry_reloc_offset_ba6c84f = quarry_entry_01fa406.PageRelativeOffset
-            if quarry_reloc_offset_ba6c84f in quarry_offsets_2756322:
-                _name_boundary.attributes(quarry_self_d57a27d)['__warnings'].append('Overlapping offsets in relocation data at RVA: 0x%x' % (quarry_reloc_offset_ba6c84f + quarry_rva_4b6a2da))
-                break
-            _name_boundary.attributes(quarry_offsets_2756322)['add'](quarry_reloc_offset_ba6c84f)
-            quarry_entries_2811df4.append(quarry_RelocationData(struct=quarry_entry_01fa406, base_rva=quarry_rva_4b6a2da, rva=quarry_reloc_offset_ba6c84f + quarry_rva_4b6a2da))
-            quarry_file_offset_0c59e86 += quarry_entry_size_ef5520f
-        return quarry_entries_2811df4
+        return _boundary_records.RecordReader(quarry_self_d57a27d).relocation_entries(quarry_data_rva_c49228c, quarry_rva_4b6a2da, quarry_size_local_1166c31, quarry_format_f2407af)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_53b64a2', 'rva': 'quarry_rva_be3f0fd', 'size': 'quarry_size_local_2f74c48'}, 'parse_debug_directory')
     def quarry_parse_debug_directory(quarry_self_53b64a2, quarry_rva_be3f0fd, quarry_size_local_2f74c48):

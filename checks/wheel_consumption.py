@@ -58,8 +58,28 @@ elif consumption_name == 'PEQuarry':
         consumption_cases.append('installed input byte bound')
     else:
         raise AssertionError('input bound was not enforced')
+    consumption_spec = consumption_util.spec_from_file_location('directory_fixtures', consumption_root/'checks/directory_fixtures.py')
+    consumption_directories = consumption_util.module_from_spec(consumption_spec)
+    consumption_spec.loader.exec_module(consumption_directories)
+    consumption_payload = consumption_directories.dynamic_payload(symbol=7, payload=consumption_directories.override_payload())
+    consumption_image, consumption_rva, consumption_raw = consumption_directories.image(consumption_reader, consumption_payload)
+    consumption_results = consumption_image.parse_dynamic_relocations(consumption_rva-consumption_image.sections[0].VirtualAddress, 1)
+    assert consumption_results[0].func_relocs[0].override_rvas == [0x210, 0x220]
+    assert consumption_results[0].bdd_relocs[0].struct.Value == 0x230
+    assert bytes(consumption_image.__data__) == consumption_raw
+    consumption_cases.append('installed bounded dynamic function/BDD directory parsing')
+    consumption_image, consumption_rva, _ = consumption_directories.image(consumption_reader, consumption_directories.relocation_payload(), max_directory_records=1)
+    try:
+        consumption_image.parse_image_base_relocation_list(consumption_rva, 12)
+    except consumption_bounds.quarry_LimitError:
+        consumption_cases.append('installed cumulative directory record bound')
+    else:
+        raise AssertionError('directory bound was not enforced')
+    consumption_image, consumption_rva, _ = consumption_directories.image(consumption_reader, consumption_directories.exception_payload(), True)
+    assert len(consumption_image.parse_exceptions_directory(consumption_rva, 12)) == 1
+    consumption_cases.append('installed static runtime-function and unwind parsing')
     consumption_metadata = consumption_importlib.import_module('importlib.metadata')
-    assert consumption_metadata.version('PEQuarry') == '1.0.1'
+    assert consumption_metadata.version('PEQuarry') == '1.0.2'
 else:
     consumption_views = consumption_importlib.import_module('idbmeadow.semantic_views')
     consumption_examples = [('empty/empty.idb','d41d8cd98f00b204e9800998ecf8427e',(0,1)),('v6.95/x32/kernel32.idb','00bf1bf1b779ce1af41371426821e0c2',(1754271744,1755177520))]

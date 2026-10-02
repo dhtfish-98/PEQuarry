@@ -13,8 +13,8 @@
       "executable": false
     },
     "DEFENSIVE_SCOPE.md": {
-      "sha256": "d97033c273342b3c63a1491f0472f11dc99d2da26e00ddf5aeeaf42106732b0d",
-      "bytes": 2458,
+      "sha256": "5a930741a22ee5d72ef3e0b916aefad923173bd8d1e2b7c4fed15a6b4dfc9113",
+      "bytes": 2864,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -33,18 +33,18 @@
       "executable": false
     },
     "NAME_AUDIT.json": {
-      "sha256": "5975b0c5623091476c3a01e254e7cb4bdb1c4ca0f2b8ec9d7f87d665f65a0047",
-      "bytes": 2103,
+      "sha256": "5755db456b63c2edbb6be8dfc0c5beffb7daa994c727f39d11f383dec2958014",
+      "bytes": 2264,
       "executable": false
     },
     "ORIGIN.md": {
-      "sha256": "50e3913902173e4da6ce7abaf09e04600b4a46fcc047124081423167b65dbf15",
-      "bytes": 3528,
+      "sha256": "ea7bdb0795d427fea0d7c4bfcdb60dec2b2c40ca1dcfe2e277b41a58b9ba9479",
+      "bytes": 4540,
       "executable": false
     },
     "README.md": {
-      "sha256": "2bc5b23b02fa6104a66f8a1834f55c451c2744c4a968f8344445c1a633bf64b5",
-      "bytes": 5277,
+      "sha256": "00c976c94fa90ed93fd82dadc4ef55f1814fb70500e9a32779fe1cd2b17754ab",
+      "bytes": 6435,
       "executable": false
     },
     "SYMBOL_MAP.json": {
@@ -53,8 +53,8 @@
       "executable": false
     },
     "VALIDATION.md": {
-      "sha256": "9d4583506396f4d186bdfd8235eb75700cb9fd5abd4026d9ce90f2fe0a6de363",
-      "bytes": 4292,
+      "sha256": "07012ddc76333bb05fc6d1c99da71f60689f0b49d0706090fd7ae24a178c206b",
+      "bytes": 5624,
       "executable": false
     },
     "checks/__init__.py": {
@@ -83,8 +83,8 @@
       "executable": false
     },
     "checks/wheel_consumption.py": {
-      "sha256": "1377d1c853d521d69cc3a1f0856d864598e80c87ae118e6d1918836b979de851",
-      "bytes": 5878,
+      "sha256": "4a807e789f8902f08b32be2e130119533612937970d6f33f4ee8df5d64dda984",
+      "bytes": 7631,
       "executable": false
     },
     "historical_checks/legacy_quarry_regression.py": {
@@ -93,7 +93,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "9a839c0418eb84099f7e8afa3cd8ddb291f30d3e43b37883a403ef8fe2688e69",
+      "sha256": "ddc2eafede15e0d1d0b0047274222474bd7c8296c1c451b410a45887fd52f73f",
       "bytes": 721,
       "executable": false
     },
@@ -108,8 +108,8 @@
       "executable": false
     },
     "src/pequarry/image_reader.py": {
-      "sha256": "1e3ff66b25be05e2f844704c7a815ee48df011305c503434c92bc703ec0bdcf2",
-      "bytes": 400891,
+      "sha256": "50e45518260a532fc818b304432a6082da02a0b1118bd75826f7009ba99a6d12",
+      "bytes": 378323,
       "executable": false
     },
     "src/pequarry/ordinal_catalog/__init__.py": {
@@ -148,8 +148,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "bcc6a12e5b86d7ab4d13d959ac66f3099403f1aad2dc2ff6287a11776a9fac05",
-      "bytes": 8442,
+      "sha256": "b3ed6e7948eb4f848e8f762931b7f66c64a797a8d49531ca6b588427b28047d7",
+      "bytes": 8844,
       "executable": true
     },
     "src/pequarry/bounded_io.py": {
@@ -168,8 +168,28 @@
       "executable": false
     },
     "CURRENT_REVIEW.json": {
-      "sha256": "480f0e45de1c649833b7f8a6589cd79278c37bcb38f7d37265a12944ad9ddfcb",
-      "bytes": 4271,
+      "sha256": "0a7cb3ed0ac94a4f1d631c4e9947fca233dba695c6870bc2f8245fb60584ea45",
+      "bytes": 4828,
+      "executable": false
+    },
+    "src/pequarry/directory_records.py": {
+      "sha256": "9cba27ac8f87e24926b68356b89cb21bb6d34cdf5168dae24d592be3022a25b0",
+      "bytes": 18083,
+      "executable": false
+    },
+    "checks/directory_fixtures.py": {
+      "sha256": "211bbce786231657d4c39c9091adf5169c9730ec406e3ef83c32057ae09871c4",
+      "bytes": 2319,
+      "executable": false
+    },
+    "checks/directory_observations.py": {
+      "sha256": "f925f7e2f61c9f30cbd1bcdadd43454ea39df0f5e4c5b72310d656fa1202e7f3",
+      "bytes": 2875,
+      "executable": false
+    },
+    "checks/test_directory_records.py": {
+      "sha256": "1af7490563820ba6a584f044964b51c278d125f1c4d2186fb38bb52441a74678",
+      "bytes": 11745,
       "executable": false
     }
   }
