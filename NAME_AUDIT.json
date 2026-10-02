@@ -13,7 +13,7 @@
     "src/pequarry/ordinal_catalog/winsock2_names.py": "620373f63ca17b8714ae0a26bf2008efd399d6fff4c5d0d6b59750b6827d96de",
     "src/pequarry/ordinal_catalog/winsock_hash_names.py": "f3d3d588fe1bde6ad6a15d7df1429af0167cf7f20b3a7e6938b35b64df7b9a3d",
     "src/pequarry/signature_tools.py": "6cbce9aa577342799edc37192e1ca60ec2ef3f88ad8ed977e4329b2912f112ab",
-    "src/pequarry/bounded_io.py": "9435ad1775d8f4c2bf198a5eb37f091492a49f2f1fd22564621b023e0765584e"
+    "src/pequarry/bounded_io.py": "65376c91391340ed524db762b43678ef352e4a908bc217cdac619f81bb53f504"
   },
   "fixed_global_contract_bindings": {},
   "binding_map_records": 1777,

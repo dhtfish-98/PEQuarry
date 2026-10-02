@@ -33,7 +33,7 @@
       "executable": false
     },
     "NAME_AUDIT.json": {
-      "sha256": "96e23302227b945133b2e92bab27a75068cb545886c6190c93d370ab5c19291b",
+      "sha256": "5975b0c5623091476c3a01e254e7cb4bdb1c4ca0f2b8ec9d7f87d665f65a0047",
       "bytes": 2103,
       "executable": false
     },
@@ -43,7 +43,7 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "620089f180927935763f838729df37e9520fe090920d31f3e1cbe4c0365ea6a3",
+      "sha256": "2bc5b23b02fa6104a66f8a1834f55c451c2744c4a968f8344445c1a633bf64b5",
       "bytes": 5277,
       "executable": false
     },
@@ -53,7 +53,7 @@
       "executable": false
     },
     "VALIDATION.md": {
-      "sha256": "0edc280beb6cfc85752a0b89495904e3fd0e9b48d1c59ca92d3711c5b970e7e2",
+      "sha256": "9d4583506396f4d186bdfd8235eb75700cb9fd5abd4026d9ce90f2fe0a6de363",
       "bytes": 4292,
       "executable": false
     },
@@ -153,13 +153,13 @@
       "executable": true
     },
     "src/pequarry/bounded_io.py": {
-      "sha256": "9435ad1775d8f4c2bf198a5eb37f091492a49f2f1fd22564621b023e0765584e",
-      "bytes": 4952,
+      "sha256": "65376c91391340ed524db762b43678ef352e4a908bc217cdac619f81bb53f504",
+      "bytes": 5060,
       "executable": false
     },
     "checks/test_quarry_boundaries.py": {
-      "sha256": "eca1d855948b2949053b3e8510901875a8bca4bbff0e0d868a084dfc4eb058a0",
-      "bytes": 15508,
+      "sha256": "6cf68b4ae5e9ec0d4c47475d998348f0be7e9118874ea8975dcb7c950cc3e230",
+      "bytes": 16109,
       "executable": false
     },
     "checks/signature_observations.py": {
@@ -168,7 +168,7 @@
       "executable": false
     },
     "CURRENT_REVIEW.json": {
-      "sha256": "12a26a61375bd39c1793a7313c30a11451fea4ccb0f3057ed59a1f57ae413589",
+      "sha256": "480f0e45de1c649833b7f8a6589cd79278c37bcb38f7d37265a12944ad9ddfcb",
       "bytes": 4271,
       "executable": false
     }

@@ -342,3 +342,18 @@ def test_missing_output_race_never_overwrites_new_file(tmp_path,monkeypatch):
     monkeypatch.setattr(os,'open',concurrent_create)
     with pytest.raises(FileExistsError):image().write(path)
     assert path.read_bytes()==b'other writer'
+
+
+def test_regular_io_selects_binary_flag_when_available(tmp_path,monkeypatch):
+    from pequarry.bounded_io import quarry_write_regular
+    marker=1<<29;real_open=os.open;seen=[]
+    monkeypatch.setattr(os,'O_BINARY',marker,raising=False)
+    def inspect_open(filename,flags,mode=0o777):
+        seen.append(flags)
+        assert flags & marker
+        return real_open(filename,flags & ~marker,mode)
+    monkeypatch.setattr(os,'open',inspect_open)
+    path=tmp_path/'bytes';data=b'A\r\n\x1aB'
+    quarry_write_regular(path,data)
+    assert quarry_read_regular(path,32)==data
+    assert len(seen)==2

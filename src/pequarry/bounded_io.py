@@ -25,6 +25,7 @@ def quarry_read_regular(quarry_filename, quarry_limit, *, quarry_allow_empty=Fal
     quarry_positive_limit(quarry_limit, 'input limit')
     quarry_flags = quarry_os.O_RDONLY | getattr(quarry_os, 'O_NONBLOCK', 0)
     quarry_flags |= getattr(quarry_os, 'O_NOFOLLOW', 0) | getattr(quarry_os, 'O_CLOEXEC', 0)
+    quarry_flags |= getattr(quarry_os, 'O_BINARY', 0)
     # lstat is also required on platforms that do not provide O_NOFOLLOW.
     quarry_before_path = quarry_os.lstat(quarry_filename)
     if not quarry_stat.S_ISREG(quarry_before_path.st_mode):
@@ -75,6 +76,7 @@ def quarry_in_memory_bytes(quarry_data, quarry_limit):
 def quarry_write_regular(quarry_filename, quarry_data):
     quarry_flags = quarry_os.O_WRONLY | getattr(quarry_os, 'O_NONBLOCK', 0)
     quarry_flags |= getattr(quarry_os, 'O_NOFOLLOW', 0) | getattr(quarry_os, 'O_CLOEXEC', 0)
+    quarry_flags |= getattr(quarry_os, 'O_BINARY', 0)
     try:
         quarry_existing = quarry_os.lstat(quarry_filename)
     except FileNotFoundError:

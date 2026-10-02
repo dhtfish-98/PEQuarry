@@ -41,6 +41,6 @@ python -m pip install '.[test]'
 python verify.py
 ```
 
-The verifier checks the current source manifest, runs 126 project checks plus the fixed independent 366-test suite, compares 373 PE observations and 1,204 ordinary signature observations against the pinned upstream, and builds/consumes the wheel in a fresh environment. It separately retains the historical unavailable/mismatched fixture failures. No input PE is executed. `--baseline PATH` and `--pe-tests PATH` reuse the fixed source/test checkouts; `--audit-only` only checks current source identities.
+The verifier checks the current source manifest, runs 127 project checks plus the fixed independent 366-test suite, compares 373 PE observations and 1,204 ordinary signature observations against the pinned upstream, and builds/consumes the wheel in a fresh environment. It separately retains the historical unavailable/mismatched fixture failures. No input PE is executed. `--baseline PATH` and `--pe-tests PATH` reuse the fixed source/test checkouts; `--audit-only` only checks current source identities.
 
 See [VALIDATION.md](VALIDATION.md), [DEFENSIVE_SCOPE.md](DEFENSIVE_SCOPE.md) and `CURRENT_REVIEW.json` for measured scope and remaining work. Naming maps describe the earlier reorganization; readable new signature routines deliberately do not add another name-obfuscation layer. Names and repository quantity do not establish defensive value or CVP eligibility.

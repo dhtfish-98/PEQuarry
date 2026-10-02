@@ -6,8 +6,8 @@
   "upstream_tree": "09c20c3324bfafdf9592379ed6028f0fd36f48d3",
   "test_commit": "7fb3461fda128b4f7864c0891e03babbe43f6d9b",
   "python": "3.12.13",
-  "local_project_tests": 126,
-  "new_boundary_tests": 124,
+  "local_project_tests": 127,
+  "new_boundary_tests": 125,
   "independent_runtime_tests": 366,
   "pe_observations_equal": 373,
   "ordinary_signature_observations_equal": 1204,
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/pequarry/bounded_io.py",
-      "sha256": "9435ad1775d8f4c2bf198a5eb37f091492a49f2f1fd22564621b023e0765584e",
+      "sha256": "65376c91391340ed524db762b43678ef352e4a908bc217cdac619f81bb53f504",
       "ast_parsed": true,
       "functions": 4,
       "scope": "new bounded I/O"

@@ -4,7 +4,7 @@
 
 Recorded environment: macOS Apple Silicon, Python 3.12.13.
 
-- PASS: 126 project checks (2 retained embedded export cases and 124 new finite-input/edit/signature cases).
+- PASS: 127 project checks (2 retained embedded export cases and 125 new finite-input/edit/signature cases).
 - PASS: 366 tests from the fixed public pefile-tests repository against the maintained runtime. The verifier also repeats the 366 upstream control tests.
 - PASS: all 373 existing PE observations equal the frozen upstream: headers, warnings, dumps, serialization, checksum, imports/exports and malformed-input outcomes.
 - PASS: all 1,204 additional ordinary signature observations equal the frozen upstream, including internal wildcards and partial data. This ordinary corpus deliberately ends patterns in concrete bytes; terminal-wildcard error changes have separate expected-result tests.
