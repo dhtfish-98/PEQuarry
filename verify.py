@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Audit frozen source, repeat upstream comparisons, and build installable artifacts."""
 from pathlib import Path
-import argparse,hashlib,importlib.metadata,json,os,subprocess,sys,tempfile,zipfile
+import argparse,hashlib,importlib.metadata,json,os,subprocess,sys,tempfile,zipfile,tarfile
 ROOT=Path(__file__).resolve().parent
 CONFIG={'name': 'PEQuarry', 'upstream': 'https://github.com/erocarrera/pefile.git', 'commit': 'e521f469b41abb074bae1cc0820396d6f7663cd9'}
 WORK=ROOT/'.verification'
@@ -55,12 +55,16 @@ def main():
     elif name=='PEQuarry':
         suite=args.pe_tests.resolve() if args.pe_tests else checkout('https://github.com/erocarrera/pefile-tests.git','7fb3461fda128b4f7864c0891e03babbe43f6d9b','pe-tests')
         if not args.skip_tests:
-            run([sys.executable,'-m','pytest','checks/test_quarry_export_test.py','-q'])
+            run([sys.executable,'-m','pytest','checks','-q','-p','no:cacheprovider'])
             env=dict(os.environ,PYTHONPATH=str(baseline))
             run([sys.executable,'-m','pytest',suite/'tests','-q'],env=env)
             bridge="import sys,pytest;import pequarry.image_reader as r;import pequarry.signature_tools as u;import pequarry.ordinal_catalog as o;sys.modules.update(pefile=r,peutils=u,ordlookup=o);raise SystemExit(pytest.main([sys.argv[1],'-q']))"
             run([sys.executable,'-c',bridge,suite/'tests'])
         checks['file_and_error_differences']=compare_observations('pe_observations.py',['pefile'],['pequarry.image_reader'],suite/'tests',baseline)
+        original_signature=run([sys.executable,ROOT/'checks/signature_observations.py','peutils'],capture_output=True,env=dict(os.environ,PYTHONPATH=str(baseline))).stdout
+        current_signature=run([sys.executable,ROOT/'checks/signature_observations.py','pequarry.signature_tools'],capture_output=True).stdout
+        assert json.loads(original_signature)==json.loads(current_signature),'Bounded ordinary signature observations differ'
+        checks['ordinary_signature_observations_equal']=len(json.loads(current_signature))
         original_history=run([sys.executable,ROOT/'checks/legacy_pe_observations.py',baseline/'tests/pefile_test.py',suite/'tests/data','original'],capture_output=True,env=dict(os.environ,PYTHONPATH=str(baseline))).stdout
         rewritten_history=run([sys.executable,ROOT/'checks/legacy_pe_observations.py',ROOT/'historical_checks/legacy_quarry_regression.py',suite/'tests/data','rewritten'],capture_output=True).stdout
         original_history=json.loads(original_history);rewritten_history=json.loads(rewritten_history)
@@ -83,19 +87,28 @@ def main():
         for source in (ROOT/'src').rglob('*.py'):
             relative=str(source.relative_to(ROOT/'src'))
             assert archive.read(relative)==source.read_bytes(),'Wheel source differs: '+relative
-        for document in ('README.md','ORIGIN.md','VALIDATION.md','DEFENSIVE_SCOPE.md','NAME_AUDIT.json'):
+        for document in ('README.md','ORIGIN.md','VALIDATION.md','DEFENSIVE_SCOPE.md','NAME_AUDIT.json','CURRENT_REVIEW.json'):
             members=[path for path in archive.namelist() if path.endswith('/share/'+CONFIG['name']+'/'+document)]
             assert len(members)==1 and archive.read(members[0])==(ROOT/document).read_bytes(),'Wheel provenance differs: '+document
     checks['wheel_source_identity']='PASS'
+    sources=list((WORK/'dist').glob('*.tar.gz'));assert len(sources)==1
+    with tarfile.open(sources[0]) as source_archive:
+        source_members=source_archive.getmembers()
+        for relative,record in json.loads((ROOT/'SOURCE_MANIFEST.json').read_text())['files'].items():
+            members=[member for member in source_members if member.isfile() and member.name.endswith('/'+relative)]
+            assert len(members)==1, 'Source distribution missing audit file: '+relative
+            assert source_archive.extractfile(members[0]).read()==(ROOT/relative).read_bytes(), 'Source distribution bytes differ: '+relative
+            assert bool(members[0].mode&0o111)==bool(record['executable']), 'Source distribution mode differs: '+relative
+    checks['source_distribution_identity']='PASS'
     # A fresh environment ensures consumption cannot import this editable checkout.
     import venv
     with tempfile.TemporaryDirectory(prefix='wheel-consumption-') as consumer_directory:
         consumer=Path(consumer_directory)
         venv.EnvBuilder(with_pip=True).create(consumer)
         interpreter=consumer/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
-        run([interpreter,'-m','pip','install','--disable-pip-version-check',wheels[0]])
+        run([interpreter,'-I','-m','pip','install','--no-index','--no-deps','--force-reinstall','--disable-pip-version-check',wheels[0]])
         env=dict(os.environ,PYTHONPATH='')
-        result=run([interpreter,ROOT/'checks/wheel_consumption.py',ROOT,CONFIG['name']],capture_output=True,env=env)
+        result=run([interpreter,'-I',ROOT/'checks/wheel_consumption.py',ROOT,CONFIG['name']],capture_output=True,env=env)
         checks['independent_wheel_consumer']=json.loads(result.stdout)
     (WORK/'result.json').write_text(json.dumps(checks,indent=2)+'\n')
     print(json.dumps(checks))

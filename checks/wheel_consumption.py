@@ -46,6 +46,20 @@ elif consumption_name == 'PEQuarry':
         assert consumption_image.quarry_generate_checksum() > 0
         consumption_image.quarry_close()
         consumption_cases.append('installed PE32/64 parse, export table, write bytes and checksum')
+    consumption_signatures = consumption_importlib.import_module('pequarry.signature_tools')
+    consumption_bounds = consumption_importlib.import_module('pequarry.bounded_io')
+    consumption_db = consumption_signatures.SignatureDatabase(data='[owned]\nsignature = 41 ??\nep_only = true\n')
+    assert consumption_db.match_data(b'AB') == (0, [['owned']])
+    assert consumption_db.match_data(b'A') == []
+    consumption_cases.append('installed full-length terminal wildcard')
+    try:
+        consumption_reader.PE(data=consumption_fixture.quarry_PE_32, max_input_size=16)
+    except consumption_bounds.quarry_LimitError:
+        consumption_cases.append('installed input byte bound')
+    else:
+        raise AssertionError('input bound was not enforced')
+    consumption_metadata = consumption_importlib.import_module('importlib.metadata')
+    assert consumption_metadata.version('PEQuarry') == '1.0.1'
 else:
     consumption_views = consumption_importlib.import_module('idbmeadow.semantic_views')
     consumption_examples = [('empty/empty.idb','d41d8cd98f00b204e9800998ecf8427e',(0,1)),('v6.95/x32/kernel32.idb','00bf1bf1b779ce1af41371426821e0c2',(1754271744,1755177520))]

@@ -1,21 +1,33 @@
 # Validation
 
-Recorded environment: macOS Apple Silicon, Python 3.12.13, Capstone 5.0.6, pytest 9.1.1. IDB dependencies: vivisect-vstruct-wb 1.0.3, six 1.17.0, cached-property 2.0.1, hexdump 3.3.
+## Current 1.0.1 checks, 2026-10-02
 
-PASS: 2 embedded PE32/PE64 export tests; original and rewritten public pefile-tests suite, 366 tests each. PASS: 373 original/new file and malformed-input observations including dump_info/dump_dict hashes, emitted bytes, checksum, imports/exports and error type/message.
+Recorded environment: macOS Apple Silicon, Python 3.12.13.
 
-## Limits and pre-existing gaps
+- PASS: 126 project checks (2 retained embedded export cases and 124 new finite-input/edit/signature cases).
+- PASS: 366 tests from the fixed public pefile-tests repository against the maintained runtime. The verifier also repeats the 366 upstream control tests.
+- PASS: all 373 existing PE observations equal the frozen upstream: headers, warnings, dumps, serialization, checksum, imports/exports and malformed-input outcomes.
+- PASS: all 1,204 additional ordinary signature observations equal the frozen upstream, including internal wildcards and partial data. This ordinary corpus deliberately ends patterns in concrete bytes; terminal-wildcard error changes have separate expected-result tests.
+- Covered changes include file/input/output spans, nonblocking rejection of final links/FIFOs/devices, detectable file mutation, owned memory snapshots, mapping total-size planning, cumulative structure/read budgets, offset-zero edits, version-string size preservation, mutable raw-byte recovery on failed relocation, iterative 1,500-byte signatures, atomic malformed loads, count/depth/node/match budgets and explicit-download validation. Mocked download tests make no outbound request.
+- Deterministic mutation checks use 48 altered copies of owned embedded header bytes. They cover those finite cases and do not establish arbitrary malformed-input safety.
 
-- OPEN: The upstream encrypted test_data archive is not usable. Its old 26-test regression suite produced 12 passes and 14 failures against the available replacement samples; these missing/mismatched historical fixtures are retained in historical_checks and excluded from the ordinary suite, not reported as passing.
-- OPEN: The independent public sample repository has mixed/partly undocumented sample origins. It is checked out only for validation at a fixed commit and is not redistributed in this project.
-- OPEN: No PE sample was executed; Windows loading, arbitrary malformed inputs and runtime behavior remain outside the measured static checks.
+The current verifier builds source and wheel distributions, checks every runtime Python byte and provenance document, installs the wheel into a fresh environment and checks installed identity, PE32/64 parse/exports/write/checksum, terminal wildcards and an input limit. A successful verifier run records the measured package consumption in `.verification/result.json`. Remote CI and release asset hashes are separate evidence tied to their actual Git commit; they are not inferred from this document.
 
-Local automated checks, installable-package consumption, source identity and remote GitHub workflow results are distinct evidence. Remote CI is not presumed from a local pass. No application/verification-program approval or independent authorship claim follows from these checks.
+## Scope and remaining work
 
-Additional PASS: 23 available historical test outcomes are equal between original and renamed sources: 10 passes and 13 identical fixture-related failures. The remaining control-generating regression test is not repeated; its original failure remains OPEN.
+- OPEN: retained directory parsing, resource/version interpretation, relocation semantics, unwind/structure helpers, alias machinery and dump formatting are not all independently rewritten. Cumulative read/structure counters bound those mediated operations; they do not bound every direct-slice loop, total memory, CPU time or text output.
+- OPEN: no PE sample was executed; Windows loading, arbitrary malformed inputs and runtime behavior remain unmeasured. A static mapped image is not proof of loader fidelity.
+- OPEN: new output is deliberately non-atomic; an explicit existing regular file may be overwritten. A failed write may leave a partial output. Existing file permissions are retained; new output gets mode 0600.
+- OPEN: socket timeout is not a complete elapsed-time bound; caller-provided custom objects and changed library settings have not been universally validated.
+- OPEN: Python 3.10/3.11 and Windows host behavior have not been measured in this local run. CI uses Linux Python 3.12.
+- OPEN: public sample origins are mixed/partly undocumented. The fixed sample checkout is used only for comparison and is not redistributed.
 
-PASS: lexical name audit of 10 mapped owned Python files; 1777 binding-map records and zero ordinary unrenamed function/comprehension bindings. PASS: two independent wheel-consumer checks in a fresh temporary environment, with every installed Python source file compared byte-for-byte. NAME_AUDIT.json records the permitted fixed global contracts.
+## Historical 1.0.0 evidence
 
-## 2026-10-02 capability review
+The previous release recorded 366 control/runtime tests and 373 equal PE observations after naming/module reorganization. Its immutable assets remain historical artifacts and do not contain the 1.0.1 boundary rewrite.
 
-The current runtime entry points, file/process/network capabilities and attribution were reviewed. See DEFENSIVE_SCOPE.md for the exact paths and remaining limitations. This documentation update does not claim another execution of the historical full test suite, a rewrite of every upstream algorithm, or CVP eligibility. GitHub CI for the new commit is separate evidence.
+The upstream encrypted test_data archive is unavailable. Its old 26-test regression run produced 12 passes and 14 failures against available replacement samples. A repeatable 23-case subset reports 10 passes and 13 identical baseline fixture failures; the remaining control-generating test was not repeated. These are retained in `historical_checks`; they are not reported as a passing 26-case gate.
+
+The earlier lexical naming audit covered 10 mapped source/test files and 1,777 historical binding records. Current byte hashes cover the current files; the newly written signature module is explicitly recorded as a readable rewrite rather than being presented as another automatic rename. Naming is not security evidence.
+
+No test count, build, repository quantity or GitHub workflow proves CVP approval, applicant identity, organizational authorization, sample safety or independent authorship.

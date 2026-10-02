@@ -20,3 +20,11 @@ Binary fixture filenames and bytes remain fixed comparison inputs. Required __in
 Ordinary local bindings are renamed even when their old spelling also appears in a fixed schema field. Scope-resolved local/global refinements are listed in SYMBOL_MAP.json. NAME_AUDIT.json and checks/naming_audit.py repeat the owned-source lexical audit.
 
 Upstream packaging configuration is expressed in the new pyproject.toml. Distribution/module identity changes deliberately; parsing behavior, CLI flags and external data contracts are verified separately.
+
+## 1.0.1 boundary rewrite
+
+The signature component is now a new line parser, atomic bounded trie loader and iterative matcher. New `bounded_io.py` owns finite regular-file operations. PE input, static mapped-image construction, serialization and checksum routines were rewritten; byte edits and mediated structure/data-read operations gained explicit limits. This is substantive maintenance of an attributed derivative. The remaining directory parsers, binary field tables, ordinal data and alias machinery retain substantial upstream/reorganization code and are not claimed as newly authored algorithms.
+
+The current `SOURCE_MANIFEST.json` records current bytes. `SYMBOL_MAP.json`/`FILE_MAP.json` preserve the historical renaming provenance; they are not a declaration that newly written routines preserve every old local name. `NAME_AUDIT.json` explicitly excludes the readable signature rewrite from the historical lexical-name criterion while retaining its current source hash.
+
+PE field/layout checks also refer to the [Microsoft PE/COFF specification](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format). That specification distinguishes file offsets from RVAs; it does not prove the complete Windows loader behavior of this implementation.

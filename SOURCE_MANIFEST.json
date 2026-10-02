@@ -13,8 +13,8 @@
       "executable": false
     },
     "DEFENSIVE_SCOPE.md": {
-      "sha256": "1353f615381804830db59c0e4125e1d43a9b57824ac092d51bb33b519512caba",
-      "bytes": 1594,
+      "sha256": "d97033c273342b3c63a1491f0472f11dc99d2da26e00ddf5aeeaf42106732b0d",
+      "bytes": 2458,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -28,23 +28,23 @@
       "executable": false
     },
     "MANIFEST.in": {
-      "sha256": "7bdfbbb37d1aaf62e3d427b3e7412b215e46028d8a9442600cc7295927b5dff3",
-      "bytes": 352,
+      "sha256": "0b6aedac252c1dac8a13bed38407d9806594ad3e5e4b209011e15b79aa82f6db",
+      "bytes": 367,
       "executable": false
     },
     "NAME_AUDIT.json": {
-      "sha256": "b18791059688cb54fd3a44634ebbb60dba496f68a35d6aaf06921e1710d5c172",
-      "bytes": 1785,
+      "sha256": "96e23302227b945133b2e92bab27a75068cb545886c6190c93d370ab5c19291b",
+      "bytes": 2103,
       "executable": false
     },
     "ORIGIN.md": {
-      "sha256": "0a56e9c3588cf6e1d84c6c9e08f7ebba35cb1488eef58eff6c0d68222e55fb77",
-      "bytes": 2267,
+      "sha256": "50e3913902173e4da6ce7abaf09e04600b4a46fcc047124081423167b65dbf15",
+      "bytes": 3528,
       "executable": false
     },
     "README.md": {
-      "sha256": "1e5ee51b7a72cae80ca2c901c2a666383c2859da4769348d59bad2a75c72b66f",
-      "bytes": 2104,
+      "sha256": "620089f180927935763f838729df37e9520fe090920d31f3e1cbe4c0365ea6a3",
+      "bytes": 5277,
       "executable": false
     },
     "SYMBOL_MAP.json": {
@@ -53,8 +53,8 @@
       "executable": false
     },
     "VALIDATION.md": {
-      "sha256": "a36d4227db6b8fce6eccb9a8ea6149b3f32aa8085e7d1da3d575d3e2fc3ffc3f",
-      "bytes": 2450,
+      "sha256": "0edc280beb6cfc85752a0b89495904e3fd0e9b48d1c59ca92d3711c5b970e7e2",
+      "bytes": 4292,
       "executable": false
     },
     "checks/__init__.py": {
@@ -68,8 +68,8 @@
       "executable": false
     },
     "checks/naming_audit.py": {
-      "sha256": "fb53c91770a23bad10cb1e2e4965327a363aae8f932dad67dbba5eb9a0dcae87",
-      "bytes": 2140,
+      "sha256": "b4411145a54db078d6153f8d9c53d270ad16aa8de15299f2314ff9888a7d69d0",
+      "bytes": 2439,
       "executable": false
     },
     "checks/pe_observations.py": {
@@ -83,8 +83,8 @@
       "executable": false
     },
     "checks/wheel_consumption.py": {
-      "sha256": "4ab02de1558b17e5984a77dd7191adc3cabec320aa65118f86af3507e6231411",
-      "bytes": 4973,
+      "sha256": "1377d1c853d521d69cc3a1f0856d864598e80c87ae118e6d1918836b979de851",
+      "bytes": 5878,
       "executable": false
     },
     "historical_checks/legacy_quarry_regression.py": {
@@ -93,8 +93,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "20031914a9a403c613c7d9dee41e0f692b3e13760d2aaf3be2340b7f666f6159",
-      "bytes": 674,
+      "sha256": "9a839c0418eb84099f7e8afa3cd8ddb291f30d3e43b37883a403ef8fe2688e69",
+      "bytes": 721,
       "executable": false
     },
     "src/pequarry/__init__.py": {
@@ -108,8 +108,8 @@
       "executable": false
     },
     "src/pequarry/image_reader.py": {
-      "sha256": "f496b24f2ba9e048a6df61f68985bdf08e5fc268405f072de4b611287e586dfe",
-      "bytes": 400419,
+      "sha256": "1e3ff66b25be05e2f844704c7a815ee48df011305c503434c92bc703ec0bdcf2",
+      "bytes": 400891,
       "executable": false
     },
     "src/pequarry/ordinal_catalog/__init__.py": {
@@ -143,14 +143,34 @@
       "executable": false
     },
     "src/pequarry/signature_tools.py": {
-      "sha256": "fc0a0e51e8088bf7a65abf93dc7f2de98897c8f657693ee2eaf8382b116ea8c9",
-      "bytes": 24069,
+      "sha256": "6cbce9aa577342799edc37192e1ca60ec2ef3f88ad8ed977e4329b2912f112ab",
+      "bytes": 21244,
       "executable": false
     },
     "verify.py": {
-      "sha256": "47878399e00365072482f0b974bdcf855e0a085632a612dc94bc5563e19d9403",
-      "bytes": 7032,
+      "sha256": "bcc6a12e5b86d7ab4d13d959ac66f3099403f1aad2dc2ff6287a11776a9fac05",
+      "bytes": 8442,
       "executable": true
+    },
+    "src/pequarry/bounded_io.py": {
+      "sha256": "9435ad1775d8f4c2bf198a5eb37f091492a49f2f1fd22564621b023e0765584e",
+      "bytes": 4952,
+      "executable": false
+    },
+    "checks/test_quarry_boundaries.py": {
+      "sha256": "eca1d855948b2949053b3e8510901875a8bca4bbff0e0d868a084dfc4eb058a0",
+      "bytes": 15508,
+      "executable": false
+    },
+    "checks/signature_observations.py": {
+      "sha256": "80e1fbea81c392c17cde9a8e8d51837cceede4625808a7a9654eae5cccd9431c",
+      "bytes": 718,
+      "executable": false
+    },
+    "CURRENT_REVIEW.json": {
+      "sha256": "12a26a61375bd39c1793a7313c30a11451fea4ccb0f3057ed59a1f57ae413589",
+      "bytes": 4271,
+      "executable": false
     }
   }
 }

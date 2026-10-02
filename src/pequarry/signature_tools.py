@@ -1,330 +1,339 @@
-# Derived from peutils.py; original copyright and license retained in ORIGIN.md.
-"""peutils, Portable Executable utilities module
-
+# Derived from peutils.py; original copyright and MIT license retained.
+"""Static signature utilities; bounded parsing and iterative matching.
 
 Copyright (c) 2005-2024 Ero Carrera <ero.carrera@gmail.com>
-
-All rights reserved.
+All rights reserved. PEQuarry maintenance preserves attribution in ORIGIN.md.
 """
-import pequarry.api_contract as _name_boundary
-import os as quarry_os
 import re as quarry_re
-import string as quarry_string
-import urllib.request as _boundary_import_urllib_request
-import urllib as quarry_urllib
+import urllib.request as quarry_request
+import urllib.parse as quarry_urlparse
+import math as quarry_math
+import pequarry.api_contract as _name_boundary
 import pequarry.image_reader as quarry_pefile
+from pequarry.bounded_io import quarry_LimitError, quarry_SIGNATURE_LIMIT, quarry_positive_limit, quarry_read_regular
 __author__ = 'Ero Carrera'
 __version__ = quarry_pefile.__version__
 __contact__ = 'ero.carrera@gmail.com'
 
-@_name_boundary.class_contract('SignatureDatabase', {'generate_section_signatures': 'quarry_generate_section_signatures', 'generate_ep_signature': 'quarry_generate_ep_signature', '__generate_signature': 'quarry___generate_signature', 'match': 'quarry_match', 'match_all': 'quarry_match_all', '__match': 'quarry___match', 'match_data': 'quarry_match_data', '__match_signature_tree': 'quarry___match_signature_tree', 'load': 'quarry_load', '__load': 'quarry___load', 'parse_sig': 'quarry_parse_sig', 'signature_tree_eponly_false': 'quarry_signature_tree_eponly_false', 'signature_tree_eponly_true': 'quarry_signature_tree_eponly_true', 'signature_tree_section_start': 'quarry_signature_tree_section_start', 'signature_count_eponly_false': 'quarry_signature_count_eponly_false', 'signature_count_eponly_true': 'quarry_signature_count_eponly_true', 'signature_count_section_start': 'quarry_signature_count_section_start', 'max_depth': 'quarry_max_depth'})
+@_name_boundary.class_contract('SignatureDatabase', {'generate_section_signatures': 'quarry_generate_section_signatures', 'generate_ep_signature': 'quarry_generate_ep_signature', '__generate_signature': 'quarry___generate_signature', 'match': 'quarry_match', 'match_all': 'quarry_match_all', '__match': 'quarry___match', 'match_data': 'quarry_match_data', '__match_signature_tree': 'quarry___match_signature_tree', 'load': 'quarry_load', '__load': 'quarry___load', 'parse_sig': 'quarry_parse_sig', 'signature_tree_eponly_false': 'quarry_signature_tree_eponly_false', 'signature_tree_eponly_true': 'quarry_signature_tree_eponly_true', 'signature_tree_section_start': 'quarry_signature_tree_section_start', 'signature_count_eponly_false': 'quarry_signature_count_eponly_false', 'signature_count_eponly_true': 'quarry_signature_count_eponly_true', 'signature_count_section_start': 'quarry_signature_count_section_start', 'max_depth': 'quarry_max_depth', 'load_url': 'quarry_load_url'})
 class quarry_SignatureDatabase:
-    """This class loads and keeps a parsed PEiD signature database.
+    """Local PEiD signature database. URL retrieval requires explicit load_url().
 
-    Usage:
-
-        signatures = SignatureDatabase('/path/to/signature/file')
-
-    and/or
-
-        signatures = SignatureDatabase()
-        signatures.load('/path/to/signature/file')
-
-    Signature databases can be combined by performing multiple loads.
-
-    The filename parameter can be a URL too. In that case the
-    signature database will be downloaded from that location.
+    Successful loads combine signatures. A malformed or over-limit load leaves
+    the existing trees and counts unchanged. Matching is static and finite;
+    reaching a budget raises LimitError rather than reporting a negative match.
     """
+    def __init__(quarry_self, filename=None, data=None, *, max_bytes=quarry_SIGNATURE_LIMIT,
+                 max_signatures=65536, max_depth=4096, max_nodes=1048576,
+                 max_match_steps=4194304, max_matches=65536):
+        quarry_self._quarry_limits = tuple(quarry_positive_limit(quarry_v, quarry_n) for quarry_v, quarry_n in (
+            (max_bytes, 'max_bytes'), (max_signatures, 'max_signatures'),
+            (max_depth, 'max_depth'), (max_nodes, 'max_nodes'),
+            (max_match_steps, 'max_match_steps'), (max_matches, 'max_matches')))
+        # Retained compatibility attribute; the actual parser is line based.
+        quarry_self.parse_sig = quarry_re.compile(r'\[(.*?)\]\s+?signature\s*=\s*(.*?)(\s+\?\?)*\s*ep_only\s*=\s*(\w+)(?:\s*section_start_only\s*=\s*(\w+)|)', quarry_re.DOTALL)
+        quarry_self.signature_tree_eponly_false = {}
+        quarry_self.signature_tree_eponly_true = {}
+        quarry_self.signature_tree_section_start = {}
+        quarry_self.signature_count_eponly_false = 0
+        quarry_self.signature_count_eponly_true = 0
+        quarry_self.signature_count_section_start = 0
+        quarry_self.max_depth = 0
+        quarry_self._quarry_nodes = 0
+        quarry_self._quarry_loaded_bytes = 0
+        quarry_self.quarry_load(filename, data)
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_b5950de', 'filename': 'quarry_filename_11b963b', 'data': 'quarry_data_local_2d72823'}, '__init__')
-    def __init__(quarry_self_b5950de, quarry_filename_11b963b=None, quarry_data_local_2d72823=None):
-        _name_boundary.attributes(quarry_self_b5950de)['parse_sig'] = quarry_re.compile('\\[(.*?)\\]\\s+?signature\\s*=\\s*(.*?)(\\s+\\?\\?)*\\s*ep_only\\s*=\\s*(\\w+)(?:\\s*section_start_only\\s*=\\s*(\\w+)|)', quarry_re.DOTALL)
-        _name_boundary.attributes(quarry_self_b5950de)['signature_tree_eponly_false'] = {}
-        _name_boundary.attributes(quarry_self_b5950de)['signature_tree_eponly_true'] = {}
-        _name_boundary.attributes(quarry_self_b5950de)['signature_tree_section_start'] = {}
-        _name_boundary.attributes(quarry_self_b5950de)['signature_count_eponly_false'] = 0
-        _name_boundary.attributes(quarry_self_b5950de)['signature_count_eponly_true'] = 0
-        _name_boundary.attributes(quarry_self_b5950de)['signature_count_section_start'] = 0
-        _name_boundary.attributes(quarry_self_b5950de)['max_depth'] = 0
-        _name_boundary.attributes(quarry_self_b5950de)['__load'](filename=quarry_filename_11b963b, data=quarry_data_local_2d72823)
+    def quarry_load(quarry_self, filename=None, data=None):
+        if filename is not None and data is not None:
+            raise ValueError('supply filename or data, not both')
+        if filename is not None:
+            # Missing paths remain missing paths. No URL or file:// fallback.
+            quarry_source = quarry_read_regular(filename, quarry_self._quarry_limits[0], quarry_allow_empty=True)
+        elif data is None:
+            return
+        else:
+            quarry_source = data
+        quarry_self.quarry___load(data=quarry_source)
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_af16e98', 'sig_length': 'quarry_sig_length_610ca79', 'pe': 'quarry_pe_local_527be8e', 'name': 'quarry_name_local_aa1ff42'}, 'generate_section_signatures')
-    def quarry_generate_section_signatures(quarry_self_af16e98, quarry_pe_local_527be8e, quarry_name_local_aa1ff42, quarry_sig_length_610ca79=512):
-        """Generates signatures for all the sections in a PE file.
+    def quarry_load_url(quarry_self, url, *, timeout=10.0):
+        """Explicit HTTPS retrieval; redirects and embedded credentials rejected.
 
-        If the section contains any data a signature will be created
-        for it. The signature name will be a combination of the
-        parameter 'name' and the section number and its name.
+        The caller owns destination authorization. This opt-in method makes an
+        outbound request. The normal constructor/load path never does so.
         """
-        quarry_section_signatures_d8d7d79 = []
-        for quarry_idx_3688a53, quarry_section_881ea3d in enumerate(_name_boundary.attributes(quarry_pe_local_527be8e)['sections'], start=1):
-            if quarry_section_881ea3d.SizeOfRawData < quarry_sig_length_610ca79:
+        if not isinstance(url, str) or any(ord(quarry_c) < 33 for quarry_c in url):
+            raise ValueError('URL must be an HTTPS string without controls')
+        quarry_parts = quarry_urlparse.urlsplit(url)
+        if quarry_parts.scheme != 'https' or not quarry_parts.hostname or quarry_parts.username is not None or quarry_parts.password is not None or quarry_parts.fragment:
+            raise ValueError('URL must use HTTPS without credentials or fragments')
+        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not quarry_math.isfinite(timeout) or timeout <= 0 or timeout > 60:
+            raise ValueError('timeout must be finite and between 0 and 60 seconds')
+        class quarry_NoRedirect(quarry_request.HTTPRedirectHandler):
+            def redirect_request(quarry_handler, quarry_req, quarry_fp, quarry_code, quarry_msg, quarry_headers, quarry_newurl):
+                quarry_fp.close()
+                raise ValueError('signature download redirects are not permitted')
+        quarry_opener = quarry_request.build_opener(quarry_NoRedirect)
+        quarry_limit = quarry_self._quarry_limits[0]
+        with quarry_opener.open(url, timeout=timeout) as quarry_response:
+            quarry_chunks = []
+            quarry_total = 0
+            while True:
+                quarry_chunk = quarry_response.read(min(65536, quarry_limit - quarry_total + 1))
+                if not quarry_chunk:
+                    break
+                quarry_total += len(quarry_chunk)
+                if quarry_total > quarry_limit:
+                    raise quarry_LimitError('signature download exceeds byte limit')
+                quarry_chunks.append(quarry_chunk)
+        quarry_self.quarry___load(data=b''.join(quarry_chunks))
+
+    def quarry___load(quarry_self, filename=None, data=None):
+        if filename is not None:
+            return quarry_self.quarry_load(filename, data)
+        if data is None:
+            return
+        if isinstance(data, bytes):
+            quarry_size = len(data)
+            if quarry_size > quarry_self._quarry_limits[0]:
+                raise quarry_LimitError('signature input exceeds byte limit')
+            quarry_text = data.decode('utf-8-sig')
+        elif isinstance(data, str):
+            if len(data) > quarry_self._quarry_limits[0]:
+                raise quarry_LimitError('signature input exceeds byte limit')
+            quarry_size = len(data.encode('utf-8'))
+            quarry_text = data.lstrip('\ufeff')
+        else:
+            raise TypeError('signature data must be str or UTF-8 bytes')
+        if quarry_size > quarry_self._quarry_limits[0] or quarry_size + quarry_self._quarry_loaded_bytes > quarry_self._quarry_limits[0]:
+            raise quarry_LimitError('combined signature input exceeds byte limit')
+        quarry_records = quarry_self._quarry_parse_records(quarry_text)
+        quarry_count = sum((quarry_self.signature_count_eponly_false, quarry_self.signature_count_eponly_true, quarry_self.signature_count_section_start))
+        if quarry_count + len(quarry_records) > quarry_self._quarry_limits[1]:
+            raise quarry_LimitError('signature count exceeds limit')
+        # Plan fresh nodes against all current trees, then mutate only after the
+        # entire input has been accepted. No recursive deepcopy is needed.
+        quarry_pending = {}
+        quarry_additions = []
+        quarry_new_nodes = 0
+        for quarry_name, quarry_tokens, quarry_kind in quarry_records:
+            quarry_tree = quarry_self._quarry_tree(quarry_kind)
+            for quarry_token in quarry_tokens:
+                quarry_key = (id(quarry_tree), quarry_token)
+                quarry_next = quarry_tree.get(quarry_token)
+                if quarry_next is None:
+                    quarry_next = quarry_pending.get(quarry_key)
+                if quarry_next is None:
+                    quarry_next = {}
+                    quarry_pending[quarry_key] = quarry_next
+                    quarry_additions.append((quarry_tree, quarry_token, quarry_next))
+                    quarry_new_nodes += 1
+                    if quarry_self._quarry_nodes + quarry_new_nodes > quarry_self._quarry_limits[3]:
+                        raise quarry_LimitError('signature tree nodes exceed limit')
+                quarry_tree = quarry_next
+            quarry_additions.append((quarry_tree, quarry_name, None))
+        for quarry_tree, quarry_key, quarry_value in quarry_additions:
+            quarry_tree[quarry_key] = quarry_value
+        quarry_self._quarry_nodes += quarry_new_nodes
+        quarry_self._quarry_loaded_bytes += quarry_size
+        for quarry_name, quarry_tokens, quarry_kind in quarry_records:
+            quarry_field = ('signature_count_eponly_false', 'signature_count_eponly_true', 'signature_count_section_start')[quarry_kind]
+            setattr(quarry_self, quarry_field, getattr(quarry_self, quarry_field) + 1)
+            quarry_self.max_depth = max(quarry_self.max_depth, len(quarry_tokens))
+
+    def _quarry_parse_records(quarry_self, quarry_text):
+        quarry_records = []
+        quarry_name = None
+        quarry_fields = {}
+        quarry_last_key = None
+        for quarry_line in quarry_text.splitlines() + ['[__PEQUARRY_END__]']:
+            quarry_line = quarry_line.strip()
+            if not quarry_line or quarry_line.startswith((';', '#')):
                 continue
-            quarry_offset_local_bf94f32 = quarry_section_881ea3d.PointerToRawData
-            quarry_sig_name_0201d47 = '%s Section(%d/%d,%s)' % (quarry_name_local_aa1ff42, quarry_idx_3688a53, len(_name_boundary.attributes(quarry_pe_local_527be8e)['sections']), ''.join((quarry_c_27feb15 for quarry_c_27feb15 in quarry_section_881ea3d.Name if quarry_c_27feb15 in quarry_string.printable)))
-            quarry_section_signatures_d8d7d79.append(_name_boundary.attributes(quarry_self_af16e98)['__generate_signature'](quarry_pe_local_527be8e, quarry_offset_local_bf94f32, quarry_sig_name_0201d47, ep_only=False, section_start_only=True, sig_length=quarry_sig_length_610ca79))
-        return '\n'.join(quarry_section_signatures_d8d7d79) + '\n'
+            if quarry_line.startswith('[') and quarry_line.endswith(']'):
+                if quarry_name is not None:
+                    if not quarry_fields.get('signature') or 'ep_only' not in quarry_fields:
+                        raise ValueError('signature record requires signature and ep_only')
+                    quarry_words = quarry_fields['signature'].replace('\\n', '').split()
+                    if len(quarry_words) > quarry_self._quarry_limits[2]:
+                        raise quarry_LimitError('signature depth exceeds limit')
+                    quarry_tokens = []
+                    for quarry_word in quarry_words:
+                        if quarry_word == '??':
+                            quarry_tokens.append('??')
+                        elif len(quarry_word) == 2 and all(quarry_c in '0123456789abcdefABCDEF' for quarry_c in quarry_word):
+                            quarry_tokens.append(int(quarry_word, 16))
+                        else:
+                            raise ValueError('signature token must be two hexadecimal digits or ??')
+                    quarry_flags = []
+                    for quarry_flag in ('ep_only', 'section_start_only'):
+                        quarry_value = quarry_fields.get(quarry_flag, 'false').lower()
+                        if quarry_value not in ('true', 'false'):
+                            raise ValueError('signature flags must be true or false')
+                        quarry_flags.append(quarry_value == 'true')
+                    quarry_kind = 2 if quarry_flags[1] else int(quarry_flags[0])
+                    quarry_records.append((quarry_name, quarry_tokens, quarry_kind))
+                    if len(quarry_records) > quarry_self._quarry_limits[1]:
+                        raise quarry_LimitError('signature count exceeds limit')
+                quarry_name = quarry_line[1:-1].strip()
+                if not quarry_name or len(quarry_name) > 1024 or quarry_name == '??' or any(ord(quarry_c) < 32 or quarry_c in '[]' for quarry_c in quarry_name):
+                    raise ValueError('invalid signature name')
+                quarry_fields = {}
+                quarry_last_key = None
+            elif '=' in quarry_line:
+                if quarry_name is None:
+                    raise ValueError('signature fields require a record name')
+                quarry_key, quarry_value = (quarry_piece.strip() for quarry_piece in quarry_line.split('=', 1))
+                quarry_key = quarry_key.lower()
+                if quarry_key not in ('signature', 'ep_only', 'section_start_only') or quarry_key in quarry_fields:
+                    raise ValueError('unknown or duplicate signature field')
+                quarry_fields[quarry_key] = quarry_value
+                quarry_last_key = quarry_key
+            elif quarry_last_key == 'signature':
+                quarry_fields['signature'] += ' ' + quarry_line
+            else:
+                raise ValueError('malformed signature record line')
+        return quarry_records
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_821c607', 'sig_length': 'quarry_sig_length_883ac68', 'pe': 'quarry_pe_local_5528f36', 'name': 'quarry_name_local_e7879f8'}, 'generate_ep_signature')
-    def quarry_generate_ep_signature(quarry_self_821c607, quarry_pe_local_5528f36, quarry_name_local_e7879f8, quarry_sig_length_883ac68=512):
-        """Generate signatures for the entry point of a PE file.
+    def _quarry_tree(quarry_self, quarry_kind):
+        return (quarry_self.signature_tree_eponly_false, quarry_self.signature_tree_eponly_true, quarry_self.signature_tree_section_start)[quarry_kind]
 
-        Creates a signature whose name will be the parameter 'name'
-        and the section number and its name.
-        """
-        quarry_offset_local_706f55e = _name_boundary.attributes(quarry_pe_local_5528f36)['get_offset_from_rva'](_name_boundary.attributes(quarry_pe_local_5528f36)['OPTIONAL_HEADER'].AddressOfEntryPoint)
-        return _name_boundary.attributes(quarry_self_821c607)['__generate_signature'](quarry_pe_local_5528f36, quarry_offset_local_706f55e, quarry_name_local_e7879f8, ep_only=True, sig_length=quarry_sig_length_883ac68)
+    def quarry___match_signature_tree(quarry_self, signature_tree, data, depth=0, *, _quarry_budget=None):
+        if not isinstance(data, (bytes, bytearray, memoryview)):
+            raise TypeError('match data must be bytes, bytearray or memoryview')
+        quarry_byte_size = data.nbytes if isinstance(data, memoryview) else len(data)
+        if quarry_byte_size > quarry_self._quarry_limits[0]:
+            raise quarry_LimitError('signature match input exceeds byte limit')
+        # Byte-oriented semantics for signed, multi-byte, multidimensional and
+        # strided buffer views. Check nbytes before copying the stable snapshot.
+        data = bytes(data)
+        if type(depth) is not int or depth < 0:
+            raise ValueError('depth must be a nonnegative integer')
+        quarry_budget = _quarry_budget if _quarry_budget is not None else [0, 0]
+        quarry_stack = [(signature_tree, 0)]
+        quarry_results = []
+        while quarry_stack:
+            quarry_node, quarry_index = quarry_stack.pop()
+            quarry_budget[0] += 1
+            if quarry_budget[0] > quarry_self._quarry_limits[4]:
+                raise quarry_LimitError('signature matching step budget exceeded')
+            if not isinstance(quarry_node, dict):
+                raise ValueError('invalid signature tree')
+            quarry_names = [quarry_key for quarry_key, quarry_value in quarry_node.items() if quarry_value is None]
+            if quarry_names:
+                quarry_budget[1] += len(quarry_names)
+                if quarry_budget[1] > quarry_self._quarry_limits[5]:
+                    raise quarry_LimitError('signature matches exceed limit')
+                quarry_results.append(quarry_names)
+            if quarry_index >= len(data) or quarry_index >= quarry_self.max_depth:
+                continue
+            quarry_byte = data[quarry_index]
+            if not isinstance(quarry_byte, int):
+                raise TypeError('match data must use byte-sized elements')
+            if quarry_byte in quarry_node:
+                quarry_stack.append((quarry_node[quarry_byte], quarry_index + 1))
+            if '??' in quarry_node:
+                quarry_stack.append((quarry_node['??'], quarry_index + 1))
+        return quarry_results
+
+    def quarry___match(quarry_self, pe, ep_only=True, section_start_only=False):
+        if section_start_only:
+            quarry_data = pe.__data__
+            quarry_addresses = [quarry_section.PointerToRawData for quarry_section in pe.sections]
+            quarry_kind = 2
+        elif ep_only:
+            quarry_data = pe.get_memory_mapped_image()
+            quarry_addresses = [pe.OPTIONAL_HEADER.AddressOfEntryPoint]
+            quarry_kind = 1
+        else:
+            quarry_data = pe.__data__
+            quarry_addresses = range(len(quarry_data))
+            quarry_kind = 0
+        if not ep_only and not section_start_only and len(quarry_data) > quarry_self._quarry_limits[4]:
+            raise quarry_LimitError('signature scan input exceeds step budget')
+        quarry_matches = []
+        quarry_budget = [0, 0]
+        quarry_tree = quarry_self._quarry_tree(quarry_kind)
+        if not quarry_tree:
+            return []
+        for quarry_offset in quarry_addresses:
+            if type(quarry_offset) is not int or not 0 <= quarry_offset < len(quarry_data):
+                continue
+            quarry_result = quarry_self.quarry___match_signature_tree(quarry_tree, memoryview(quarry_data)[quarry_offset:quarry_offset + quarry_self.max_depth], _quarry_budget=quarry_budget)
+            if quarry_result:
+                quarry_matches.append((quarry_offset, quarry_result))
+        return quarry_matches[0] if ep_only and quarry_matches else quarry_matches
+
+    def quarry_match_all(quarry_self, pe, ep_only=True, section_start_only=False):
+        quarry_matches = quarry_self.quarry___match(pe, ep_only, section_start_only)
+        if not quarry_matches:
+            return None
+        return quarry_matches[1] if ep_only else quarry_matches
+
+    def quarry_match(quarry_self, pe, ep_only=True, section_start_only=False):
+        quarry_matches = quarry_self.quarry___match(pe, ep_only, section_start_only)
+        if not quarry_matches:
+            return None
+        return quarry_matches[1][-1] if ep_only else [(quarry_offset, quarry_groups[-1]) for quarry_offset, quarry_groups in quarry_matches]
+
+    def quarry_match_data(quarry_self, code_data, ep_only=True, section_start_only=False):
+        quarry_kind = 2 if section_start_only else int(bool(ep_only))
+        quarry_result = quarry_self.quarry___match_signature_tree(quarry_self._quarry_tree(quarry_kind), code_data)
+        quarry_matches = [(0, quarry_result)] if quarry_result else []
+        return quarry_matches[0] if ep_only and quarry_matches else quarry_matches
 
     @staticmethod
-    @_name_boundary.callable_contract({'ep_only': 'quarry_ep_only_8d1c5cd', 'section_start_only': 'quarry_section_start_only_124ecff', 'sig_length': 'quarry_sig_length_873b760', 'pe': 'quarry_pe_local_24b54a3', 'offset': 'quarry_offset_local_12ab4f0', 'name': 'quarry_name_local_7cf8fbb'}, '__generate_signature')
-    def quarry___generate_signature(quarry_pe_local_24b54a3, quarry_offset_local_12ab4f0, quarry_name_local_7cf8fbb, quarry_ep_only_8d1c5cd=False, quarry_section_start_only_124ecff=False, quarry_sig_length_873b760=512):
-        quarry_data_local_977428e = quarry_pe_local_24b54a3.__data__[quarry_offset_local_12ab4f0:quarry_offset_local_12ab4f0 + quarry_sig_length_873b760]
-        quarry_signature_bytes_48375d2 = ' '.join((f'{ord(quarry_c_46afac6):02x}' for quarry_c_46afac6 in quarry_data_local_977428e))
-        if quarry_ep_only_8d1c5cd:
-            quarry_ep_only_8d1c5cd = 'true'
-        else:
-            quarry_ep_only_8d1c5cd = 'false'
-        if quarry_section_start_only_124ecff:
-            quarry_section_start_only_124ecff = 'true'
-        else:
-            quarry_section_start_only_124ecff = 'false'
-        quarry_signature_16b75bd = f'[{quarry_name_local_7cf8fbb}]\nsignature = {quarry_signature_bytes_48375d2}\nep_only = {quarry_ep_only_8d1c5cd}\nsection_start_only = {quarry_section_start_only_124ecff}\n'
-        return quarry_signature_16b75bd
+    def quarry___generate_signature(pe, offset, name, ep_only=False, section_start_only=False, sig_length=512):
+        quarry_positive_limit(sig_length, 'sig_length')
+        if sig_length > 4096:
+            raise quarry_LimitError('signature generation length exceeds limit')
+        if not isinstance(name, str) or not name or len(name) > 1024 or name == '??' or any(ord(quarry_c) < 32 or quarry_c in '[]' for quarry_c in name):
+            raise ValueError('invalid signature name')
+        if type(offset) is not int or offset < 0 or offset > len(pe.__data__) or sig_length > len(pe.__data__) - offset:
+            raise ValueError('signature generation span is outside the file')
+        quarry_data = bytes(pe.__data__[offset:offset + sig_length])
+        quarry_hex = ' '.join(f'{quarry_byte:02x}' for quarry_byte in quarry_data)
+        return f'[{name}]\nsignature = {quarry_hex}\nep_only = {str(bool(ep_only)).lower()}\nsection_start_only = {str(bool(section_start_only)).lower()}\n'
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_568f711', 'ep_only': 'quarry_ep_only_e17dc43', 'section_start_only': 'quarry_section_start_only_6e7bb0a', 'pe': 'quarry_pe_local_0e6dc4d'}, 'match')
-    def quarry_match(quarry_self_568f711, quarry_pe_local_0e6dc4d, quarry_ep_only_e17dc43=True, quarry_section_start_only_6e7bb0a=False):
-        """Matches and returns the exact match(es).
+    def quarry_generate_ep_signature(quarry_self, pe, name, sig_length=512):
+        quarry_offset = pe.get_offset_from_rva(pe.OPTIONAL_HEADER.AddressOfEntryPoint)
+        return quarry_self.quarry___generate_signature(pe, quarry_offset, name, ep_only=True, sig_length=sig_length)
 
-        If ep_only is True the result will be a string with
-        the packer name. Otherwise it will be a list of the
-        form (file_offset, packer_name) specifying where
-        in the file the signature was found.
-        """
-        quarry_matches_9f036f3 = _name_boundary.attributes(quarry_self_568f711)['__match'](quarry_pe_local_0e6dc4d, quarry_ep_only_e17dc43, quarry_section_start_only_6e7bb0a)
-        if quarry_matches_9f036f3:
-            if not quarry_ep_only_e17dc43:
-                return [(quarry_match_261681d[0], quarry_match_261681d[1][-1]) for quarry_match_261681d in quarry_matches_9f036f3]
-            return quarry_matches_9f036f3[1][-1]
-        return None
+    def quarry_generate_section_signatures(quarry_self, pe, name, sig_length=512):
+        quarry_positive_limit(sig_length, 'sig_length')
+        quarry_records = []
+        quarry_output_bytes = 1
+        for quarry_index, quarry_section in enumerate(pe.sections, start=1):
+            if quarry_section.SizeOfRawData < sig_length:
+                continue
+            quarry_label = bytes(quarry_section.Name).decode('ascii', 'backslashreplace').rstrip('\x00')
+            quarry_label = ''.join(quarry_c if 32 <= ord(quarry_c) < 127 and quarry_c not in '[]' else '_' for quarry_c in quarry_label)
+            quarry_name = f'{name} Section({quarry_index}/{len(pe.sections)},{quarry_label})'
+            quarry_record = quarry_self.quarry___generate_signature(pe, quarry_section.PointerToRawData, quarry_name, section_start_only=True, sig_length=sig_length)
+            quarry_output_bytes += len(quarry_record.encode('utf-8')) + 1
+            if quarry_output_bytes > quarry_self._quarry_limits[0]:
+                raise quarry_LimitError('generated signatures exceed byte limit')
+            quarry_records.append(quarry_record)
+            if len(quarry_records) > quarry_self._quarry_limits[1]:
+                raise quarry_LimitError('generated signature count exceeds limit')
+        return '\n'.join(quarry_records) + '\n'
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_10839db', 'ep_only': 'quarry_ep_only_7717807', 'section_start_only': 'quarry_section_start_only_af2a9be', 'pe': 'quarry_pe_local_76c1cc9'}, 'match_all')
-    def quarry_match_all(quarry_self_10839db, quarry_pe_local_76c1cc9, quarry_ep_only_7717807=True, quarry_section_start_only_af2a9be=False):
-        """Matches and returns all the likely matches."""
-        quarry_matches_f6e71c1 = _name_boundary.attributes(quarry_self_10839db)['__match'](quarry_pe_local_76c1cc9, quarry_ep_only_7717807, quarry_section_start_only_af2a9be)
-        if quarry_matches_f6e71c1:
-            if not quarry_ep_only_7717807:
-                return quarry_matches_f6e71c1
-            return quarry_matches_f6e71c1[1]
-        return None
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_8839f4b', 'ep_only': 'quarry_ep_only_87e4b65', 'section_start_only': 'quarry_section_start_only_057f869', 'pe': 'quarry_pe_local_b4d7ddd'}, '__match')
-    def quarry___match(quarry_self_8839f4b, quarry_pe_local_b4d7ddd, quarry_ep_only_87e4b65, quarry_section_start_only_057f869):
-        if quarry_section_start_only_057f869 is True:
-            try:
-                quarry_data_local_128e552 = quarry_pe_local_b4d7ddd.__data__
-            except Exception:
-                raise
-            quarry_signatures_8ec888c = _name_boundary.attributes(quarry_self_8839f4b)['signature_tree_section_start']
-            quarry_scan_addresses_5ba05df = [quarry_section_381a5cf.PointerToRawData for quarry_section_381a5cf in _name_boundary.attributes(quarry_pe_local_b4d7ddd)['sections']]
-        elif quarry_ep_only_87e4b65 is True:
-            try:
-                quarry_data_local_128e552 = _name_boundary.attributes(quarry_pe_local_b4d7ddd)['get_memory_mapped_image']()
-            except Exception:
-                raise
-            quarry_signatures_8ec888c = _name_boundary.attributes(quarry_self_8839f4b)['signature_tree_eponly_true']
-            quarry_ep_0931c1c = _name_boundary.attributes(quarry_pe_local_b4d7ddd)['OPTIONAL_HEADER'].AddressOfEntryPoint
-            quarry_scan_addresses_5ba05df = [quarry_ep_0931c1c]
-        else:
-            quarry_data_local_128e552 = quarry_pe_local_b4d7ddd.__data__
-            quarry_signatures_8ec888c = _name_boundary.attributes(quarry_self_8839f4b)['signature_tree_eponly_false']
-            quarry_scan_addresses_5ba05df = range(len(quarry_data_local_128e552))
-        quarry_matches_6005420 = []
-        for quarry_idx_e9d6b2d in quarry_scan_addresses_5ba05df:
-            quarry_result_9120c2f = _name_boundary.attributes(quarry_self_8839f4b)['__match_signature_tree'](quarry_signatures_8ec888c, quarry_data_local_128e552[quarry_idx_e9d6b2d:quarry_idx_e9d6b2d + _name_boundary.attributes(quarry_self_8839f4b)['max_depth']])
-            if quarry_result_9120c2f:
-                quarry_matches_6005420.append((quarry_idx_e9d6b2d, quarry_result_9120c2f))
-        if quarry_ep_only_87e4b65 is True and quarry_matches_6005420:
-            return quarry_matches_6005420[0]
-        return quarry_matches_6005420
+def quarry_is_valid(quarry_pe):
+    """Retained upstream placeholder: returns None, not a validity verdict."""
+    return None
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_9740fef', 'code_data': 'quarry_code_data_5586232', 'ep_only': 'quarry_ep_only_d94a154', 'section_start_only': 'quarry_section_start_only_79f1b54'}, 'match_data')
-    def quarry_match_data(quarry_self_9740fef, quarry_code_data_5586232, quarry_ep_only_d94a154=True, quarry_section_start_only_79f1b54=False):
-        quarry_data_local_00b4a96 = quarry_code_data_5586232
-        quarry_scan_addresses_7e85b34 = [0]
-        if quarry_section_start_only_79f1b54:
-            quarry_signatures_86d0471 = _name_boundary.attributes(quarry_self_9740fef)['signature_tree_section_start']
-        elif quarry_ep_only_d94a154:
-            quarry_signatures_86d0471 = _name_boundary.attributes(quarry_self_9740fef)['signature_tree_eponly_true']
-        quarry_matches_ad3da93 = []
-        for quarry_idx_f1d59cb in quarry_scan_addresses_7e85b34:
-            quarry_result_85846fe = _name_boundary.attributes(quarry_self_9740fef)['__match_signature_tree'](quarry_signatures_86d0471, quarry_data_local_00b4a96[quarry_idx_f1d59cb:quarry_idx_f1d59cb + _name_boundary.attributes(quarry_self_9740fef)['max_depth']])
-            if quarry_result_85846fe:
-                quarry_matches_ad3da93.append((quarry_idx_f1d59cb, quarry_result_85846fe))
-        if quarry_ep_only_d94a154 and quarry_matches_ad3da93:
-            return quarry_matches_ad3da93[0]
-        return quarry_matches_ad3da93
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_492fd40', 'signature_tree': 'quarry_signature_tree_ed7f878', 'depth': 'quarry_depth_625d3ea', 'data': 'quarry_data_local_04ccef2'}, '__match_signature_tree')
-    def quarry___match_signature_tree(quarry_self_492fd40, quarry_signature_tree_ed7f878, quarry_data_local_04ccef2, quarry_depth_625d3ea=0):
-        """Recursive function to find matches along the signature tree.
+def quarry_is_suspicious(quarry_pe):
+    """Retained upstream placeholder: returns None, not a suspicion verdict."""
+    return None
 
-        signature_tree  is the part of the tree left to walk
-        data    is the data being checked against the signature tree
-        depth   keeps track of how far we have gone down the tree
-        """
-        quarry_matched_names_433cdd1 = []
-        quarry_match_af6d5c1 = quarry_signature_tree_ed7f878
-        for quarry_idx_0ac29b4, quarry_byte_6c81555 in enumerate([quarry_b_1270bdd if isinstance(quarry_b_1270bdd, int) else ord(quarry_b_1270bdd) for quarry_b_1270bdd in quarry_data_local_04ccef2]):
-            if quarry_match_af6d5c1 is None:
-                break
-            quarry_match_next_09df9b2 = quarry_match_af6d5c1.get(quarry_byte_6c81555, None)
-            if None in list(quarry_match_af6d5c1.values()):
-                quarry_names_82f6afc = []
-                for quarry_item_e1ebbfa in quarry_match_af6d5c1.items():
-                    if quarry_item_e1ebbfa[1] is None:
-                        quarry_names_82f6afc.append(quarry_item_e1ebbfa[0])
-                quarry_matched_names_433cdd1.append(quarry_names_82f6afc)
-            if '??' in quarry_match_af6d5c1:
-                quarry_match_tree_alternate_0067620 = quarry_match_af6d5c1.get('??', None)
-                quarry_data_remaining_24a2e83 = quarry_data_local_04ccef2[quarry_idx_0ac29b4 + 1:]
-                if quarry_data_remaining_24a2e83:
-                    quarry_matched_names_433cdd1.extend(_name_boundary.attributes(quarry_self_492fd40)['__match_signature_tree'](quarry_match_tree_alternate_0067620, quarry_data_remaining_24a2e83, quarry_idx_0ac29b4 + quarry_depth_625d3ea + 1))
-            quarry_match_af6d5c1 = quarry_match_next_09df9b2
-        if quarry_match_af6d5c1 is not None and None in list(quarry_match_af6d5c1.values()):
-            quarry_names_82f6afc = []
-            for quarry_item_e1ebbfa in quarry_match_af6d5c1.items():
-                if quarry_item_e1ebbfa[1] is None:
-                    quarry_names_82f6afc.append(quarry_item_e1ebbfa[0])
-            quarry_matched_names_433cdd1.append(quarry_names_82f6afc)
-        return quarry_matched_names_433cdd1
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_a2e866e', 'filename': 'quarry_filename_0865f0c', 'data': 'quarry_data_local_323dc7c'}, 'load')
-    def quarry_load(quarry_self_a2e866e, quarry_filename_0865f0c=None, quarry_data_local_323dc7c=None):
-        """Load a PEiD signature file.
-
-        Invoking this method on different files combines the signatures.
-        """
-        _name_boundary.attributes(quarry_self_a2e866e)['__load'](filename=quarry_filename_0865f0c, data=quarry_data_local_323dc7c)
-
-    @_name_boundary.callable_contract({'self': 'quarry_self_de218fb', 'filename': 'quarry_filename_363b0a6', 'data': 'quarry_data_local_2ca9083'}, '__load')
-    def quarry___load(quarry_self_de218fb, quarry_filename_363b0a6=None, quarry_data_local_2ca9083=None):
-        if quarry_filename_363b0a6 is not None:
-            if not quarry_os.path.exists(quarry_filename_363b0a6):
-                try:
-                    quarry_sig_f_dac1393 = quarry_urllib.request.urlopen(quarry_filename_363b0a6)
-                    quarry_sig_data_ed6de08 = quarry_sig_f_dac1393.read()
-                    _name_boundary.attributes(quarry_sig_f_dac1393)['close']()
-                except OSError:
-                    raise
-            else:
-                try:
-                    with open(quarry_filename_363b0a6, 'r') as quarry_f_8fdc727:
-                        quarry_sig_data_ed6de08 = quarry_f_8fdc727.read()
-                except OSError:
-                    raise
-        else:
-            quarry_sig_data_ed6de08 = quarry_data_local_2ca9083
-        if not quarry_sig_data_ed6de08:
-            return
-
-        @_name_boundary.callable_contract({'value': 'quarry_value_895c8ad'}, 'to_byte')
-        def quarry_to_byte_1531848(quarry_value_895c8ad):
-            if '?' in quarry_value_895c8ad:
-                return quarry_value_895c8ad
-            return int(quarry_value_895c8ad, 16)
-        quarry_matches_6e5b5d3 = _name_boundary.attributes(quarry_self_de218fb)['parse_sig'].findall(quarry_sig_data_ed6de08)
-        for quarry_packer_name_5fb3da6, quarry_signature_d33ce95, quarry_superfluous_wildcards_36aa04f, quarry_ep_only_619d4ad, quarry_section_start_only_06a788a in quarry_matches_6e5b5d3:
-            quarry_ep_only_619d4ad = quarry_ep_only_619d4ad.strip().lower()
-            quarry_signature_d33ce95 = quarry_signature_d33ce95.replace('\\n', '').strip()
-            quarry_signature_bytes_aba38ab = [quarry_to_byte_1531848(quarry_b_14922c8) for quarry_b_14922c8 in quarry_signature_d33ce95.split()]
-            if quarry_ep_only_619d4ad == 'true':
-                quarry_ep_only_619d4ad = True
-            else:
-                quarry_ep_only_619d4ad = False
-            if quarry_section_start_only_06a788a == 'true':
-                quarry_section_start_only_06a788a = True
-            else:
-                quarry_section_start_only_06a788a = False
-            quarry_depth_a72ebf6 = 0
-            if quarry_section_start_only_06a788a:
-                quarry_tree_7955e28 = _name_boundary.attributes(quarry_self_de218fb)['signature_tree_section_start']
-                _name_boundary.attributes(quarry_self_de218fb)['signature_count_section_start'] += 1
-            elif quarry_ep_only_619d4ad:
-                quarry_tree_7955e28 = _name_boundary.attributes(quarry_self_de218fb)['signature_tree_eponly_true']
-                _name_boundary.attributes(quarry_self_de218fb)['signature_count_eponly_true'] += 1
-            else:
-                quarry_tree_7955e28 = _name_boundary.attributes(quarry_self_de218fb)['signature_tree_eponly_false']
-                _name_boundary.attributes(quarry_self_de218fb)['signature_count_eponly_false'] += 1
-            for quarry_idx_352bfee, quarry_byte_e4accd7 in enumerate(quarry_signature_bytes_aba38ab, start=1):
-                if quarry_idx_352bfee == len(quarry_signature_bytes_aba38ab):
-                    quarry_tree_7955e28[quarry_byte_e4accd7] = quarry_tree_7955e28.get(quarry_byte_e4accd7, {})
-                    quarry_tree_7955e28[quarry_byte_e4accd7][quarry_packer_name_5fb3da6] = None
-                else:
-                    quarry_tree_7955e28[quarry_byte_e4accd7] = quarry_tree_7955e28.get(quarry_byte_e4accd7, {})
-                quarry_tree_7955e28 = quarry_tree_7955e28[quarry_byte_e4accd7]
-                quarry_depth_a72ebf6 += 1
-            _name_boundary.attributes(quarry_self_de218fb)['max_depth'] = max(_name_boundary.attributes(quarry_self_de218fb)['max_depth'], quarry_depth_a72ebf6)
-
-@_name_boundary.callable_contract({'pe': 'quarry_pe_local_5eb6582'}, 'is_valid')
-def quarry_is_valid(quarry_pe_local_5eb6582):
-    """"""
-
-@_name_boundary.callable_contract({'pe': 'quarry_pe_local_3161c85'}, 'is_suspicious')
-def quarry_is_suspicious(quarry_pe_local_3161c85):
-    """
-    Unusual locations of import tables
-    Non-recognized section names
-    Presence of long ASCII strings
-    """
-    quarry_relocations_overlap_entry_point_491055f = False
-    quarry_sequential_relocs_6127803 = 0
-    if _name_boundary.has_attribute(quarry_pe_local_3161c85, 'DIRECTORY_ENTRY_BASERELOC'):
-        for quarry_base_reloc_13d3f9f in quarry_pe_local_3161c85.DIRECTORY_ENTRY_BASERELOC:
-            quarry_last_reloc_rva_8cca70c = None
-            for quarry_reloc_50d6625 in quarry_base_reloc_13d3f9f.entries:
-                if quarry_reloc_50d6625.rva <= _name_boundary.attributes(quarry_pe_local_3161c85)['OPTIONAL_HEADER'].AddressOfEntryPoint <= quarry_reloc_50d6625.rva + 4:
-                    quarry_relocations_overlap_entry_point_491055f = True
-                if quarry_last_reloc_rva_8cca70c is not None and quarry_last_reloc_rva_8cca70c <= quarry_reloc_50d6625.rva <= quarry_last_reloc_rva_8cca70c + 4:
-                    quarry_sequential_relocs_6127803 += 1
-                quarry_last_reloc_rva_8cca70c = quarry_reloc_50d6625.rva
-    quarry_warnings_while_parsing_d812de0 = False
-    quarry_warnings_cf3d501 = _name_boundary.attributes(quarry_pe_local_3161c85)['get_warnings']()
-    if quarry_warnings_cf3d501:
-        quarry_warnings_while_parsing_d812de0
-
-@_name_boundary.callable_contract({'section_entropy': 'quarry_section_entropy_c313583', 'packed_threshold': 'quarry_packed_threshold_8fb8eb8', 'pe': 'quarry_pe_local_6c84d8f'}, 'is_probably_packed')
-def quarry_is_probably_packed(quarry_pe_local_6c84d8f, quarry_section_entropy_c313583=7.4, quarry_packed_threshold_8fb8eb8=0.2):
-    """
-    The entropy of sections are analyzed to determine if they likely contain
-    compressed data (default > 7.4). The proportion of the total size of these
-    (probably) compressed sections to the total file size (excluding any
-    overlay) is calculated. If this proportion is greater than a threshold
-    (default > 0.2) the PE file is likely packed or compressed.
-
-    The section entropy default of 7.4 is empirical, based on looking at a few
-    files packed by different packers. This and the packed threshold can be user
-    specified.
-
-    Args:
-        pe: An instance of class PE.
-        section_entropy: Threshold of a section being considered packed / compressed.
-        packed_threshold: The proportion of the size of high-entropy sections to
-            total file size, above which it is assumed that it could be an installer
-            or a packed file.
-
-    Returns:
-        True if file is probably packed or contains compressed data, False otherwise.
-    """
-    quarry_total_pe_data_length_2d04246 = len(_name_boundary.attributes(quarry_pe_local_6c84d8f)['trim']())
-    if not quarry_total_pe_data_length_2d04246:
+def quarry_is_probably_packed(quarry_pe, section_entropy=7.4, packed_threshold=0.2):
+    """Empirical entropy heuristic; does not establish maliciousness."""
+    quarry_total = len(quarry_pe.trim())
+    if not quarry_total:
         return True
-    quarry_total_compressed_data_9dfc290 = 0
-    for quarry_section_bac9308 in _name_boundary.attributes(quarry_pe_local_6c84d8f)['sections']:
-        quarry_s_entropy_bf67d65 = _name_boundary.attributes(quarry_section_bac9308)['get_entropy']()
-        if quarry_s_entropy_bf67d65 > quarry_section_entropy_c313583:
-            quarry_total_compressed_data_9dfc290 += len(_name_boundary.attributes(quarry_section_bac9308)['get_data']())
-    quarry_has_significant_amount_of_compressed_data_7543ac5 = False
-    if quarry_total_compressed_data_9dfc290 / quarry_total_pe_data_length_2d04246 > quarry_packed_threshold_8fb8eb8:
-        quarry_has_significant_amount_of_compressed_data_7543ac5 = True
-    return quarry_has_significant_amount_of_compressed_data_7543ac5
-_name_boundary.module_contract(globals(), {'pefile': 'quarry_pefile', 'SignatureDatabase': 'quarry_SignatureDatabase', 'is_valid': 'quarry_is_valid', 're': 'quarry_re', 'is_probably_packed': 'quarry_is_probably_packed', 'is_suspicious': 'quarry_is_suspicious', 'os': 'quarry_os', 'urllib': 'quarry_urllib', 'string': 'quarry_string'})
+    quarry_compressed = sum(len(quarry_section.get_data()) for quarry_section in quarry_pe.sections if quarry_section.get_entropy() > section_entropy)
+    return quarry_compressed / quarry_total > packed_threshold
+
+_name_boundary.module_contract(globals(), {'pefile': 'quarry_pefile', 'SignatureDatabase': 'quarry_SignatureDatabase', 'is_valid': 'quarry_is_valid', 'is_probably_packed': 'quarry_is_probably_packed', 'is_suspicious': 'quarry_is_suspicious'})

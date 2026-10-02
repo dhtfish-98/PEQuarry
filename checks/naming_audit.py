@@ -1,4 +1,4 @@
-"""Repeat the lexical implementation-name audit of the mapped upstream files."""
+"""Check historical mapped names and explicitly identified readable rewrites."""
 from pathlib import Path as NamingPath
 import hashlib as naming_hashlib
 import json as naming_json
@@ -14,6 +14,8 @@ naming_global_contracts = {}
 for naming_relative, naming_digest in naming_record['owned_python_source_sha256'].items():
     naming_source = (naming_root/naming_relative).read_bytes()
     assert naming_hashlib.sha256(naming_source).hexdigest() == naming_digest, naming_relative
+    if naming_relative in naming_record.get('readable_rewritten_modules', []):
+        continue
     naming_wrapper = NamingWrapper(naming_cst.parse_module(naming_source.decode()))
     naming_scopes = naming_wrapper.resolve(NamingScopes)
     for naming_scope in set(naming_scopes.values()):
@@ -27,4 +29,4 @@ for naming_relative, naming_digest in naming_record['owned_python_source_sha256'
                 naming_global_contracts.setdefault(naming_relative,set()).add(naming_value)
 assert not naming_unrenamed, naming_unrenamed
 assert {naming_relative:sorted(naming_values) for naming_relative,naming_values in naming_global_contracts.items()} == naming_record['fixed_global_contract_bindings']
-print(naming_json.dumps({'status':'PASS','ordinary_unrenamed_function_or_comprehension_bindings':0,'mapped_owned_python_files':len(naming_record['owned_python_source_sha256'])}))
+print(naming_json.dumps({'status':'PASS','ordinary_unrenamed_function_or_comprehension_bindings':0,'source_hashes_checked':len(naming_record['owned_python_source_sha256']),'lexical_scope_files':len(naming_record['owned_python_source_sha256'])-len(naming_record.get('readable_rewritten_modules',[])),'readable_rewritten_modules':naming_record.get('readable_rewritten_modules',[])}))

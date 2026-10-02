@@ -32,6 +32,7 @@ from collections import Counter as quarry_Counter, defaultdict as quarry_default
 from functools import lru_cache as quarry_lru_cache, wraps as quarry_wraps
 from hashlib import md5 as quarry_md5, sha1 as quarry_sha1, sha256 as quarry_sha256, sha512 as quarry_sha512
 import pequarry.ordinal_catalog as quarry_ordlookup
+from pequarry.bounded_io import quarry_INPUT_LIMIT, quarry_MAPPED_LIMIT, quarry_LimitError, quarry_positive_limit, quarry_read_regular, quarry_in_memory_bytes, quarry_write_regular
 quarry_codecs.register_error('backslashreplace_', quarry_codecs.lookup_error('backslashreplace'))
 
 @_name_boundary.callable_contract({'maxsize': 'quarry_maxsize_43837fc', 'typed': 'quarry_typed_2c3ac54'}, 'lru_cache_copy')
@@ -1637,8 +1638,14 @@ class quarry_PE:
     __IMAGE_BOUND_FORWARDER_REF_format__ = ('IMAGE_BOUND_FORWARDER_REF', ('I,TimeDateStamp', 'H,OffsetModuleName', 'H,Reserved'))
     __RUNTIME_FUNCTION_format__ = ('RUNTIME_FUNCTION', ('I,BeginAddress', 'I,EndAddress', 'I,UnwindData'))
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_e6c9ec5', 'fast_load': 'quarry_fast_load_67d872a', 'max_symbol_exports': 'quarry_max_symbol_exports_4e129d8', 'max_repeated_symbol': 'quarry_max_repeated_symbol_faa7853', 'max_offset': 'quarry_max_offset_d8b6150', 'name': 'quarry_name_local_ba04eb2', 'data': 'quarry_data_local_1465b4c'}, '__init__')
-    def __init__(quarry_self_e6c9ec5, quarry_name_local_ba04eb2=None, quarry_data_local_1465b4c=None, quarry_fast_load_67d872a=None, quarry_max_symbol_exports_4e129d8=quarry_MAX_SYMBOL_EXPORT_COUNT, quarry_max_repeated_symbol_faa7853=120, *, quarry_max_offset_d8b6150=268435456):
+    @_name_boundary.callable_contract({'self': 'quarry_self_e6c9ec5', 'fast_load': 'quarry_fast_load_67d872a', 'max_symbol_exports': 'quarry_max_symbol_exports_4e129d8', 'max_repeated_symbol': 'quarry_max_repeated_symbol_faa7853', 'max_offset': 'quarry_max_offset_d8b6150', 'max_input_size': 'quarry_max_input_size', 'max_mapped_size': 'quarry_max_mapped_size', 'max_structures': 'quarry_max_structures', 'max_data_reads': 'quarry_max_data_reads', 'name': 'quarry_name_local_ba04eb2', 'data': 'quarry_data_local_1465b4c'}, '__init__')
+    def __init__(quarry_self_e6c9ec5, quarry_name_local_ba04eb2=None, quarry_data_local_1465b4c=None, quarry_fast_load_67d872a=None, quarry_max_symbol_exports_4e129d8=quarry_MAX_SYMBOL_EXPORT_COUNT, quarry_max_repeated_symbol_faa7853=120, *, quarry_max_offset_d8b6150=268435456, quarry_max_input_size=quarry_INPUT_LIMIT, quarry_max_mapped_size=quarry_MAPPED_LIMIT, quarry_max_structures=131072, quarry_max_data_reads=1048576):
+        quarry_self_e6c9ec5._quarry_input_limit = quarry_positive_limit(quarry_max_input_size, 'max_input_size')
+        quarry_self_e6c9ec5._quarry_mapped_limit = quarry_positive_limit(quarry_max_mapped_size, 'max_mapped_size')
+        quarry_self_e6c9ec5._quarry_structure_limit = quarry_positive_limit(quarry_max_structures, 'max_structures')
+        quarry_self_e6c9ec5._quarry_read_limit = quarry_positive_limit(quarry_max_data_reads, 'max_data_reads')
+        quarry_self_e6c9ec5._quarry_structure_count = 0
+        quarry_self_e6c9ec5._quarry_read_count = 0
         _name_boundary.attributes(quarry_self_e6c9ec5)['max_symbol_exports'] = quarry_max_symbol_exports_4e129d8
         _name_boundary.attributes(quarry_self_e6c9ec5)['max_repeated_symbol'] = quarry_max_repeated_symbol_faa7853
         _name_boundary.attributes(quarry_self_e6c9ec5)['_get_section_by_rva_last_used'] = None
@@ -1672,8 +1679,7 @@ class quarry_PE:
 
     @_name_boundary.callable_contract({'self': 'quarry_self_9aa5f63'}, '_close_data')
     def quarry__close_data(quarry_self_9aa5f63):
-        if _name_boundary.attributes(quarry_self_9aa5f63)['__from_file'] is True and _name_boundary.has_attribute(quarry_self_9aa5f63, '__data__') and (isinstance(quarry_mmap.mmap, type) and isinstance(quarry_self_9aa5f63.__data__, quarry_mmap.mmap) or 'mmap.mmap' in repr(type(quarry_self_9aa5f63.__data__))):
-            _name_boundary.attributes(quarry_self_9aa5f63.__data__)['close']()
+        if _name_boundary.attributes(quarry_self_9aa5f63)['__from_file'] is True and hasattr(quarry_self_9aa5f63, '__data__'):
             del quarry_self_9aa5f63.__data__
 
     @_name_boundary.callable_contract({'self': 'quarry_self_67d9cfa'}, 'close')
@@ -1686,6 +1692,9 @@ class quarry_PE:
 
         Returns an unpacked structure object if successful, None otherwise.
         """
+        quarry_self_a6b47e4._quarry_structure_count += 1
+        if quarry_self_a6b47e4._quarry_structure_count > quarry_self_a6b47e4._quarry_structure_limit:
+            raise quarry_LimitError('parsed structure budget exceeded')
         quarry_structure_2e5234f = quarry_Structure(quarry_format_8ad1d3b, file_offset=quarry_file_offset_1c3de14)
         try:
             quarry_structure_2e5234f.__unpack__(quarry_data_local_2139489)
@@ -1701,6 +1710,9 @@ class quarry_PE:
 
         Returns an unpacked structure object if successful, None otherwise.
         """
+        quarry_self_b7fe96a._quarry_structure_count += 1
+        if quarry_self_b7fe96a._quarry_structure_count > quarry_self_b7fe96a._quarry_structure_limit:
+            raise quarry_LimitError('parsed structure budget exceeded')
         quarry_structure_91e1c2b = quarry_StructureWithBitfields(quarry_format_87cdec7, file_offset=quarry_file_offset_e3687fa)
         try:
             quarry_structure_91e1c2b.__unpack__(quarry_data_local_0bb0ee2)
@@ -1718,27 +1730,17 @@ class quarry_PE:
         through the instance's attributes.
         """
         if quarry_fname_ecdee91 is not None:
-            quarry_stat_bbd6500 = quarry_os.stat(quarry_fname_ecdee91)
-            if quarry_stat_bbd6500.st_size == 0:
-                raise quarry_PEFormatError('The file is empty')
-            quarry_fd_7d10851 = None
             try:
-                quarry_fd_7d10851 = open(quarry_fname_ecdee91, 'rb')
-                _name_boundary.attributes(quarry_self_1d604c3)['fileno'] = _name_boundary.attributes(quarry_fd_7d10851)['fileno']()
-                if _name_boundary.has_attribute(quarry_mmap, 'MAP_PRIVATE'):
-                    quarry_self_1d604c3.__data__ = quarry_mmap.mmap(_name_boundary.attributes(quarry_self_1d604c3)['fileno'], 0, quarry_mmap.MAP_PRIVATE)
-                else:
-                    quarry_self_1d604c3.__data__ = quarry_mmap.mmap(_name_boundary.attributes(quarry_self_1d604c3)['fileno'], 0, access=quarry_mmap.ACCESS_READ)
-                _name_boundary.attributes(quarry_self_1d604c3)['__from_file'] = True
-            except OSError as quarry_excp_70c1e00:
-                quarry_exception_msg_f481b41 = f'{quarry_excp_70c1e00}'
-                quarry_exception_msg_f481b41 = quarry_exception_msg_f481b41 and f': {quarry_exception_msg_f481b41}'
-                raise Exception(f"Unable to access file '{quarry_fname_ecdee91}'{quarry_exception_msg_f481b41}")
-            finally:
-                if quarry_fd_7d10851 is not None:
-                    _name_boundary.attributes(quarry_fd_7d10851)['close']()
+                quarry_self_1d604c3.__data__ = quarry_read_regular(quarry_fname_ecdee91, quarry_self_1d604c3._quarry_input_limit)
+            except FileNotFoundError:
+                raise
+            except OSError as quarry_error:
+                raise Exception(f"Unable to access file '{quarry_fname_ecdee91}': {quarry_error}") from quarry_error
+            _name_boundary.attributes(quarry_self_1d604c3)['__from_file'] = True
+            if not quarry_self_1d604c3.__data__:
+                raise quarry_PEFormatError('The file is empty')
         elif quarry_data_local_617ff48 is not None:
-            quarry_self_1d604c3.__data__ = quarry_data_local_617ff48
+            quarry_self_1d604c3.__data__ = quarry_in_memory_bytes(quarry_data_local_617ff48, quarry_self_1d604c3._quarry_input_limit)
             _name_boundary.attributes(quarry_self_1d604c3)['__from_file'] = False
         _name_boundary.attributes(quarry_self_1d604c3)['__resource_size_limit_upperbounds'] = len(quarry_self_1d604c3.__data__)
         _name_boundary.attributes(quarry_self_1d604c3)['__resource_size_limit_reached'] = False
@@ -1948,41 +1950,49 @@ class quarry_PE:
         else:
             _name_boundary.attributes(quarry_self_dc535bc)['RICH_HEADER'] = None
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_f12ea31', 'filename': 'quarry_filename_3f7a101'}, 'write')
-    def quarry_write(quarry_self_f12ea31, quarry_filename_3f7a101=None):
-        """Write the PE file.
+    @_name_boundary.callable_contract({'self': 'quarry_self', 'filename': 'quarry_filename_3f7a101'}, 'write')
+    def quarry_write(quarry_self, quarry_filename_3f7a101=None):
+        """Serialize changes to bounded bytes, or an explicitly named output.
 
-        This function will process all headers and components
-        of the PE file and include all changes made (by just
-        assigning to attributes in the PE objects) and write
-        the changes back to a file whose name is provided as
-        an argument. The filename is optional, if not
-        provided the data will be returned as a 'bytearray' object.
+        In-memory serialization retains ordinary upstream header editing and
+        small padding extensions. Invalid offsets, shrinking string edits and
+        unbounded expansion are rejected before opening the output path.
         """
-        quarry_file_data_162778e = bytearray(quarry_self_f12ea31.__data__)
-        for quarry_structure_6420bb8 in quarry_self_f12ea31.__structures__:
-            quarry_struct_data_3eed22f = bytearray(quarry_structure_6420bb8.__pack__())
-            quarry_offset_local_fa5b8b1 = _name_boundary.attributes(quarry_structure_6420bb8)['get_file_offset']()
-            quarry_file_data_162778e[quarry_offset_local_fa5b8b1:quarry_offset_local_fa5b8b1 + len(quarry_struct_data_3eed22f)] = quarry_struct_data_3eed22f
-        if _name_boundary.has_attribute(quarry_self_f12ea31, 'VS_VERSIONINFO') and _name_boundary.has_attribute(quarry_self_f12ea31, 'FileInfo'):
-            for quarry_file_info_a0b54df in _name_boundary.attributes(quarry_self_f12ea31)['FileInfo']:
-                for quarry_entry_315092f in quarry_file_info_a0b54df:
-                    if _name_boundary.has_attribute(quarry_entry_315092f, 'StringTable'):
-                        for quarry_st_entry_c147c53 in quarry_entry_315092f.StringTable:
-                            for quarry_key_21485f4, quarry_value_98f5729 in quarry_st_entry_c147c53.entries.items():
-                                quarry_offsets_7eebb9d = quarry_st_entry_c147c53.entries_offsets[quarry_key_21485f4]
-                                quarry_lengths_829b67e = quarry_st_entry_c147c53.entries_lengths[quarry_key_21485f4]
-                                if len(quarry_value_98f5729) > quarry_lengths_829b67e[1]:
-                                    quarry_l_b6af458 = _name_boundary.attributes(quarry_value_98f5729)['decode']('utf-8').encode('utf-16le')
-                                    quarry_file_data_162778e[quarry_offsets_7eebb9d[1]:quarry_offsets_7eebb9d[1] + quarry_lengths_829b67e[1] * 2] = quarry_l_b6af458[:quarry_lengths_829b67e[1] * 2]
-                                else:
-                                    quarry_encoded_data_48ca9ee = _name_boundary.attributes(quarry_value_98f5729)['decode']('utf-8').encode('utf-16le')
-                                    quarry_file_data_162778e[quarry_offsets_7eebb9d[1]:quarry_offsets_7eebb9d[1] + len(quarry_encoded_data_48ca9ee)] = quarry_encoded_data_48ca9ee
-        quarry_new_file_data_0196d01 = quarry_file_data_162778e
+        quarry_limit = quarry_self._quarry_input_limit
+        if len(quarry_self.__data__) > quarry_limit:
+            raise quarry_LimitError('serialized input exceeds byte limit')
+        quarry_output = bytearray(quarry_self.__data__)
+        for quarry_structure in quarry_self.__structures__:
+            quarry_packed = quarry_structure.__pack__()
+            quarry_offset = quarry_structure.get_file_offset()
+            if type(quarry_offset) is not int or not 0 <= quarry_offset <= len(quarry_output):
+                raise quarry_PEFormatError('serialized structure offset is outside the file')
+            if len(quarry_packed) > quarry_limit - quarry_offset:
+                raise quarry_LimitError('serialized structure exceeds output byte limit')
+            quarry_output[quarry_offset:quarry_offset + len(quarry_packed)] = quarry_packed
+        if hasattr(quarry_self, 'VS_VERSIONINFO') and hasattr(quarry_self, 'FileInfo'):
+            for quarry_group in quarry_self.FileInfo:
+                for quarry_entry in quarry_group:
+                    if not hasattr(quarry_entry, 'StringTable'):
+                        continue
+                    for quarry_table in quarry_entry.StringTable:
+                        for quarry_key, quarry_value in quarry_table.entries.items():
+                            quarry_offsets = quarry_table.entries_offsets[quarry_key]
+                            quarry_lengths = quarry_table.entries_lengths[quarry_key]
+                            quarry_offset, quarry_capacity = quarry_offsets[1], quarry_lengths[1]
+                            if type(quarry_offset) is not int or type(quarry_capacity) is not int or quarry_offset < 0 or quarry_capacity < 0 or quarry_offset > len(quarry_output) or quarry_capacity > (len(quarry_output) - quarry_offset) // 2:
+                                raise quarry_PEFormatError('version string span is outside the file')
+                            if not isinstance(quarry_value, bytes):
+                                raise TypeError('version string values must be UTF-8 bytes')
+                            if len(quarry_value) > quarry_limit:
+                                raise quarry_LimitError('version string value exceeds byte limit')
+                            quarry_encoded = quarry_value.decode('utf-8').encode('utf-16le')[:quarry_capacity * 2]
+                            # Assign only produced bytes: bytearray slice resizing
+                            # cannot shift following structures or shrink the file.
+                            quarry_output[quarry_offset:quarry_offset + len(quarry_encoded)] = quarry_encoded
         if not quarry_filename_3f7a101:
-            return quarry_new_file_data_0196d01
-        with open(quarry_filename_3f7a101, 'wb+') as quarry_f_b066a4f:
-            _name_boundary.attributes(quarry_f_b066a4f)['write'](quarry_new_file_data_0196d01)
+            return quarry_output
+        quarry_write_regular(quarry_filename_3f7a101, quarry_output)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_95faa03', 'max_offset': 'quarry_max_offset_c623bcc', 'offset': 'quarry_offset_local_b0fd54b'}, 'parse_sections')
     def quarry_parse_sections(quarry_self_95faa03, quarry_offset_local_b0fd54b, quarry_max_offset_c623bcc=268435456):
@@ -2389,7 +2399,11 @@ class quarry_PE:
             if quarry_rlc_e3e2c3b.SizeOfBlock > _name_boundary.attributes(quarry_self_d8e9803)['OPTIONAL_HEADER'].SizeOfImage:
                 _name_boundary.attributes(quarry_self_d8e9803)['__warnings'].append(f'Invalid relocation information. SizeOfBlock too large: {quarry_rlc_e3e2c3b.SizeOfBlock}')
                 break
-            if quarry_fmt_caec92c is None:
+            if quarry_rlc_e3e2c3b.SizeOfBlock == 0:
+                # A retained terminal padding block contains no entries; do not
+                # convert its absent payload into a negative data-read length.
+                quarry_reloc_entries_b708412 = []
+            elif quarry_fmt_caec92c is None:
                 quarry_reloc_entries_b708412 = _name_boundary.attributes(quarry_self_d8e9803)['parse_relocations'](quarry_rva_6ba0b1a + quarry_rlc_size_4cb10fd, quarry_rlc_e3e2c3b.VirtualAddress, quarry_rlc_e3e2c3b.SizeOfBlock - quarry_rlc_size_4cb10fd)
             else:
                 quarry_reloc_entries_b708412 = _name_boundary.attributes(quarry_self_d8e9803)['parse_relocations_with_format'](quarry_rva_6ba0b1a + quarry_rlc_size_4cb10fd, quarry_rlc_e3e2c3b.VirtualAddress, quarry_rlc_e3e2c3b.SizeOfBlock - quarry_rlc_size_4cb10fd, quarry_fmt_caec92c)
@@ -3333,54 +3347,59 @@ class quarry_PE:
             quarry_table_4e17b47.append(quarry_thunk_data_ab88169)
         return quarry_table_4e17b47
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_b0dc9df', 'max_virtual_address': 'quarry_max_virtual_address_e6bc56f', 'ImageBase': 'quarry_ImageBase_d22b716'}, 'get_memory_mapped_image')
-    def quarry_get_memory_mapped_image(quarry_self_b0dc9df, quarry_max_virtual_address_e6bc56f=268435456, quarry_ImageBase_d22b716=None):
-        """Returns the data corresponding to the memory layout of the PE file.
+    @_name_boundary.callable_contract({'self': 'quarry_self', 'max_virtual_address': 'quarry_max_virtual_address_e6bc56f', 'ImageBase': 'quarry_ImageBase_d22b716'}, 'get_memory_mapped_image')
+    def quarry_get_memory_mapped_image(quarry_self, quarry_max_virtual_address_e6bc56f=268435456, quarry_ImageBase_d22b716=None):
+        """Build a bounded static memory layout; never load or execute the PE.
 
-        The data includes the PE header and the sections loaded at offsets
-        corresponding to their relative virtual addresses (the VirtualAddress
-        section header member).
-        Any offset in this data corresponds to the absolute memory address
-        ImageBase + offset.
-
-        The optional argument 'max_virtual_address' provides a way of limiting
-        which sections are processed.
-        Any section with their VirtualAddress beyond this value will be skipped.
-        Normally, sections with values beyond this range are just there to confuse
-        tools. This is a common trick to see in packed executables.
-
-        If the 'ImageBase' optional argument is supplied, the file's relocations
-        will be applied to the image by calling the 'relocate_image()' method. Beware
-        that the relocation information is applied permanently.
+        max_virtual_address retains its starting-RVA selection convention.
+        max_mapped_size additionally caps the entire produced byte image.
+        ImageBase retains the upstream permanent structure-relocation effect;
+        raw bytes are restored even if mapping fails after relocation.
         """
-        if quarry_ImageBase_d22b716 is not None:
-            quarry_original_data_d6d7a7e = quarry_self_b0dc9df.__data__
-            _name_boundary.attributes(quarry_self_b0dc9df)['relocate_image'](quarry_ImageBase_d22b716)
-        quarry_mapped_data_e4d0c0a = _name_boundary.attributes(quarry_self_b0dc9df)['header']
-        for quarry_section_819e86a in _name_boundary.attributes(quarry_self_b0dc9df)['sections']:
-            if quarry_section_819e86a.Misc_VirtualSize == 0 and quarry_section_819e86a.SizeOfRawData == 0:
+        quarry_positive_limit(quarry_max_virtual_address_e6bc56f, 'max_virtual_address')
+        quarry_limit = quarry_self._quarry_mapped_limit
+        quarry_plan = []
+        quarry_size = len(quarry_self.header)
+        if quarry_size > quarry_limit:
+            raise quarry_LimitError('mapped header exceeds byte limit')
+        for quarry_section in quarry_self.sections:
+            quarry_raw_size = quarry_section.SizeOfRawData
+            quarry_virtual_size = quarry_section.Misc_VirtualSize
+            if quarry_virtual_size == 0 and quarry_raw_size == 0:
                 continue
-            quarry_srd_8cfc3d1 = quarry_section_819e86a.SizeOfRawData
-            quarry_prd_28f48df = _name_boundary.attributes(quarry_self_b0dc9df)['adjust_PointerToRawData'](quarry_section_819e86a.PointerToRawData)
-            quarry_VirtualAddress_adj_local_14388fc = _name_boundary.attributes(quarry_self_b0dc9df)['adjust_SectionAlignment'](quarry_section_819e86a.VirtualAddress, _name_boundary.attributes(quarry_self_b0dc9df)['OPTIONAL_HEADER'].SectionAlignment, _name_boundary.attributes(quarry_self_b0dc9df)['OPTIONAL_HEADER'].FileAlignment)
-            if quarry_srd_8cfc3d1 > len(quarry_self_b0dc9df.__data__) or quarry_prd_28f48df > len(quarry_self_b0dc9df.__data__) or quarry_srd_8cfc3d1 + quarry_prd_28f48df > len(quarry_self_b0dc9df.__data__) or (quarry_VirtualAddress_adj_local_14388fc >= quarry_max_virtual_address_e6bc56f):
+            quarry_raw_start = quarry_self.adjust_PointerToRawData(quarry_section.PointerToRawData)
+            quarry_rva = quarry_self.adjust_SectionAlignment(quarry_section.VirtualAddress, quarry_self.OPTIONAL_HEADER.SectionAlignment, quarry_self.OPTIONAL_HEADER.FileAlignment)
+            if any(type(quarry_v) is not int or quarry_v < 0 for quarry_v in (quarry_raw_size, quarry_virtual_size, quarry_raw_start, quarry_rva)):
+                raise quarry_PEFormatError('negative or non-integer mapped section span')
+            if quarry_raw_start > len(quarry_self.__data__) or quarry_raw_size > len(quarry_self.__data__) - quarry_raw_start or quarry_rva >= quarry_max_virtual_address_e6bc56f:
                 continue
-            quarry_padding_length_5919963 = quarry_VirtualAddress_adj_local_14388fc - len(quarry_mapped_data_e4d0c0a)
-            if quarry_padding_length_5919963 > 0:
-                quarry_mapped_data_e4d0c0a += b'\x00' * quarry_padding_length_5919963
-            elif quarry_padding_length_5919963 < 0:
-                quarry_mapped_data_e4d0c0a = quarry_mapped_data_e4d0c0a[:quarry_padding_length_5919963]
-            quarry_section_data_1f3609c = _name_boundary.attributes(quarry_section_819e86a)['get_data']()
-            quarry_virtual_size_da87cda = quarry_section_819e86a.Misc_VirtualSize
-            if quarry_virtual_size_da87cda and len(quarry_section_data_1f3609c) != quarry_virtual_size_da87cda:
-                if quarry_virtual_size_da87cda < len(quarry_section_data_1f3609c):
-                    quarry_section_data_1f3609c = quarry_section_data_1f3609c[:quarry_virtual_size_da87cda]
-                elif quarry_virtual_size_da87cda > len(quarry_section_data_1f3609c):
-                    quarry_section_data_1f3609c += b'\x00' * (quarry_virtual_size_da87cda - len(quarry_section_data_1f3609c))
-            quarry_mapped_data_e4d0c0a += quarry_section_data_1f3609c
-        if quarry_ImageBase_d22b716 is not None:
-            quarry_self_b0dc9df.__data__ = quarry_original_data_d6d7a7e
-        return quarry_mapped_data_e4d0c0a
+            quarry_data = quarry_section.get_data()
+            quarry_length = quarry_virtual_size or len(quarry_data)
+            if quarry_rva > quarry_limit or quarry_length > quarry_limit - quarry_rva:
+                raise quarry_LimitError('mapped section exceeds byte limit')
+            quarry_plan.append((quarry_section, quarry_rva, quarry_length))
+            quarry_size = quarry_rva + quarry_length
+        quarry_original_data = quarry_self.__data__
+        quarry_original_bytes = bytes(quarry_original_data) if quarry_ImageBase_d22b716 is not None else None
+        try:
+            if quarry_ImageBase_d22b716 is not None:
+                _name_boundary.attributes(quarry_self)['relocate_image'](quarry_ImageBase_d22b716)
+            quarry_output = bytearray(quarry_self.header)
+            for quarry_section, quarry_rva, quarry_length in quarry_plan:
+                if len(quarry_output) > quarry_rva:
+                    del quarry_output[quarry_rva:]
+                elif len(quarry_output) < quarry_rva:
+                    quarry_output.extend(bytes(quarry_rva - len(quarry_output)))
+                quarry_data = quarry_section.get_data()
+                quarry_output.extend(quarry_data[:quarry_length])
+                if len(quarry_data) < quarry_length:
+                    quarry_output.extend(bytes(quarry_length - len(quarry_data)))
+            return bytes(quarry_output)
+        finally:
+            if quarry_ImageBase_d22b716 is not None:
+                if isinstance(quarry_original_data, bytearray):
+                    quarry_original_data[:] = quarry_original_bytes
+                quarry_self.__data__ = quarry_original_data
 
     @_name_boundary.callable_contract({'self': 'quarry_self_6264130'}, 'get_resources_strings')
     def quarry_get_resources_strings(quarry_self_6264130):
@@ -3408,6 +3427,11 @@ class quarry_PE:
         Given a RVA and the size of the chunk to retrieve, this method
         will find the section where the data lies and return the data.
         """
+        quarry_self_592d8a9._quarry_read_count += 1
+        if quarry_self_592d8a9._quarry_read_count > quarry_self_592d8a9._quarry_read_limit:
+            raise quarry_LimitError('PE data read budget exceeded')
+        if type(quarry_rva_642c28a) is not int or quarry_rva_642c28a < 0 or (quarry_length_2b4e96b is not None and (type(quarry_length_2b4e96b) is not int or quarry_length_2b4e96b < 0)):
+            raise quarry_PEFormatError('data RVA and length must be nonnegative integers')
         quarry_s_272cfa2 = _name_boundary.attributes(quarry_self_592d8a9)['get_section_by_rva'](quarry_rva_642c28a)
         if quarry_length_2b4e96b is None:
             quarry_end_local_aa447e6 = None
@@ -4139,7 +4163,7 @@ class quarry_PE:
         if not isinstance(quarry_data_local_dbcf8b8, bytes):
             raise TypeError('data should be of type: bytes')
         quarry_offset_local_ab84a15 = _name_boundary.attributes(quarry_self_4559606)['get_physical_by_rva'](quarry_rva_edfde98)
-        if not quarry_offset_local_ab84a15:
+        if quarry_offset_local_ab84a15 is None:
             return False
         return _name_boundary.attributes(quarry_self_4559606)['set_bytes_at_offset'](quarry_offset_local_ab84a15, quarry_data_local_dbcf8b8)
 
@@ -4152,7 +4176,7 @@ class quarry_PE:
         """
         if not isinstance(quarry_data_local_f87710a, bytes):
             raise TypeError('data should be of type: bytes')
-        if 0 <= quarry_offset_local_e0d379a < len(quarry_self_777fff4.__data__):
+        if type(quarry_offset_local_e0d379a) is int and 0 <= quarry_offset_local_e0d379a <= len(quarry_self_777fff4.__data__) and len(quarry_data_local_f87710a) <= len(quarry_self_777fff4.__data__) - quarry_offset_local_e0d379a:
             _name_boundary.attributes(quarry_self_777fff4)['set_data_bytes'](quarry_offset_local_e0d379a, quarry_data_local_f87710a)
         else:
             return False
@@ -4160,6 +4184,10 @@ class quarry_PE:
 
     @_name_boundary.callable_contract({'self': 'quarry_self_f6d9d8a', 'offset': 'quarry_offset_local_d98f92d', 'data': 'quarry_data_local_c4c54db'}, 'set_data_bytes')
     def quarry_set_data_bytes(quarry_self_f6d9d8a, quarry_offset_local_d98f92d: int, quarry_data_local_c4c54db: bytes):
+        if not isinstance(quarry_data_local_c4c54db, bytes):
+            raise TypeError('data should be of type: bytes')
+        if type(quarry_offset_local_d98f92d) is not int or quarry_offset_local_d98f92d < 0 or quarry_offset_local_d98f92d > len(quarry_self_f6d9d8a.__data__) or len(quarry_data_local_c4c54db) > len(quarry_self_f6d9d8a.__data__) - quarry_offset_local_d98f92d:
+            raise quarry_PEFormatError('byte edit span is outside the file')
         if not isinstance(quarry_self_f6d9d8a.__data__, bytearray):
             quarry_new_data_fc01f76 = bytearray(quarry_self_f6d9d8a.__data__)
             _name_boundary.attributes(quarry_self_f6d9d8a)['_close_data']()
@@ -4280,34 +4308,23 @@ class quarry_PE:
     def quarry_verify_checksum(quarry_self_7b4a1ab):
         return _name_boundary.attributes(quarry_self_7b4a1ab)['OPTIONAL_HEADER'].CheckSum == _name_boundary.attributes(quarry_self_7b4a1ab)['generate_checksum']()
 
-    @_name_boundary.callable_contract({'self': 'quarry_self_42dabac'}, 'generate_checksum')
-    def quarry_generate_checksum(quarry_self_42dabac):
-        """This will ensure that the data representing the PE image
-        is updated with any changes that might have been made by
-        assigning values to header fields as those are not automatically
-        updated upon assignment.
-        """
-        quarry_new_data_d33defd = _name_boundary.attributes(quarry_self_42dabac)['write']()
-        _name_boundary.attributes(quarry_self_42dabac)['_close_data']()
-        quarry_self_42dabac.__data__ = quarry_new_data_d33defd
-        quarry_checksum_offset_dfcf597 = _name_boundary.attributes(_name_boundary.attributes(quarry_self_42dabac)['OPTIONAL_HEADER'])['get_file_offset']() + 64
-        quarry_checksum_4bce06b = 0
-        quarry_remainder_d031167 = len(quarry_self_42dabac.__data__) % 4
-        quarry_data_len_c332fe8 = len(quarry_self_42dabac.__data__) + (4 - quarry_remainder_d031167) * (quarry_remainder_d031167 != 0)
-        for quarry_i_5a7be6e in range(quarry_data_len_c332fe8 // 4):
-            if quarry_i_5a7be6e == quarry_checksum_offset_dfcf597 // 4:
+    @_name_boundary.callable_contract({'self': 'quarry_self'}, 'generate_checksum')
+    def quarry_generate_checksum(quarry_self):
+        """Fold explicit little-endian words, excluding the checksum field."""
+        quarry_data = quarry_self.write()
+        quarry_self._close_data()
+        quarry_self.__data__ = quarry_data
+        quarry_checksum_offset = quarry_self.OPTIONAL_HEADER.get_file_offset() + 64
+        quarry_sum = 0
+        for quarry_offset in range(0, len(quarry_data), 4):
+            if quarry_offset // 4 == quarry_checksum_offset // 4:
                 continue
-            if quarry_i_5a7be6e + 1 == quarry_data_len_c332fe8 // 4 and quarry_remainder_d031167:
-                quarry_dword_7357589 = quarry_struct.unpack('I', quarry_self_42dabac.__data__[quarry_i_5a7be6e * 4:] + b'\x00' * (4 - quarry_remainder_d031167))[0]
-            else:
-                quarry_dword_7357589 = quarry_struct.unpack('I', quarry_self_42dabac.__data__[quarry_i_5a7be6e * 4:quarry_i_5a7be6e * 4 + 4])[0]
-            quarry_checksum_4bce06b += quarry_dword_7357589
-            if quarry_checksum_4bce06b >= 2 ** 32:
-                quarry_checksum_4bce06b = (quarry_checksum_4bce06b & 4294967295) + (quarry_checksum_4bce06b >> 32)
-        quarry_checksum_4bce06b = (quarry_checksum_4bce06b & 65535) + (quarry_checksum_4bce06b >> 16)
-        quarry_checksum_4bce06b += quarry_checksum_4bce06b >> 16
-        quarry_checksum_4bce06b &= 65535
-        return quarry_checksum_4bce06b + len(quarry_self_42dabac.__data__)
+            quarry_word = int.from_bytes(quarry_data[quarry_offset:quarry_offset + 4], 'little')
+            quarry_sum += quarry_word
+            quarry_sum = (quarry_sum & 0xffffffff) + (quarry_sum >> 32)
+        quarry_sum = (quarry_sum & 0xffff) + (quarry_sum >> 16)
+        quarry_sum += quarry_sum >> 16
+        return (quarry_sum & 0xffff) + len(quarry_data)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_e1e2a32'}, 'is_exe')
     def quarry_is_exe(quarry_self_e1e2a32):
