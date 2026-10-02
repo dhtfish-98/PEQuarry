@@ -83,7 +83,7 @@ def main():
         for source in (ROOT/'src').rglob('*.py'):
             relative=str(source.relative_to(ROOT/'src'))
             assert archive.read(relative)==source.read_bytes(),'Wheel source differs: '+relative
-        for document in ('README.md','ORIGIN.md','VALIDATION.md','NAME_AUDIT.json'):
+        for document in ('README.md','ORIGIN.md','VALIDATION.md','DEFENSIVE_SCOPE.md','NAME_AUDIT.json'):
             members=[path for path in archive.namelist() if path.endswith('/share/'+CONFIG['name']+'/'+document)]
             assert len(members)==1 and archive.read(members[0])==(ROOT/document).read_bytes(),'Wheel provenance differs: '+document
     checks['wheel_source_identity']='PASS'

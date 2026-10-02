@@ -1,4 +1,4 @@
-include NAME_AUDIT.json README.md ORIGIN.md VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json verify.py
+include DEFENSIVE_SCOPE.md NAME_AUDIT.json README.md ORIGIN.md VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json verify.py
 recursive-include src *.py
 recursive-include checks *
 recursive-include fixtures *
