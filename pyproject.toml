@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "PEQuarry"
+version = "1.0.0"
+description = "Attributed, scope-renamed binary research derivative of pefile"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+dependencies = []
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.pytest.ini_options]
+testpaths = ["checks"]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1", "build==1.6.1", "setuptools==84.0.0", "wheel==0.48.0", "libcst==1.9.0"]
+
+[tool.setuptools.data-files]
+"share/PEQuarry" = ["README.md", "ORIGIN.md", "VALIDATION.md", "NAME_AUDIT.json"]

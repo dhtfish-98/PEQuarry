@@ -1,0 +1,14 @@
+{
+  "ordlookup/__init__.py": "src/pequarry/ordinal_catalog/__init__.py",
+  "ordlookup/imphash_oleaut32.py": "src/pequarry/ordinal_catalog/automation_hash_names.py",
+  "ordlookup/imphash_ws2_32.py": "src/pequarry/ordinal_catalog/winsock_hash_names.py",
+  "ordlookup/oleaut32.py": "src/pequarry/ordinal_catalog/automation_names.py",
+  "ordlookup/ws2_32.py": "src/pequarry/ordinal_catalog/winsock2_names.py",
+  "ordlookup/wsock32.py": "src/pequarry/ordinal_catalog/winsock1_names.py",
+  "pefile.py": "src/pequarry/image_reader.py",
+  "peutils.py": "src/pequarry/signature_tools.py",
+  "tests/export_test.py": "checks/test_quarry_export_test.py",
+  "tests/pefile_test.py": "historical_checks/legacy_quarry_regression.py",
+  "LICENSE": "LICENSE",
+  "pyproject.toml": "pyproject.toml"
+}

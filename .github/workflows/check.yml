@@ -1,0 +1,19 @@
+name: Frozen static analysis verification
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned test dependencies and this source
+        run: python -m pip install '.[test]'
+      - name: Repeat tests, pinned upstream differences, and wheel identity
+        run: python verify.py

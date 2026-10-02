@@ -1,0 +1,151 @@
+{
+  "project": "PEQuarry",
+  "hash_algorithm": "SHA-256",
+  "files": {
+    ".github/workflows/check.yml": {
+      "sha256": "2d8e422881f0d1ee62471ba1bfb6c9d14618b7562c10d9642e8b302977467ca4",
+      "bytes": 574,
+      "executable": false
+    },
+    ".gitignore": {
+      "sha256": "50536db98a12c1294b7e1e44c15069b3eb96378e7466d2c872d5b42599a7823e",
+      "bytes": 91,
+      "executable": false
+    },
+    "FILE_MAP.json": {
+      "sha256": "7ac893b93756001932b8e95656f68009407e5c8130c2ad2636915bce58499609",
+      "bytes": 781,
+      "executable": false
+    },
+    "LICENSE": {
+      "sha256": "b44409c067c6da52bfb54bb6624fb11a7b52157c3a13ae1400232f8196e86ad3",
+      "bytes": 1083,
+      "executable": false
+    },
+    "MANIFEST.in": {
+      "sha256": "46cae9a9c79e931ffb1faa10aa3af7ea710821266ac02e13315ad5996a1c0fdc",
+      "bytes": 333,
+      "executable": false
+    },
+    "NAME_AUDIT.json": {
+      "sha256": "b18791059688cb54fd3a44634ebbb60dba496f68a35d6aaf06921e1710d5c172",
+      "bytes": 1785,
+      "executable": false
+    },
+    "ORIGIN.md": {
+      "sha256": "0a56e9c3588cf6e1d84c6c9e08f7ebba35cb1488eef58eff6c0d68222e55fb77",
+      "bytes": 2267,
+      "executable": false
+    },
+    "README.md": {
+      "sha256": "bef3ba7c2146049b4053ac45a54f28d1af069760cc186ad38bdaf1474ecaa3d9",
+      "bytes": 2007,
+      "executable": false
+    },
+    "SYMBOL_MAP.json": {
+      "sha256": "13b164224e7af74cf73a5c992d402029b3de6d570922a7391d4ecf0815c46dca",
+      "bytes": 368600,
+      "executable": false
+    },
+    "VALIDATION.md": {
+      "sha256": "546dd79c4d2231a62c3a67b87b0242676b50b0e715e97ad070b862421ad29663",
+      "bytes": 2043,
+      "executable": false
+    },
+    "checks/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "executable": false
+    },
+    "checks/legacy_pe_observations.py": {
+      "sha256": "4c8521edbc2e1081b315f77117e8a07a79863967cb596f95101dd9eac6a9b424",
+      "bytes": 1607,
+      "executable": false
+    },
+    "checks/naming_audit.py": {
+      "sha256": "fb53c91770a23bad10cb1e2e4965327a363aae8f932dad67dbba5eb9a0dcae87",
+      "bytes": 2140,
+      "executable": false
+    },
+    "checks/pe_observations.py": {
+      "sha256": "48d24be4de2ebee02ce5a76ec16883bc4d2fe6dc6a403cb08438dd8b6fe419f8",
+      "bytes": 1450,
+      "executable": false
+    },
+    "checks/test_quarry_export_test.py": {
+      "sha256": "e2501103003c94ea39cb211736967365e2cd7e12545cd02ed9aed05ff774a4db",
+      "bytes": 8536,
+      "executable": false
+    },
+    "checks/wheel_consumption.py": {
+      "sha256": "4ab02de1558b17e5984a77dd7191adc3cabec320aa65118f86af3507e6231411",
+      "bytes": 4973,
+      "executable": false
+    },
+    "historical_checks/legacy_quarry_regression.py": {
+      "sha256": "b92d71c39916902a2c56b3a58d4dddef9724d568aa9222034b46fd24ec8adfea",
+      "bytes": 43051,
+      "executable": false
+    },
+    "pyproject.toml": {
+      "sha256": "7ca2cd27256db011500abbc6898452bc685f682795b7647f476553dd345779b6",
+      "bytes": 652,
+      "executable": false
+    },
+    "src/pequarry/__init__.py": {
+      "sha256": "5c9246307a2954df211ce8b272478a71d159d14cc6d233ae7b50b504d42588ca",
+      "bytes": 28,
+      "executable": false
+    },
+    "src/pequarry/api_contract.py": {
+      "sha256": "086026db45ee4353701559e97a7fbd1a557b7d89405adc359a0239cc23461a93",
+      "bytes": 35534,
+      "executable": false
+    },
+    "src/pequarry/image_reader.py": {
+      "sha256": "f496b24f2ba9e048a6df61f68985bdf08e5fc268405f072de4b611287e586dfe",
+      "bytes": 400419,
+      "executable": false
+    },
+    "src/pequarry/ordinal_catalog/__init__.py": {
+      "sha256": "354ac42f9f05dcfdca50112ff4ccafea1cf0bc4f2b16438b4b20bdd56eae5e63",
+      "bytes": 3855,
+      "executable": false
+    },
+    "src/pequarry/ordinal_catalog/automation_hash_names.py": {
+      "sha256": "706d45e21943277f12898bd843b8cd0bc37d80370486926d256b4959b98e82b8",
+      "bytes": 9802,
+      "executable": false
+    },
+    "src/pequarry/ordinal_catalog/automation_names.py": {
+      "sha256": "364502e3e755245ae2ce74fab99fa6857d2109bbd64c5ce1e2958c27f988de00",
+      "bytes": 10279,
+      "executable": false
+    },
+    "src/pequarry/ordinal_catalog/winsock1_names.py": {
+      "sha256": "fac91e84f85ac528bdac07066996c3993fe00188d2e4b43a91bea586b61b0108",
+      "bytes": 1876,
+      "executable": false
+    },
+    "src/pequarry/ordinal_catalog/winsock2_names.py": {
+      "sha256": "620373f63ca17b8714ae0a26bf2008efd399d6fff4c5d0d6b59750b6827d96de",
+      "bytes": 5437,
+      "executable": false
+    },
+    "src/pequarry/ordinal_catalog/winsock_hash_names.py": {
+      "sha256": "f3d3d588fe1bde6ad6a15d7df1429af0167cf7f20b3a7e6938b35b64df7b9a3d",
+      "bytes": 3312,
+      "executable": false
+    },
+    "src/pequarry/signature_tools.py": {
+      "sha256": "fc0a0e51e8088bf7a65abf93dc7f2de98897c8f657693ee2eaf8382b116ea8c9",
+      "bytes": 24069,
+      "executable": false
+    },
+    "verify.py": {
+      "sha256": "145d7f6c17593e3d2d8ba1f31fd58b5cd98e69b5d49e105aea35bdc343903cbd",
+      "bytes": 7011,
+      "executable": true
+    }
+  }
+}
