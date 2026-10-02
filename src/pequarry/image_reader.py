@@ -17,6 +17,8 @@ Copyright (c) 2005-2024 Ero Carrera <ero.carrera@gmail.com>
 """
 import pequarry.api_contract as _name_boundary
 import pequarry.directory_records as _boundary_records
+import pequarry.resource_records as _boundary_resources
+import pequarry.version_records as _boundary_versions
 __author__ = 'Ero Carrera'
 __version__ = '2024.8.26'
 __contact__ = 'ero.carrera@gmail.com'
@@ -144,23 +146,7 @@ def quarry_get_sublang_name_for_lang(quarry_lang_value_49d1fa9, quarry_sublang_v
 
 @_name_boundary.callable_contract({'counter': 'quarry_counter_d31841a', 'l': 'quarry_l_750496d', 'data': 'quarry_data_local_1598bae'}, 'parse_strings')
 def quarry_parse_strings(quarry_data_local_1598bae, quarry_counter_d31841a, quarry_l_750496d):
-    quarry_i_86338e5 = 0
-    quarry_error_count_a163065 = 0
-    while quarry_i_86338e5 < len(quarry_data_local_1598bae):
-        quarry_data_slice_94b07cd = quarry_data_local_1598bae[quarry_i_86338e5:quarry_i_86338e5 + 2]
-        if len(quarry_data_slice_94b07cd) < 2:
-            break
-        quarry_len__1b3ffea = quarry_struct.unpack('<h', quarry_data_slice_94b07cd)[0]
-        quarry_i_86338e5 += 2
-        if 0 < quarry_len__1b3ffea * 2 <= len(quarry_data_local_1598bae):
-            try:
-                quarry_l_750496d[quarry_counter_d31841a] = _name_boundary.attributes(quarry_data_local_1598bae[quarry_i_86338e5:quarry_i_86338e5 + quarry_len__1b3ffea * 2])['decode']('utf-16le')
-            except UnicodeDecodeError:
-                quarry_error_count_a163065 += 1
-            if quarry_error_count_a163065 >= 3:
-                break
-            quarry_i_86338e5 += quarry_len__1b3ffea * 2
-        quarry_counter_d31841a += 1
+    _boundary_resources.parse_strings(quarry_data_local_1598bae, quarry_counter_d31841a, quarry_l_750496d)
 
 @_name_boundary.callable_contract({'flag_dict': 'quarry_flag_dict_d7409d2', 'flag_filter': 'quarry_flag_filter_cdd1044'}, 'retrieve_flags')
 def quarry_retrieve_flags(quarry_flag_dict_d7409d2, quarry_flag_filter_cdd1044):
@@ -1948,7 +1934,8 @@ class quarry_PE:
                         for quarry_key, quarry_value in quarry_table.entries.items():
                             quarry_offsets = quarry_table.entries_offsets[quarry_key]
                             quarry_lengths = quarry_table.entries_lengths[quarry_key]
-                            quarry_offset, quarry_capacity = quarry_offsets[1], quarry_lengths[1]
+                            quarry_offset = quarry_offsets[1]
+                            quarry_capacity = getattr(quarry_table, '_quarry_value_capacities', {}).get(quarry_key, quarry_lengths[1])
                             if type(quarry_offset) is not int or type(quarry_capacity) is not int or quarry_offset < 0 or quarry_capacity < 0 or quarry_offset > len(quarry_output) or quarry_capacity > (len(quarry_output) - quarry_offset) // 2:
                                 raise quarry_PEFormatError('version string span is outside the file')
                             if not isinstance(quarry_value, bytes):
@@ -2290,347 +2277,19 @@ class quarry_PE:
 
     @_name_boundary.callable_contract({'self': 'quarry_self_a47e071', 'rva': 'quarry_rva_d301385', 'base_rva': 'quarry_base_rva_ce2f676', 'level': 'quarry_level_bf15713', 'dirs': 'quarry_dirs_73b4820', 'size': 'quarry_size_local_cfb9449'}, 'parse_resources_directory')
     def quarry_parse_resources_directory(quarry_self_a47e071, quarry_rva_d301385, quarry_size_local_cfb9449=0, quarry_base_rva_ce2f676=None, quarry_level_bf15713=0, quarry_dirs_73b4820=None):
-        """Parse the resources directory.
-
-        Given the RVA of the resources directory, it will process all
-        its entries.
-
-        The root will have the corresponding member of its structure,
-        IMAGE_RESOURCE_DIRECTORY plus 'entries', a list of all the
-        entries in the directory.
-
-        Those entries will have, correspondingly, all the structure's
-        members (IMAGE_RESOURCE_DIRECTORY_ENTRY) and an additional one,
-        "directory", pointing to the IMAGE_RESOURCE_DIRECTORY structure
-        representing upper layers of the tree. This one will also have
-        an 'entries' attribute, pointing to the 3rd, and last, level.
-        Another directory with more entries. Those last entries will
-        have a new attribute (both 'leaf' or 'data_entry' can be used to
-        access it). This structure finally points to the resource data.
-        All the members of this structure, IMAGE_RESOURCE_DATA_ENTRY,
-        are available as its attributes.
-        """
-        if quarry_dirs_73b4820 is None:
-            quarry_dirs_73b4820 = [quarry_rva_d301385]
-        if quarry_base_rva_ce2f676 is None:
-            quarry_base_rva_ce2f676 = quarry_rva_d301385
-        if quarry_level_bf15713 > quarry_MAX_RESOURCE_DEPTH:
-            _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f'Error parsing the resources directory. Excessively nested table depth {quarry_level_bf15713} (>{quarry_MAX_RESOURCE_DEPTH})')
-            return None
-        try:
-            quarry_data_local_d917526 = _name_boundary.attributes(quarry_self_a47e071)['get_data'](quarry_rva_d301385, _name_boundary.attributes(quarry_Structure(quarry_self_a47e071.__IMAGE_RESOURCE_DIRECTORY_format__))['sizeof']())
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f"Invalid resources directory. Can't read directory data at RVA: {quarry_rva_d301385:#x}")
-            return None
-        quarry_resource_dir_a0934cb = quarry_self_a47e071.__unpack_data__(quarry_self_a47e071.__IMAGE_RESOURCE_DIRECTORY_format__, quarry_data_local_d917526, file_offset=_name_boundary.attributes(quarry_self_a47e071)['get_offset_from_rva'](quarry_rva_d301385))
-        if quarry_resource_dir_a0934cb is None:
-            _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f"Invalid resources directory. Can't parse directory data at RVA: {quarry_rva_d301385:#x}")
-            return None
-        quarry_dir_entries_2eec245 = []
-        quarry_rva_d301385 += _name_boundary.attributes(quarry_resource_dir_a0934cb)['sizeof']()
-        quarry_number_of_entries_692b449 = quarry_resource_dir_a0934cb.NumberOfNamedEntries + quarry_resource_dir_a0934cb.NumberOfIdEntries
-        quarry_MAX_ALLOWED_ENTRIES_27b1fc5 = 4096
-        if quarry_number_of_entries_692b449 > quarry_MAX_ALLOWED_ENTRIES_27b1fc5:
-            _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f'Error parsing the resources directory. The directory contains {quarry_number_of_entries_692b449} entries (>{quarry_MAX_ALLOWED_ENTRIES_27b1fc5})')
-            return None
-        _name_boundary.attributes(quarry_self_a47e071)['__total_resource_entries_count'] += quarry_number_of_entries_692b449
-        if _name_boundary.attributes(quarry_self_a47e071)['__total_resource_entries_count'] > quarry_MAX_RESOURCE_ENTRIES:
-            _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f"Error parsing the resources directory. The file contains at least {_name_boundary.attributes(quarry_self_a47e071)['__total_resource_entries_count']} entries (>{quarry_MAX_RESOURCE_ENTRIES})")
-            return None
-        quarry_strings_to_postprocess_8b7e160 = []
-        quarry_last_name_begin_end_1a5e62d = None
-        for quarry_idx_d2dcd02 in range(quarry_number_of_entries_692b449):
-            if not _name_boundary.attributes(quarry_self_a47e071)['__resource_size_limit_reached'] and _name_boundary.attributes(quarry_self_a47e071)['__total_resource_bytes'] > _name_boundary.attributes(quarry_self_a47e071)['__resource_size_limit_upperbounds']:
-                _name_boundary.attributes(quarry_self_a47e071)['__resource_size_limit_reached'] = True
-                _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f"Resource size {_name_boundary.attributes(quarry_self_a47e071)['__total_resource_bytes']:#x} exceeds file size {_name_boundary.attributes(quarry_self_a47e071)['__resource_size_limit_upperbounds']:#x}, overlapping resources found.")
-            quarry_res_d9e503e = _name_boundary.attributes(quarry_self_a47e071)['parse_resource_entry'](quarry_rva_d301385)
-            if quarry_res_d9e503e is None:
-                _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f'Error parsing the resources directory, Entry {quarry_idx_d2dcd02} is invalid, RVA = {quarry_rva_d301385:#x}. ')
-                break
-            quarry_entry_name_d0f27bf = None
-            quarry_entry_id_49b3a5c = None
-            if not quarry_res_d9e503e.NameIsString:
-                quarry_entry_id_49b3a5c = quarry_res_d9e503e.Name
-            else:
-                quarry_ustr_offset_c87a65d = quarry_base_rva_ce2f676 + quarry_res_d9e503e.NameOffset
-                try:
-                    quarry_entry_name_d0f27bf = quarry_UnicodeStringWrapperPostProcessor(quarry_self_a47e071, quarry_ustr_offset_c87a65d)
-                    _name_boundary.attributes(quarry_self_a47e071)['__total_resource_bytes'] += _name_boundary.attributes(quarry_entry_name_d0f27bf)['get_pascal_16_length']()
-                    if quarry_last_name_begin_end_1a5e62d and quarry_last_name_begin_end_1a5e62d[0] < quarry_ustr_offset_c87a65d <= quarry_last_name_begin_end_1a5e62d[1]:
-                        quarry_strings_to_postprocess_8b7e160.pop()
-                        _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f'Error parsing the resources directory, attempting to read entry name. Entry names overlap {quarry_ustr_offset_c87a65d:#x}')
-                        break
-                    quarry_last_name_begin_end_1a5e62d = (quarry_ustr_offset_c87a65d, quarry_ustr_offset_c87a65d + _name_boundary.attributes(quarry_entry_name_d0f27bf)['get_pascal_16_length']())
-                    quarry_strings_to_postprocess_8b7e160.append(quarry_entry_name_d0f27bf)
-                except quarry_PEFormatError:
-                    _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f"Error parsing the resources directory, attempting to read entry name. Can't read unicode string at offset {quarry_ustr_offset_c87a65d:#x}")
-            if quarry_res_d9e503e.DataIsDirectory:
-                if quarry_base_rva_ce2f676 + quarry_res_d9e503e.OffsetToDirectory in quarry_dirs_73b4820:
-                    break
-                quarry_entry_directory_f45ab4c = _name_boundary.attributes(quarry_self_a47e071)['parse_resources_directory'](quarry_base_rva_ce2f676 + quarry_res_d9e503e.OffsetToDirectory, quarry_size_local_cfb9449 - (quarry_rva_d301385 - quarry_base_rva_ce2f676), base_rva=quarry_base_rva_ce2f676, level=quarry_level_bf15713 + 1, dirs=quarry_dirs_73b4820 + [quarry_base_rva_ce2f676 + quarry_res_d9e503e.OffsetToDirectory])
-                if not quarry_entry_directory_f45ab4c:
-                    break
-                if quarry_entry_id_49b3a5c == quarry_RESOURCE_TYPE['RT_STRING']:
-                    quarry_strings_ddb9b9a = {}
-                    for quarry_resource_id_b6a5fb3 in quarry_entry_directory_f45ab4c.entries:
-                        if _name_boundary.has_attribute(quarry_resource_id_b6a5fb3, 'directory'):
-                            quarry_resource_strings_995d9b4 = {}
-                            for quarry_resource_lang_089fa11 in quarry_resource_id_b6a5fb3.directory.entries:
-                                if quarry_resource_lang_089fa11 is None or not _name_boundary.has_attribute(quarry_resource_lang_089fa11, 'data') or _name_boundary.attributes(quarry_resource_lang_089fa11.data)['struct'].Size is None or (quarry_resource_id_b6a5fb3.id is None):
-                                    continue
-                                quarry_string_entry_rva_1bbc762 = _name_boundary.attributes(quarry_resource_lang_089fa11.data)['struct'].OffsetToData
-                                quarry_string_entry_size_216e77c = _name_boundary.attributes(quarry_resource_lang_089fa11.data)['struct'].Size
-                                quarry_string_entry_id_6fc8d92 = quarry_resource_id_b6a5fb3.id
-                                try:
-                                    quarry_string_entry_data_40183b1 = _name_boundary.attributes(quarry_self_a47e071)['get_data'](quarry_string_entry_rva_1bbc762, quarry_string_entry_size_216e77c)
-                                except quarry_PEFormatError:
-                                    _name_boundary.attributes(quarry_self_a47e071)['__warnings'].append(f'Error parsing resource of type RT_STRING at RVA {quarry_string_entry_rva_1bbc762:#x} with size {quarry_string_entry_size_216e77c}')
-                                    continue
-                                quarry_parse_strings(quarry_string_entry_data_40183b1, (int(quarry_string_entry_id_6fc8d92) - 1) * 16, quarry_resource_strings_995d9b4)
-                                quarry_strings_ddb9b9a.update(quarry_resource_strings_995d9b4)
-                            quarry_resource_id_b6a5fb3.directory.strings = quarry_resource_strings_995d9b4
-                quarry_dir_entries_2eec245.append(quarry_ResourceDirEntryData(struct=quarry_res_d9e503e, name=quarry_entry_name_d0f27bf, id=quarry_entry_id_49b3a5c, directory=quarry_entry_directory_f45ab4c))
-            else:
-                quarry_struct_f4c5a3d = _name_boundary.attributes(quarry_self_a47e071)['parse_resource_data_entry'](quarry_base_rva_ce2f676 + quarry_res_d9e503e.OffsetToDirectory)
-                if quarry_struct_f4c5a3d:
-                    _name_boundary.attributes(quarry_self_a47e071)['__total_resource_bytes'] += quarry_struct_f4c5a3d.Size
-                    quarry_entry_data_cbdbd97 = quarry_ResourceDataEntryData(struct=quarry_struct_f4c5a3d, lang=quarry_res_d9e503e.Name & 1023, sublang=quarry_res_d9e503e.Name >> 10)
-                    quarry_dir_entries_2eec245.append(quarry_ResourceDirEntryData(struct=quarry_res_d9e503e, name=quarry_entry_name_d0f27bf, id=quarry_entry_id_49b3a5c, data=quarry_entry_data_cbdbd97))
-                else:
-                    break
-            if quarry_level_bf15713 == 0 and quarry_res_d9e503e.Id == quarry_RESOURCE_TYPE['RT_VERSION']:
-                if quarry_dir_entries_2eec245:
-                    quarry_last_entry_43e8cb7 = quarry_dir_entries_2eec245[-1]
-                try:
-                    quarry_version_entries_072e6fa = quarry_last_entry_43e8cb7.directory.entries[0].directory.entries
-                except (AttributeError, IndexError):
-                    pass
-                else:
-                    for quarry_version_entry_cc42407 in quarry_version_entries_072e6fa:
-                        quarry_rt_version_struct_8818b0d = None
-                        try:
-                            quarry_rt_version_struct_8818b0d = _name_boundary.attributes(quarry_version_entry_cc42407.data)['struct']
-                        except (AttributeError, IndexError):
-                            pass
-                        if quarry_rt_version_struct_8818b0d is not None:
-                            _name_boundary.attributes(quarry_self_a47e071)['parse_version_information'](quarry_rt_version_struct_8818b0d)
-            quarry_rva_d301385 += _name_boundary.attributes(quarry_res_d9e503e)['sizeof']()
-        quarry_string_rvas_74ebc15 = [_name_boundary.attributes(quarry_s_3bdc313)['get_rva']() for quarry_s_3bdc313 in quarry_strings_to_postprocess_8b7e160]
-        quarry_string_rvas_74ebc15.sort()
-        for quarry_s_4ff6c1a in quarry_strings_to_postprocess_8b7e160:
-            _name_boundary.attributes(quarry_s_4ff6c1a)['render_pascal_16']()
-        quarry_resource_directory_data_7997799 = quarry_ResourceDirData(struct=quarry_resource_dir_a0934cb, entries=quarry_dir_entries_2eec245)
-        return quarry_resource_directory_data_7997799
+        return _boundary_resources.ResourceReader(quarry_self_a47e071).resources(quarry_rva_d301385, quarry_size_local_cfb9449, quarry_base_rva_ce2f676, quarry_level_bf15713, quarry_dirs_73b4820)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_4c00f68', 'rva': 'quarry_rva_54d9a0a'}, 'parse_resource_data_entry')
     def quarry_parse_resource_data_entry(quarry_self_4c00f68, quarry_rva_54d9a0a):
-        """Parse a data entry from the resources directory."""
-        try:
-            quarry_data_local_34ccf0b = _name_boundary.attributes(quarry_self_4c00f68)['get_data'](quarry_rva_54d9a0a, _name_boundary.attributes(quarry_Structure(quarry_self_4c00f68.__IMAGE_RESOURCE_DATA_ENTRY_format__))['sizeof']())
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_4c00f68)['__warnings'].append(f'Error parsing a resource directory data entry, the RVA is invalid: {quarry_rva_54d9a0a:#x}')
-            return None
-        quarry_data_entry_12ba5a2 = quarry_self_4c00f68.__unpack_data__(quarry_self_4c00f68.__IMAGE_RESOURCE_DATA_ENTRY_format__, quarry_data_local_34ccf0b, file_offset=_name_boundary.attributes(quarry_self_4c00f68)['get_offset_from_rva'](quarry_rva_54d9a0a))
-        return quarry_data_entry_12ba5a2
+        return _boundary_resources.ResourceReader(quarry_self_4c00f68).data_entry(quarry_rva_54d9a0a)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_d988853', 'rva': 'quarry_rva_c0933ad'}, 'parse_resource_entry')
     def quarry_parse_resource_entry(quarry_self_d988853, quarry_rva_c0933ad):
-        """Parse a directory entry from the resources directory."""
-        try:
-            quarry_data_local_2a511b2 = _name_boundary.attributes(quarry_self_d988853)['get_data'](quarry_rva_c0933ad, _name_boundary.attributes(quarry_Structure(quarry_self_d988853.__IMAGE_RESOURCE_DIRECTORY_ENTRY_format__))['sizeof']())
-        except quarry_PEFormatError:
-            return None
-        quarry_resource_46bc5f3 = quarry_self_d988853.__unpack_data__(quarry_self_d988853.__IMAGE_RESOURCE_DIRECTORY_ENTRY_format__, quarry_data_local_2a511b2, file_offset=_name_boundary.attributes(quarry_self_d988853)['get_offset_from_rva'](quarry_rva_c0933ad))
-        if quarry_resource_46bc5f3 is None:
-            return None
-        quarry_resource_46bc5f3.NameOffset = quarry_resource_46bc5f3.Name & 2147483647
-        quarry_resource_46bc5f3.NameIsString = (quarry_resource_46bc5f3.Name & 2147483648) >> 31
-        quarry_resource_46bc5f3.Id = quarry_resource_46bc5f3.Name & 65535
-        quarry_resource_46bc5f3.OffsetToDirectory = quarry_resource_46bc5f3.OffsetToData & 2147483647
-        quarry_resource_46bc5f3.DataIsDirectory = (quarry_resource_46bc5f3.OffsetToData & 2147483648) >> 31
-        return quarry_resource_46bc5f3
+        return _boundary_resources.ResourceReader(quarry_self_d988853).entry(quarry_rva_c0933ad)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_f47cf38', 'version_struct': 'quarry_version_struct_3aab9d9'}, 'parse_version_information')
     def quarry_parse_version_information(quarry_self_f47cf38, quarry_version_struct_3aab9d9):
-        """Parse version information structure.
-
-        The data will be made available in three attributes of the PE object.
-
-        VS_VERSIONINFO will contain the first three fields of the main structure:
-            'Length', 'ValueLength', and 'Type'
-
-        VS_FIXEDFILEINFO will hold the rest of the fields, accessible as sub-attributes:
-            'Signature'
-            'StrucVersion'
-            'FileVersionMS'
-            'FileVersionLS'
-            'ProductVersionMS'
-            'ProductVersionLS'
-            'FileFlagsMask'
-            'FileFlags'
-            'FileOS'
-            'FileType'
-            'FileSubtype'
-            'FileDateMS'
-            'FileDateLS'
-            
-        FileInfo is a list of all StringFileInfo and VarFileInfo structures.
-
-        StringFileInfo structures will have a list as an attribute named 'StringTable'
-        containing all the StringTable structures. Each of those structures contains a
-        dictionary 'entries' with all the key-value version information string pairs.
-
-        VarFileInfo structures will have a list as an attribute named 'Var' containing
-        all Var structures. Each Var structure will have a dictionary as an attribute
-        named 'entry' which will contain the name and value of the Var.
-        """
-        try:
-            quarry_start_offset_9ac0123 = _name_boundary.attributes(quarry_self_f47cf38)['get_offset_from_rva'](quarry_version_struct_3aab9d9.OffsetToData)
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f'Error parsing the version information, attempting to read OffsetToData with RVA: {quarry_version_struct_3aab9d9.OffsetToData:#x}')
-            return
-        quarry_raw_data_b14daad = quarry_self_f47cf38.__data__[quarry_start_offset_9ac0123:quarry_start_offset_9ac0123 + quarry_version_struct_3aab9d9.Size]
-        quarry_versioninfo_struct_5b0bdb0 = quarry_self_f47cf38.__unpack_data__(quarry_self_f47cf38.__VS_VERSIONINFO_format__, quarry_raw_data_b14daad, file_offset=quarry_start_offset_9ac0123)
-        if quarry_versioninfo_struct_5b0bdb0 is None:
-            return
-        quarry_ustr_offset_d15c99a = quarry_version_struct_3aab9d9.OffsetToData + _name_boundary.attributes(quarry_versioninfo_struct_5b0bdb0)['sizeof']()
-        quarry_section_7f505dc = _name_boundary.attributes(quarry_self_f47cf38)['get_section_by_rva'](quarry_ustr_offset_d15c99a)
-        quarry_section_end_804f2e9 = None
-        if quarry_section_7f505dc:
-            quarry_section_end_804f2e9 = quarry_section_7f505dc.VirtualAddress + max(quarry_section_7f505dc.SizeOfRawData, quarry_section_7f505dc.Misc_VirtualSize)
-        quarry_versioninfo_string_8e7d6ee = None
-        try:
-            if quarry_section_end_804f2e9 is None:
-                quarry_versioninfo_string_8e7d6ee = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a, encoding='ascii')
-            else:
-                quarry_versioninfo_string_8e7d6ee = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a, quarry_section_end_804f2e9 - quarry_ustr_offset_d15c99a >> 1, encoding='ascii')
-        except quarry_PEFormatError:
-            _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f"Error parsing the version information, attempting to read VS_VERSION_INFO string. Can't read unicode string at offset {quarry_ustr_offset_d15c99a:#x}")
-        if quarry_versioninfo_string_8e7d6ee is None:
-            _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f'Invalid VS_VERSION_INFO block: {quarry_versioninfo_string_8e7d6ee}')
-            return
-        if quarry_versioninfo_string_8e7d6ee != b'VS_VERSION_INFO':
-            if len(quarry_versioninfo_string_8e7d6ee) > 128:
-                quarry_excerpt_ead8699 = _name_boundary.attributes(quarry_versioninfo_string_8e7d6ee[:128])['decode']('ascii')
-                quarry_excerpt_ead8699 = quarry_excerpt_ead8699[:quarry_excerpt_ead8699.rfind('\\u')]
-                quarry_versioninfo_string_8e7d6ee = f'{quarry_excerpt_ead8699} ... ({len(quarry_versioninfo_string_8e7d6ee)} bytes, too long to display)'.encode()
-            _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append('Invalid VS_VERSION_INFO block: {}'.format(_name_boundary.attributes(quarry_versioninfo_string_8e7d6ee)['decode']('ascii').replace('\x00', '\\00')))
-            return
-        if not _name_boundary.has_attribute(quarry_self_f47cf38, 'VS_VERSIONINFO'):
-            _name_boundary.attributes(quarry_self_f47cf38)['VS_VERSIONINFO'] = []
-        quarry_vinfo_dc4606b = quarry_versioninfo_struct_5b0bdb0
-        quarry_vinfo_dc4606b.Key = quarry_versioninfo_string_8e7d6ee
-        _name_boundary.attributes(quarry_self_f47cf38)['VS_VERSIONINFO'].append(quarry_vinfo_dc4606b)
-        quarry_fixedfileinfo_offset_f27b356 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](_name_boundary.attributes(quarry_versioninfo_struct_5b0bdb0)['sizeof']() + 2 * (len(quarry_versioninfo_string_8e7d6ee) + 1), quarry_version_struct_3aab9d9.OffsetToData)
-        quarry_fixedfileinfo_struct_57ff0d2 = quarry_self_f47cf38.__unpack_data__(quarry_self_f47cf38.__VS_FIXEDFILEINFO_format__, quarry_raw_data_b14daad[quarry_fixedfileinfo_offset_f27b356:], file_offset=quarry_start_offset_9ac0123 + quarry_fixedfileinfo_offset_f27b356)
-        if not quarry_fixedfileinfo_struct_57ff0d2:
-            return
-        if not _name_boundary.has_attribute(quarry_self_f47cf38, 'VS_FIXEDFILEINFO'):
-            _name_boundary.attributes(quarry_self_f47cf38)['VS_FIXEDFILEINFO'] = []
-        _name_boundary.attributes(quarry_self_f47cf38)['VS_FIXEDFILEINFO'].append(quarry_fixedfileinfo_struct_57ff0d2)
-        quarry_stringfileinfo_offset_f8bd444 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_fixedfileinfo_offset_f27b356 + _name_boundary.attributes(quarry_fixedfileinfo_struct_57ff0d2)['sizeof'](), quarry_version_struct_3aab9d9.OffsetToData)
-        if not _name_boundary.has_attribute(quarry_self_f47cf38, 'FileInfo'):
-            _name_boundary.attributes(quarry_self_f47cf38)['FileInfo'] = []
-        quarry_finfo_5d7b577 = []
-        while True:
-            quarry_stringfileinfo_struct_83aaeb1 = quarry_self_f47cf38.__unpack_data__(quarry_self_f47cf38.__StringFileInfo_format__, quarry_raw_data_b14daad[quarry_stringfileinfo_offset_f8bd444:], file_offset=quarry_start_offset_9ac0123 + quarry_stringfileinfo_offset_f8bd444)
-            if quarry_stringfileinfo_struct_83aaeb1 is None:
-                _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append('Error parsing StringFileInfo/VarFileInfo struct')
-                return
-            quarry_ustr_offset_d15c99a = quarry_version_struct_3aab9d9.OffsetToData + quarry_stringfileinfo_offset_f8bd444 + _name_boundary.attributes(quarry_versioninfo_struct_5b0bdb0)['sizeof']()
-            try:
-                quarry_stringfileinfo_string_d33cfed = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a)
-            except quarry_PEFormatError:
-                _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f"Error parsing the version information, attempting to read StringFileInfo string. Can't read unicode string at offset {quarry_ustr_offset_d15c99a:#x}")
-                break
-            quarry_stringfileinfo_struct_83aaeb1.Key = quarry_stringfileinfo_string_d33cfed
-            quarry_finfo_5d7b577.append(quarry_stringfileinfo_struct_83aaeb1)
-            if quarry_stringfileinfo_string_d33cfed and quarry_stringfileinfo_string_d33cfed.startswith(b'StringFileInfo'):
-                if quarry_stringfileinfo_struct_83aaeb1.Type in (0, 1) and quarry_stringfileinfo_struct_83aaeb1.ValueLength == 0:
-                    quarry_stringtable_offset_6cddc4b = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_stringfileinfo_offset_f8bd444 + _name_boundary.attributes(quarry_stringfileinfo_struct_83aaeb1)['sizeof']() + 2 * (len(quarry_stringfileinfo_string_d33cfed) + 1), quarry_version_struct_3aab9d9.OffsetToData)
-                    quarry_stringfileinfo_struct_83aaeb1.StringTable = []
-                    while True:
-                        quarry_stringtable_struct_fc2df49 = quarry_self_f47cf38.__unpack_data__(quarry_self_f47cf38.__StringTable_format__, quarry_raw_data_b14daad[quarry_stringtable_offset_6cddc4b:], file_offset=quarry_start_offset_9ac0123 + quarry_stringtable_offset_6cddc4b)
-                        if not quarry_stringtable_struct_fc2df49:
-                            break
-                        quarry_ustr_offset_d15c99a = quarry_version_struct_3aab9d9.OffsetToData + quarry_stringtable_offset_6cddc4b + _name_boundary.attributes(quarry_stringtable_struct_fc2df49)['sizeof']()
-                        try:
-                            quarry_stringtable_string_1780c27 = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a)
-                        except quarry_PEFormatError:
-                            _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f"Error parsing the version information, attempting to read StringTable string. Can't read unicode string at offset {quarry_ustr_offset_d15c99a:#x}")
-                            break
-                        quarry_stringtable_struct_fc2df49.LangID = quarry_stringtable_string_1780c27
-                        quarry_stringtable_struct_fc2df49.entries = {}
-                        quarry_stringtable_struct_fc2df49.entries_offsets = {}
-                        quarry_stringtable_struct_fc2df49.entries_lengths = {}
-                        quarry_stringfileinfo_struct_83aaeb1.StringTable.append(quarry_stringtable_struct_fc2df49)
-                        quarry_entry_offset_d6f7080 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_stringtable_offset_6cddc4b + _name_boundary.attributes(quarry_stringtable_struct_fc2df49)['sizeof']() + 2 * (len(quarry_stringtable_string_1780c27) + 1), quarry_version_struct_3aab9d9.OffsetToData)
-                        while quarry_entry_offset_d6f7080 < quarry_stringtable_offset_6cddc4b + quarry_stringtable_struct_fc2df49.Length:
-                            quarry_string_struct_69bc636 = quarry_self_f47cf38.__unpack_data__(quarry_self_f47cf38.__String_format__, quarry_raw_data_b14daad[quarry_entry_offset_d6f7080:], file_offset=quarry_start_offset_9ac0123 + quarry_entry_offset_d6f7080)
-                            if not quarry_string_struct_69bc636:
-                                break
-                            quarry_ustr_offset_d15c99a = quarry_version_struct_3aab9d9.OffsetToData + quarry_entry_offset_d6f7080 + _name_boundary.attributes(quarry_string_struct_69bc636)['sizeof']()
-                            try:
-                                quarry_key_42443b6 = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a)
-                                quarry_key_offset_c8c0ada = _name_boundary.attributes(quarry_self_f47cf38)['get_offset_from_rva'](quarry_ustr_offset_d15c99a)
-                            except quarry_PEFormatError:
-                                _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f"Error parsing the version information, attempting to read StringTable Key string. Can't read unicode string at offset {quarry_ustr_offset_d15c99a:#x}")
-                                break
-                            quarry_value_offset_d232137 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](2 * (len(quarry_key_42443b6) + 1) + quarry_entry_offset_d6f7080 + _name_boundary.attributes(quarry_string_struct_69bc636)['sizeof'](), quarry_version_struct_3aab9d9.OffsetToData)
-                            quarry_ustr_offset_d15c99a = quarry_version_struct_3aab9d9.OffsetToData + quarry_value_offset_d232137
-                            try:
-                                quarry_value_b7a6a8a = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a, max_length=quarry_string_struct_69bc636.ValueLength)
-                                quarry_value_offset_d232137 = _name_boundary.attributes(quarry_self_f47cf38)['get_offset_from_rva'](quarry_ustr_offset_d15c99a)
-                            except quarry_PEFormatError:
-                                _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f"Error parsing the version information, attempting to read StringTable Value string. Can't read unicode string at offset {quarry_ustr_offset_d15c99a:#x}")
-                                break
-                            if quarry_string_struct_69bc636.Length == 0:
-                                quarry_entry_offset_d6f7080 = quarry_stringtable_offset_6cddc4b + quarry_stringtable_struct_fc2df49.Length
-                            else:
-                                quarry_entry_offset_d6f7080 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_string_struct_69bc636.Length + quarry_entry_offset_d6f7080, quarry_version_struct_3aab9d9.OffsetToData)
-                            quarry_stringtable_struct_fc2df49.entries[quarry_key_42443b6] = quarry_value_b7a6a8a
-                            quarry_stringtable_struct_fc2df49.entries_offsets[quarry_key_42443b6] = (quarry_key_offset_c8c0ada, quarry_value_offset_d232137)
-                            quarry_stringtable_struct_fc2df49.entries_lengths[quarry_key_42443b6] = (len(quarry_key_42443b6), len(quarry_value_b7a6a8a))
-                        quarry_new_stringtable_offset_aa3358d = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_stringtable_struct_fc2df49.Length + quarry_stringtable_offset_6cddc4b, quarry_version_struct_3aab9d9.OffsetToData)
-                        if quarry_new_stringtable_offset_aa3358d == quarry_stringtable_offset_6cddc4b:
-                            break
-                        quarry_stringtable_offset_6cddc4b = quarry_new_stringtable_offset_aa3358d
-                        if quarry_stringtable_offset_6cddc4b >= quarry_stringfileinfo_struct_83aaeb1.Length:
-                            break
-            elif quarry_stringfileinfo_string_d33cfed and quarry_stringfileinfo_string_d33cfed.startswith(b'VarFileInfo'):
-                quarry_varfileinfo_struct_00d6146 = quarry_stringfileinfo_struct_83aaeb1
-                quarry_varfileinfo_struct_00d6146.name = 'VarFileInfo'
-                if quarry_varfileinfo_struct_00d6146.Type in (0, 1) and quarry_varfileinfo_struct_00d6146.ValueLength == 0:
-                    quarry_var_offset_9918357 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_stringfileinfo_offset_f8bd444 + _name_boundary.attributes(quarry_varfileinfo_struct_00d6146)['sizeof']() + 2 * (len(quarry_stringfileinfo_string_d33cfed) + 1), quarry_version_struct_3aab9d9.OffsetToData)
-                    quarry_varfileinfo_struct_00d6146.Var = []
-                    while True:
-                        quarry_var_struct_bb4f8c2 = quarry_self_f47cf38.__unpack_data__(quarry_self_f47cf38.__Var_format__, quarry_raw_data_b14daad[quarry_var_offset_9918357:], file_offset=quarry_start_offset_9ac0123 + quarry_var_offset_9918357)
-                        if not quarry_var_struct_bb4f8c2:
-                            break
-                        quarry_ustr_offset_d15c99a = quarry_version_struct_3aab9d9.OffsetToData + quarry_var_offset_9918357 + _name_boundary.attributes(quarry_var_struct_bb4f8c2)['sizeof']()
-                        try:
-                            quarry_var_string_571fd53 = _name_boundary.attributes(quarry_self_f47cf38)['get_string_u_at_rva'](quarry_ustr_offset_d15c99a)
-                        except quarry_PEFormatError:
-                            _name_boundary.attributes(quarry_self_f47cf38)['__warnings'].append(f"Error parsing the version information, attempting to read VarFileInfo Var string. Can't read unicode string at offset {quarry_ustr_offset_d15c99a:#x}")
-                            break
-                        if quarry_var_string_571fd53 is None:
-                            break
-                        quarry_varfileinfo_struct_00d6146.Var.append(quarry_var_struct_bb4f8c2)
-                        quarry_varword_offset_a604227 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](2 * (len(quarry_var_string_571fd53) + 1) + quarry_var_offset_9918357 + _name_boundary.attributes(quarry_var_struct_bb4f8c2)['sizeof'](), quarry_version_struct_3aab9d9.OffsetToData)
-                        quarry_orig_varword_offset_9891d62 = quarry_varword_offset_a604227
-                        while quarry_varword_offset_a604227 < quarry_orig_varword_offset_9891d62 + quarry_var_struct_bb4f8c2.ValueLength:
-                            quarry_word1_37fe903 = _name_boundary.attributes(quarry_self_f47cf38)['get_word_from_data'](quarry_raw_data_b14daad[quarry_varword_offset_a604227:quarry_varword_offset_a604227 + 2], 0)
-                            quarry_word2_98403f1 = _name_boundary.attributes(quarry_self_f47cf38)['get_word_from_data'](quarry_raw_data_b14daad[quarry_varword_offset_a604227 + 2:quarry_varword_offset_a604227 + 4], 0)
-                            quarry_varword_offset_a604227 += 4
-                            if isinstance(quarry_word1_37fe903, int) and isinstance(quarry_word2_98403f1, int):
-                                quarry_var_struct_bb4f8c2.entry = {quarry_var_string_571fd53: f'0x{quarry_word1_37fe903:04x} 0x{quarry_word2_98403f1:04x}'}
-                        quarry_var_offset_9918357 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_var_offset_9918357 + quarry_var_struct_bb4f8c2.Length, quarry_version_struct_3aab9d9.OffsetToData)
-                        if quarry_var_offset_9918357 <= quarry_var_offset_9918357 + quarry_var_struct_bb4f8c2.Length:
-                            break
-            quarry_stringfileinfo_offset_f8bd444 = _name_boundary.attributes(quarry_self_f47cf38)['dword_align'](quarry_stringfileinfo_struct_83aaeb1.Length + quarry_stringfileinfo_offset_f8bd444, quarry_version_struct_3aab9d9.OffsetToData)
-            if quarry_stringfileinfo_struct_83aaeb1.Length == 0 or quarry_stringfileinfo_offset_f8bd444 >= quarry_versioninfo_struct_5b0bdb0.Length:
-                break
-        _name_boundary.attributes(quarry_self_f47cf38)['FileInfo'].append(quarry_finfo_5d7b577)
+        return _boundary_versions.parse_version(quarry_self_f47cf38, quarry_version_struct_3aab9d9)
 
     @_name_boundary.callable_contract({'self': 'quarry_self_3373b52', 'rva': 'quarry_rva_9c05383', 'forwarded_only': 'quarry_forwarded_only_e9c126f', 'size': 'quarry_size_local_9b99bc9'}, 'parse_export_directory')
     def quarry_parse_export_directory(quarry_self_3373b52, quarry_rva_9c05383, quarry_size_local_9b99bc9, quarry_forwarded_only_e9c126f=False):

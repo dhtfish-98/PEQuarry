@@ -1,17 +1,16 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "date": "2026-10-02",
   "status": "PASS with stated OPEN scope",
   "upstream_commit": "e521f469b41abb074bae1cc0820396d6f7663cd9",
   "upstream_tree": "09c20c3324bfafdf9592379ed6028f0fd36f48d3",
   "test_commit": "7fb3461fda128b4f7864c0891e03babbe43f6d9b",
   "python": "3.12.13",
-  "local_project_tests": 211,
-  "new_boundary_tests": 209,
+  "local_project_tests": 316,
+  "new_boundary_tests": 314,
   "new_directory_tests": 84,
   "normal_directory_observations_equal": 149,
-  "independent_runtime_tests": 366,
-  "pe_observations_equal": 373,
+  "pe_observations_equal": 371,
   "ordinary_signature_observations_equal": 1204,
   "runtime_files": [
     {
@@ -44,10 +43,10 @@
     },
     {
       "path": "src/pequarry/image_reader.py",
-      "sha256": "50e45518260a532fc818b304432a6082da02a0b1118bd75826f7009ba99a6d12",
+      "sha256": "1d0a0b9a3f23771c76d625623ba0145e70740c89135e80c46e41038a31102cec",
       "ast_parsed": true,
       "functions": 229,
-      "scope": "core boundaries and directory API bridges rewritten; remaining core algorithms OPEN"
+      "scope": "core boundaries and directory/resource/version API bridges rewritten; remaining core algorithms OPEN"
     },
     {
       "path": "src/pequarry/ordinal_catalog/__init__.py",
@@ -92,11 +91,25 @@
       "scope": "retained static data/API contracts"
     },
     {
+      "path": "src/pequarry/resource_records.py",
+      "sha256": "ced6b7453a49907b4d3dc3bcf5217b26a91eb4b5ef5082844deb7e338d01e9a5",
+      "ast_parsed": true,
+      "functions": 8,
+      "scope": "finite resource metadata stack/UTF-16/string traversal rewritten; attributed result objects; semantic completeness OPEN"
+    },
+    {
       "path": "src/pequarry/signature_tools.py",
       "sha256": "6cbce9aa577342799edc37192e1ca60ec2ef3f88ad8ed977e4329b2912f112ab",
       "ast_parsed": true,
       "functions": 18,
       "scope": "full signature component rewrite"
+    },
+    {
+      "path": "src/pequarry/version_records.py",
+      "sha256": "98101cfae2f1f34fe50707e6f88d5d49092eaef7eea688eb2c461135ea4be3f4",
+      "ast_parsed": true,
+      "functions": 9,
+      "scope": "parent-contained version records/UTF-16/Var parsing rewritten; compatible metadata fields and Unicode edit capacity"
     }
   ],
   "limits": {
@@ -119,8 +132,19 @@
     "execute_input": false
   },
   "OPEN": [
-    "Import/export/resource/version/debug/TLS/bound-import/load-config algorithms, relocation application, unwind opcode/optional-chain/IA64 semantics, structure/alias/formatting remain OPEN.",
+    "Import/export/debug/TLS/bound-import/load-config algorithms, relocation application, unwind opcode/optional-chain/IA64 semantics, structure/alias/formatting remain OPEN.",
+    "Resource/version completeness markers describe traversal/byte scope, not every Windows semantic rule or loader acceptance.",
     "Mediated counters and byte caps do not establish total CPU, memory, output or wall-clock bounds.",
     "Actual CVP identity, organizational authorization and blocked legitimate task evidence remain unverified."
-  ]
+  ],
+  "new_resource_tests": 58,
+  "new_version_tests": 43,
+  "new_observation_key_tests": 4,
+  "normal_resource_observations_equal": 128,
+  "independent_source_control_tests": 366,
+  "independent_runtime_tests_passed": 364,
+  "independent_runtime_strict_reviewed_legacy_differences": 2,
+  "pe_observations_compared": 373,
+  "pe_observations_precise_reviewed_changes": 2,
+  "reviewed_version_byte_evidence": "REVIEWED_VERSION_CHANGES.json"
 }

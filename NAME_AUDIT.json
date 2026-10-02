@@ -5,7 +5,7 @@
   "owned_python_source_sha256": {
     "checks/test_quarry_export_test.py": "e2501103003c94ea39cb211736967365e2cd7e12545cd02ed9aed05ff774a4db",
     "historical_checks/legacy_quarry_regression.py": "b92d71c39916902a2c56b3a58d4dddef9724d568aa9222034b46fd24ec8adfea",
-    "src/pequarry/image_reader.py": "50e45518260a532fc818b304432a6082da02a0b1118bd75826f7009ba99a6d12",
+    "src/pequarry/image_reader.py": "1d0a0b9a3f23771c76d625623ba0145e70740c89135e80c46e41038a31102cec",
     "src/pequarry/ordinal_catalog/__init__.py": "354ac42f9f05dcfdca50112ff4ccafea1cf0bc4f2b16438b4b20bdd56eae5e63",
     "src/pequarry/ordinal_catalog/automation_hash_names.py": "706d45e21943277f12898bd843b8cd0bc37d80370486926d256b4959b98e82b8",
     "src/pequarry/ordinal_catalog/automation_names.py": "364502e3e755245ae2ce74fab99fa6857d2109bbd64c5ce1e2958c27f988de00",
@@ -14,7 +14,9 @@
     "src/pequarry/ordinal_catalog/winsock_hash_names.py": "f3d3d588fe1bde6ad6a15d7df1429af0167cf7f20b3a7e6938b35b64df7b9a3d",
     "src/pequarry/signature_tools.py": "6cbce9aa577342799edc37192e1ca60ec2ef3f88ad8ed977e4329b2912f112ab",
     "src/pequarry/bounded_io.py": "65376c91391340ed524db762b43678ef352e4a908bc217cdac619f81bb53f504",
-    "src/pequarry/directory_records.py": "9cba27ac8f87e24926b68356b89cb21bb6d34cdf5168dae24d592be3022a25b0"
+    "src/pequarry/directory_records.py": "9cba27ac8f87e24926b68356b89cb21bb6d34cdf5168dae24d592be3022a25b0",
+    "src/pequarry/resource_records.py": "ced6b7453a49907b4d3dc3bcf5217b26a91eb4b5ef5082844deb7e338d01e9a5",
+    "src/pequarry/version_records.py": "98101cfae2f1f34fe50707e6f88d5d49092eaef7eea688eb2c461135ea4be3f4"
   },
   "fixed_global_contract_bindings": {},
   "binding_map_records": 1777,
@@ -25,7 +27,9 @@
   "class_scope_exceptions": "Fixed ctypes/vstruct binary fields and hooks, named-record/enum data labels, cmd.Cmd callback names and Python interpreter hooks. See ORIGIN.md.",
   "readable_rewritten_modules": [
     "src/pequarry/signature_tools.py",
-    "src/pequarry/directory_records.py"
+    "src/pequarry/directory_records.py",
+    "src/pequarry/resource_records.py",
+    "src/pequarry/version_records.py"
   ],
-  "scope_note": "Historical mapped lexical names; readable signature/directory rewrites is hash-checked and separately tested, not name-obfuscated."
+  "scope_note": "Historical mapped lexical names; readable signature/directory/resource/version rewrites are hash-checked and separately tested, not name-obfuscated."
 }

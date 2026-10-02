@@ -78,8 +78,41 @@ elif consumption_name == 'PEQuarry':
     consumption_image, consumption_rva, _ = consumption_directories.image(consumption_reader, consumption_directories.exception_payload(), True)
     assert len(consumption_image.parse_exceptions_directory(consumption_rva, 12)) == 1
     consumption_cases.append('installed static runtime-function and unwind parsing')
+    consumption_sys.path.insert(0, str(consumption_root/'checks'))
+    consumption_spec = consumption_util.spec_from_file_location('resource_fixtures', consumption_root/'checks/resource_fixtures.py')
+    consumption_resources = consumption_util.module_from_spec(consumption_spec)
+    consumption_spec.loader.exec_module(consumption_resources)
+    consumption_sys.path.pop(0)
+    consumption_payload = consumption_resources.tree_payload(name='资源')
+    consumption_image, consumption_raw = consumption_resources.make_image(consumption_reader, consumption_payload)
+    consumption_tree = consumption_image.parse_resources_directory(consumption_resources.BASE, len(consumption_payload))
+    assert consumption_tree.metadata_complete and str(consumption_tree.entries[0].name) == '资源'
+    assert consumption_tree.entries[0].directory.entries[0].directory.entries[0].data.struct.Size == 5
+    assert bytes(consumption_image.__data__) == consumption_raw
+    consumption_cases.append('installed finite named resource metadata')
+    from types import SimpleNamespace as ConsumptionResource
+    consumption_payload = consumption_resources.version_payload(entries=(('A','中文'), ('B','sentinel')), languages=('040904b0','080404b0'))
+    consumption_image, consumption_raw = consumption_resources.make_image(consumption_reader, consumption_payload)
+    consumption_image.parse_version_information(ConsumptionResource(OffsetToData=consumption_resources.BASE, Size=len(consumption_payload)))
+    assert consumption_image.VS_VERSIONINFO[0].metadata_complete
+    assert len(consumption_image.FileInfo[0][0].StringTable) == 2
+    assert consumption_image.FileInfo[0][1].Var[0].translations == [(0x409,1200)]
+    consumption_table = consumption_image.FileInfo[0][0].StringTable[0]
+    consumption_offset = consumption_table.entries_offsets[b'A'][1]
+    consumption_table.entries[b'A'] = b'ABCDEFGH'
+    consumption_output = consumption_image.write()
+    assert consumption_output[consumption_offset:consumption_offset+4] == 'AB'.encode('utf-16le')
+    assert consumption_output[consumption_offset+4:] == consumption_raw[consumption_offset+4:]
+    consumption_cases.append('installed parent-contained versions and Unicode edit isolation')
+    consumption_image, consumption_raw = consumption_resources.make_image(consumption_reader, consumption_resources.tree_payload(), max_directory_records=1)
+    try:
+        consumption_image.parse_resources_directory(consumption_resources.BASE)
+    except consumption_bounds.quarry_LimitError:
+        consumption_cases.append('installed cumulative resource record bound')
+    else:
+        raise AssertionError('resource record bound was not enforced')
     consumption_metadata = consumption_importlib.import_module('importlib.metadata')
-    assert consumption_metadata.version('PEQuarry') == '1.0.2'
+    assert consumption_metadata.version('PEQuarry') == '1.0.3'
 else:
     consumption_views = consumption_importlib.import_module('idbmeadow.semantic_views')
     consumption_examples = [('empty/empty.idb','d41d8cd98f00b204e9800998ecf8427e',(0,1)),('v6.95/x32/kernel32.idb','00bf1bf1b779ce1af41371426821e0c2',(1754271744,1755177520))]
