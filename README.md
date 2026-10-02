@@ -1,5 +1,7 @@
 # PEQuarry
 
+防御用途、实际能力及本轮验证范围见 [DEFENSIVE_SCOPE.md](DEFENSIVE_SCOPE.md)。
+
 Portable Executable structure, malformed-input, import/export, resource, checksum and byte-preserving write analysis. This is an attributed, reorganized derivative of pefile, with scope-resolved binding/file/module renaming and explicit API/schema adapters. It supports lawful offline security research and static analysis. Upstream algorithms and history remain credited.
 
 ## Install and use

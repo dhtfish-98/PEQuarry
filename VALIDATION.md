@@ -15,3 +15,7 @@ Local automated checks, installable-package consumption, source identity and rem
 Additional PASS: 23 available historical test outcomes are equal between original and renamed sources: 10 passes and 13 identical fixture-related failures. The remaining control-generating regression test is not repeated; its original failure remains OPEN.
 
 PASS: lexical name audit of 10 mapped owned Python files; 1777 binding-map records and zero ordinary unrenamed function/comprehension bindings. PASS: two independent wheel-consumer checks in a fresh temporary environment, with every installed Python source file compared byte-for-byte. NAME_AUDIT.json records the permitted fixed global contracts.
+
+## 2026-10-02 capability review
+
+The current runtime entry points, file/process/network capabilities and attribution were reviewed. See DEFENSIVE_SCOPE.md for the exact paths and remaining limitations. This documentation update does not claim another execution of the historical full test suite, a rewrite of every upstream algorithm, or CVP eligibility. GitHub CI for the new commit is separate evidence.
