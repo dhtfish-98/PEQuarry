@@ -1,6 +1,8 @@
+> 目录已整理：文档在「项目文档」，构建、缓存与暂存输入在「Build」。从仓库根目录运行 `python3 构建.py --build`；如需使用本文原有源码命令，先运行 `python3 构建.py --stage --ci`，再进入 `Build/源码`。暂存会恢复原输入路径。现有版本和历史验证记录按各自提交理解。
+
 # PEQuarry
 
-Bounded local PE inspection and static signature review, derived from [pefile](https://github.com/erocarrera/pefile). MIT attribution and the frozen upstream commit remain in [ORIGIN.md](ORIGIN.md).
+Bounded local PE inspection and static signature review, derived from [pefile](https://github.com/erocarrera/pefile). MIT attribution and the frozen upstream commit remain in [ORIGIN.md](<ORIGIN.md>).
 
 Version 1.0.3 adds independently written resource-tree, unsigned resource-string and parent-contained version-block parsing, plus bounded UTF-16 version editing. The 1.0.2 relocation/dynamic/function-override/exception and 1.0.1 input/mapping/signature rewrites remain. Other attributed directory parsers, opcode/structure helpers, aliases and ordinal tables remain. This is an ongoing defensive maintenance project; it is not a claim that every upstream algorithm has been rewritten.
 
@@ -45,4 +47,4 @@ python verify.py
 
 The verifier checks the current source manifest and runs 316 project checks. The fixed independent suite has 366 source-control passes and 364 maintained passes plus 2 strict reviewed legacy snapshot differences. Fresh PE observations are 371 exactly equal and 2 precisely corrected; `REVIEWED_VERSION_CHANGES.json` preserves old/current full results, Microsoft layout references and independent raw-byte decoding. Typed JSON keys fix an observer TypeError that previously hid `version_std` dump differences. Another 149 normal directory, 128 normal resource/version and 1,204 ordinary signature observations remain exactly equal. The verifier builds/consumes the wheel in a fresh environment. It separately retains the historical unavailable/mismatched fixture failures. No input PE is executed. `--baseline PATH` and `--pe-tests PATH` reuse the fixed source/test checkouts; `--audit-only` only checks current source identities.
 
-See [VALIDATION.md](VALIDATION.md), [DEFENSIVE_SCOPE.md](DEFENSIVE_SCOPE.md) and `CURRENT_REVIEW.json` for measured scope and remaining work. Naming maps describe the earlier reorganization; readable new signature, directory, resource and version routines deliberately do not add another name-obfuscation layer. Names and repository quantity do not establish defensive value or CVP eligibility.
+See [VALIDATION.md](<VALIDATION.md>), [DEFENSIVE_SCOPE.md](<DEFENSIVE_SCOPE.md>) and `CURRENT_REVIEW.json` for measured scope and remaining work. Naming maps describe the earlier reorganization; readable new signature, directory, resource and version routines deliberately do not add another name-obfuscation layer. Names and repository quantity do not establish defensive value or CVP eligibility.

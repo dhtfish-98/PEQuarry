@@ -1,0 +1,35 @@
+{
+  "schema": "project-build-layout.v1",
+  "project": "PEQuarry",
+  "author": "dhtfish98",
+  "kind": "python",
+  "base_public_commit": "1716e4b10d2af484b257810d8bc0ebb6428c60c4",
+  "restored_inputs": [
+    {
+      "original": "DEFENSIVE_SCOPE.md",
+      "stored": "项目文档/DEFENSIVE_SCOPE.md",
+      "sha256": "79d92dae96cb0bf2d43819bb7c7de02a1434043380a9ebbc3bda42bf510119a7"
+    },
+    {
+      "original": "LICENSE",
+      "stored": "项目文档/LICENSE",
+      "sha256": "b44409c067c6da52bfb54bb6624fb11a7b52157c3a13ae1400232f8196e86ad3"
+    },
+    {
+      "original": "ORIGIN.md",
+      "stored": "项目文档/ORIGIN.md",
+      "sha256": "702b72737a9d98694335a303e9e565922dc326f17677e57f4a038159452b739d"
+    },
+    {
+      "original": "README.md",
+      "stored": "项目文档/README.md",
+      "sha256": "f2aaeb8265633e846ec5d5142c6f74cfdc85d16796e70cf85baed858e6b88ee5"
+    },
+    {
+      "original": "VALIDATION.md",
+      "stored": "项目文档/VALIDATION.md",
+      "sha256": "41e4075c0b48b7ebe2281836c52535ce2858834d064bb3f6ed812c98b5d911ad"
+    }
+  ],
+  "platform_entries": []
+}

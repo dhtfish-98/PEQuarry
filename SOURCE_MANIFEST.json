@@ -3,18 +3,18 @@
   "hash_algorithm": "SHA-256",
   "files": {
     ".github/workflows/check.yml": {
-      "sha256": "2d8e422881f0d1ee62471ba1bfb6c9d14618b7562c10d9642e8b302977467ca4",
-      "bytes": 574,
+      "sha256": "607565e6c0eada7c2ccc97322c563939f7b3a246d9706fffafd5ad350b1bef9a",
+      "bytes": 1895,
       "executable": false
     },
     ".gitignore": {
-      "sha256": "50536db98a12c1294b7e1e44c15069b3eb96378e7466d2c872d5b42599a7823e",
-      "bytes": 91,
+      "sha256": "fc57ae6e33256c4b7cc02df5f40bfceb9e1b8439bb4933a00c75f51f0a3446f8",
+      "bytes": 205,
       "executable": false
     },
-    "DEFENSIVE_SCOPE.md": {
-      "sha256": "79d92dae96cb0bf2d43819bb7c7de02a1434043380a9ebbc3bda42bf510119a7",
-      "bytes": 3459,
+    "CURRENT_REVIEW.json": {
+      "sha256": "6376ec04636ed99e7766f06a4b94a6e10ecc87daaf791cc3751bd0be9b4cf7a3",
+      "bytes": 6017,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -22,14 +22,9 @@
       "bytes": 781,
       "executable": false
     },
-    "LICENSE": {
-      "sha256": "b44409c067c6da52bfb54bb6624fb11a7b52157c3a13ae1400232f8196e86ad3",
-      "bytes": 1083,
-      "executable": false
-    },
     "MANIFEST.in": {
-      "sha256": "aa28f0800a428e3876e7aaa0afdec3095b897876f9f8e06d7f4e7bf76ba0b7d0",
-      "bytes": 397,
+      "sha256": "76f674eb137dcda44fdaa776927a050c67ad93c09473c96c84ddd296d339519f",
+      "bytes": 925,
       "executable": false
     },
     "NAME_AUDIT.json": {
@@ -37,14 +32,9 @@
       "bytes": 2576,
       "executable": false
     },
-    "ORIGIN.md": {
-      "sha256": "702b72737a9d98694335a303e9e565922dc326f17677e57f4a038159452b739d",
-      "bytes": 5821,
-      "executable": false
-    },
-    "README.md": {
-      "sha256": "e0a3af114dd627bd5ee3edf3e472be3047456e442f081661ac7ef8359df78634",
-      "bytes": 7701,
+    "REVIEWED_VERSION_CHANGES.json": {
+      "sha256": "1e29839bf118859654489f810569059c4fd05bca189fa489b90d14e992b83b44",
+      "bytes": 191660,
       "executable": false
     },
     "SYMBOL_MAP.json": {
@@ -52,14 +42,24 @@
       "bytes": 368600,
       "executable": false
     },
-    "VALIDATION.md": {
-      "sha256": "41e4075c0b48b7ebe2281836c52535ce2858834d064bb3f6ed812c98b5d911ad",
-      "bytes": 9457,
-      "executable": false
-    },
     "checks/__init__.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "bytes": 0,
+      "executable": false
+    },
+    "checks/directory_fixtures.py": {
+      "sha256": "211bbce786231657d4c39c9091adf5169c9730ec406e3ef83c32057ae09871c4",
+      "bytes": 2319,
+      "executable": false
+    },
+    "checks/directory_observations.py": {
+      "sha256": "f925f7e2f61c9f30cbd1bcdadd43454ea39df0f5e4c5b72310d656fa1202e7f3",
+      "bytes": 2875,
+      "executable": false
+    },
+    "checks/known_pe_changes.py": {
+      "sha256": "62479722314029383f7252ee3bd2d73a54f9289434edc28b2bedbc16b2cd3093",
+      "bytes": 7133,
       "executable": false
     },
     "checks/legacy_pe_observations.py": {
@@ -67,9 +67,19 @@
       "bytes": 1607,
       "executable": false
     },
+    "checks/maintained_suite.py": {
+      "sha256": "7f96a14265f7369d22c87806f4b09c66c174202f7210cc97a639a3d82ba78847",
+      "bytes": 1630,
+      "executable": false
+    },
     "checks/naming_audit.py": {
       "sha256": "b4411145a54db078d6153f8d9c53d270ad16aa8de15299f2314ff9888a7d69d0",
       "bytes": 2439,
+      "executable": false
+    },
+    "checks/observation_json.py": {
+      "sha256": "a90263ad4145631828b90c6e0be735c276a56bd44464a445626bc635a66e9da1",
+      "bytes": 857,
       "executable": false
     },
     "checks/pe_observations.py": {
@@ -77,9 +87,54 @@
       "bytes": 1482,
       "executable": false
     },
+    "checks/resource_fixtures.py": {
+      "sha256": "4ad3a3ba4224b49c25b86164698c6bb1c1cb3bc2abbc018c4077fec3aabd7b9a",
+      "bytes": 2894,
+      "executable": false
+    },
+    "checks/resource_observations.py": {
+      "sha256": "70651c2d8c6032e4153dc6e78db88fe7aa85cb4e861d4699c898ee7c69b27c68",
+      "bytes": 3442,
+      "executable": false
+    },
+    "checks/signature_observations.py": {
+      "sha256": "80e1fbea81c392c17cde9a8e8d51837cceede4625808a7a9654eae5cccd9431c",
+      "bytes": 718,
+      "executable": false
+    },
+    "checks/test_directory_records.py": {
+      "sha256": "1af7490563820ba6a584f044964b51c278d125f1c4d2186fb38bb52441a74678",
+      "bytes": 11745,
+      "executable": false
+    },
+    "checks/test_observation_json.py": {
+      "sha256": "82efe6595bac6f714b6216839ab3b4374f50809a926f08e9cbbfdb2a61337edb",
+      "bytes": 798,
+      "executable": false
+    },
+    "checks/test_quarry_boundaries.py": {
+      "sha256": "6cf68b4ae5e9ec0d4c47475d998348f0be7e9118874ea8975dcb7c950cc3e230",
+      "bytes": 16109,
+      "executable": false
+    },
     "checks/test_quarry_export_test.py": {
       "sha256": "e2501103003c94ea39cb211736967365e2cd7e12545cd02ed9aed05ff774a4db",
       "bytes": 8536,
+      "executable": false
+    },
+    "checks/test_resource_records.py": {
+      "sha256": "b1f8ac17e910ac085652b8c34c0f07eac2596b06176559ca8b0791f5c601407e",
+      "bytes": 8270,
+      "executable": false
+    },
+    "checks/test_version_records.py": {
+      "sha256": "8e73daf98a7702d6e6cb4ade5020d6ffca2bedfb57bc6baf636ccdc44c34f637",
+      "bytes": 6320,
+      "executable": false
+    },
+    "checks/version_byte_evidence.py": {
+      "sha256": "aa1065ef2c092dadd8b495c5c61106dfe822be4caa6c0204ad0dab9ae7255733",
+      "bytes": 4732,
       "executable": false
     },
     "checks/wheel_consumption.py": {
@@ -93,8 +148,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "5a124405a5a680b81b65eaa97857d149e0c7e901a47a2c2600cae6ca4c249950",
-      "bytes": 754,
+      "sha256": "40a997c8fd4d0a74e3e7cac63b78ec5426022e0cc112b3fcf842fef7d52a8e0c",
+      "bytes": 892,
       "executable": false
     },
     "src/pequarry/__init__.py": {
@@ -105,6 +160,16 @@
     "src/pequarry/api_contract.py": {
       "sha256": "086026db45ee4353701559e97a7fbd1a557b7d89405adc359a0239cc23461a93",
       "bytes": 35534,
+      "executable": false
+    },
+    "src/pequarry/bounded_io.py": {
+      "sha256": "65376c91391340ed524db762b43678ef352e4a908bc217cdac619f81bb53f504",
+      "bytes": 5060,
+      "executable": false
+    },
+    "src/pequarry/directory_records.py": {
+      "sha256": "9cba27ac8f87e24926b68356b89cb21bb6d34cdf5168dae24d592be3022a25b0",
+      "bytes": 18083,
       "executable": false
     },
     "src/pequarry/image_reader.py": {
@@ -142,59 +207,14 @@
       "bytes": 3312,
       "executable": false
     },
-    "src/pequarry/signature_tools.py": {
-      "sha256": "6cbce9aa577342799edc37192e1ca60ec2ef3f88ad8ed977e4329b2912f112ab",
-      "bytes": 21244,
-      "executable": false
-    },
-    "verify.py": {
-      "sha256": "448ca6084b977cf58ca3294f1b8168af0bec79fad1563c4e5f8fc663dd5d7108",
-      "bytes": 8941,
-      "executable": true
-    },
-    "src/pequarry/bounded_io.py": {
-      "sha256": "65376c91391340ed524db762b43678ef352e4a908bc217cdac619f81bb53f504",
-      "bytes": 5060,
-      "executable": false
-    },
-    "checks/test_quarry_boundaries.py": {
-      "sha256": "6cf68b4ae5e9ec0d4c47475d998348f0be7e9118874ea8975dcb7c950cc3e230",
-      "bytes": 16109,
-      "executable": false
-    },
-    "checks/signature_observations.py": {
-      "sha256": "80e1fbea81c392c17cde9a8e8d51837cceede4625808a7a9654eae5cccd9431c",
-      "bytes": 718,
-      "executable": false
-    },
-    "CURRENT_REVIEW.json": {
-      "sha256": "6376ec04636ed99e7766f06a4b94a6e10ecc87daaf791cc3751bd0be9b4cf7a3",
-      "bytes": 6017,
-      "executable": false
-    },
-    "src/pequarry/directory_records.py": {
-      "sha256": "9cba27ac8f87e24926b68356b89cb21bb6d34cdf5168dae24d592be3022a25b0",
-      "bytes": 18083,
-      "executable": false
-    },
-    "checks/directory_fixtures.py": {
-      "sha256": "211bbce786231657d4c39c9091adf5169c9730ec406e3ef83c32057ae09871c4",
-      "bytes": 2319,
-      "executable": false
-    },
-    "checks/directory_observations.py": {
-      "sha256": "f925f7e2f61c9f30cbd1bcdadd43454ea39df0f5e4c5b72310d656fa1202e7f3",
-      "bytes": 2875,
-      "executable": false
-    },
-    "checks/test_directory_records.py": {
-      "sha256": "1af7490563820ba6a584f044964b51c278d125f1c4d2186fb38bb52441a74678",
-      "bytes": 11745,
-      "executable": false
-    },
     "src/pequarry/resource_records.py": {
       "sha256": "ced6b7453a49907b4d3dc3bcf5217b26a91eb4b5ef5082844deb7e338d01e9a5",
       "bytes": 12476,
+      "executable": false
+    },
+    "src/pequarry/signature_tools.py": {
+      "sha256": "6cbce9aa577342799edc37192e1ca60ec2ef3f88ad8ed977e4329b2912f112ab",
+      "bytes": 21244,
       "executable": false
     },
     "src/pequarry/version_records.py": {
@@ -202,55 +222,62 @@
       "bytes": 8337,
       "executable": false
     },
-    "checks/test_resource_records.py": {
-      "sha256": "b1f8ac17e910ac085652b8c34c0f07eac2596b06176559ca8b0791f5c601407e",
-      "bytes": 8270,
+    "verify.py": {
+      "sha256": "448ca6084b977cf58ca3294f1b8168af0bec79fad1563c4e5f8fc663dd5d7108",
+      "bytes": 8941,
+      "executable": true
+    },
+    "构建.py": {
+      "sha256": "248c7594ad67a2d9380273b1dd68986253a2d9bac75595f1f6e3647720335c8e",
+      "bytes": 6787,
       "executable": false
     },
-    "checks/test_version_records.py": {
-      "sha256": "8e73daf98a7702d6e6cb4ade5020d6ffca2bedfb57bc6baf636ccdc44c34f637",
-      "bytes": 6320,
+    "构建配置.json": {
+      "sha256": "834e7361b103d324a83d6047a9e06b05103a588d749597aa45fc2bdb5fd316bf",
+      "bytes": 1100,
       "executable": false
     },
-    "checks/resource_fixtures.py": {
-      "sha256": "4ad3a3ba4224b49c25b86164698c6bb1c1cb3bc2abbc018c4077fec3aabd7b9a",
-      "bytes": 2894,
+    "项目文档/DEFENSIVE_SCOPE.md": {
+      "sha256": "79d92dae96cb0bf2d43819bb7c7de02a1434043380a9ebbc3bda42bf510119a7",
+      "bytes": 3459,
       "executable": false
     },
-    "checks/resource_observations.py": {
-      "sha256": "70651c2d8c6032e4153dc6e78db88fe7aa85cb4e861d4699c898ee7c69b27c68",
-      "bytes": 3442,
+    "项目文档/LICENSE": {
+      "sha256": "b44409c067c6da52bfb54bb6624fb11a7b52157c3a13ae1400232f8196e86ad3",
+      "bytes": 1083,
       "executable": false
     },
-    "checks/known_pe_changes.py": {
-      "sha256": "62479722314029383f7252ee3bd2d73a54f9289434edc28b2bedbc16b2cd3093",
-      "bytes": 7133,
+    "项目文档/ORIGIN.md": {
+      "sha256": "702b72737a9d98694335a303e9e565922dc326f17677e57f4a038159452b739d",
+      "bytes": 5821,
       "executable": false
     },
-    "checks/maintained_suite.py": {
-      "sha256": "7f96a14265f7369d22c87806f4b09c66c174202f7210cc97a639a3d82ba78847",
-      "bytes": 1630,
+    "项目文档/README.md": {
+      "sha256": "f2aaeb8265633e846ec5d5142c6f74cfdc85d16796e70cf85baed858e6b88ee5",
+      "bytes": 8062,
       "executable": false
     },
-    "checks/observation_json.py": {
-      "sha256": "a90263ad4145631828b90c6e0be735c276a56bd44464a445626bc635a66e9da1",
-      "bytes": 857,
+    "项目文档/VALIDATION.md": {
+      "sha256": "41e4075c0b48b7ebe2281836c52535ce2858834d064bb3f6ed812c98b5d911ad",
+      "bytes": 9457,
       "executable": false
     },
-    "checks/version_byte_evidence.py": {
-      "sha256": "aa1065ef2c092dadd8b495c5c61106dfe822be4caa6c0204ad0dab9ae7255733",
-      "bytes": 4732,
+    "项目文档/历史/目录更新20261003/SOURCE_MANIFEST.json.public-1716e4b10d2a.json": {
+      "sha256": "1fc037e696b63f013e16a4f9c380d7ad5cefe37bd335dee525fa0715a6fa8592",
+      "bytes": 8827,
       "executable": false
     },
-    "checks/test_observation_json.py": {
-      "sha256": "82efe6595bac6f714b6216839ab3b4374f50809a926f08e9cbbfdb2a61337edb",
-      "bytes": 798,
-      "executable": false
-    },
-    "REVIEWED_VERSION_CHANGES.json": {
-      "sha256": "1e29839bf118859654489f810569059c4fd05bca189fa489b90d14e992b83b44",
-      "bytes": 191660,
-      "executable": false
+    "项目文档/目录与构建.md": {
+      "executable": false,
+      "sha256": "3f7599e7a43cd47108377905ec46e6894317d8e574e3f865157e9fc9bc6d7c72",
+      "bytes": 816
     }
+  },
+  "directory_layout_maintenance": {
+    "base_public_commit": "1716e4b10d2af484b257810d8bc0ebb6428c60c4",
+    "original_inventory": "项目文档/历史/目录更新20261003/SOURCE_MANIFEST.json.public-1716e4b10d2a.json",
+    "original_inventory_sha256": "1fc037e696b63f013e16a4f9c380d7ad5cefe37bd335dee525fa0715a6fa8592",
+    "path_view": "Canonical repository paths; the builder also restores byte-identical legacy aliases under ignored Build for existing packaging checks",
+    "scope": "Current file inventory and packaging paths only; runtime bytes/version/API unchanged. Historical validation and security conclusions are retained, not rerun or newly certified."
   }
 }

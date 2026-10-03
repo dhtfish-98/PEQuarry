@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 name = "PEQuarry"
 version = "1.0.3"
 description = "Bounded local PE inspection and static signature review; attributed pefile derivative"
-readme = "README.md"
+readme = "项目文档/README.md"
 requires-python = ">=3.10"
-license = {file = "LICENSE"}
+license = {file = "项目文档/LICENSE"}
 dependencies = []
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -18,4 +18,7 @@ testpaths = ["checks"]
 test = ["pytest==9.1.1", "build==1.6.1", "setuptools==84.0.0", "wheel==0.48.0", "libcst==1.9.0"]
 
 [tool.setuptools.data-files]
-"share/PEQuarry" = ["README.md", "ORIGIN.md", "VALIDATION.md", "DEFENSIVE_SCOPE.md", "NAME_AUDIT.json", "CURRENT_REVIEW.json", "REVIEWED_VERSION_CHANGES.json"]
+"share/PEQuarry" = ["项目文档/README.md", "项目文档/ORIGIN.md", "项目文档/VALIDATION.md", "项目文档/DEFENSIVE_SCOPE.md", "NAME_AUDIT.json", "CURRENT_REVIEW.json", "REVIEWED_VERSION_CHANGES.json"]
+
+[tool.setuptools]
+license-files = ["项目文档/LICENSE"]

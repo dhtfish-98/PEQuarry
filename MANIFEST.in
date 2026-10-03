@@ -1,8 +1,23 @@
 include .github/workflows/check.yml .gitignore
-include DEFENSIVE_SCOPE.md NAME_AUDIT.json README.md ORIGIN.md VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json CURRENT_REVIEW.json REVIEWED_VERSION_CHANGES.json verify.py
+include 项目文档/DEFENSIVE_SCOPE.md NAME_AUDIT.json 项目文档/README.md 项目文档/ORIGIN.md 项目文档/VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json CURRENT_REVIEW.json REVIEWED_VERSION_CHANGES.json verify.py
 recursive-include src *.py
 recursive-include checks *
 recursive-include historical_checks *.py
 global-exclude *.pyc
 global-exclude .DS_Store
 prune **/__pycache__
+
+# Directory layout: canonical docs and source build entry; generated trees are not sdist inputs.
+graft 项目文档
+include 构建.py 构建配置.json
+prune Build/源码
+prune Build/新构建
+prune Build/输出
+prune Build/环境
+prune Build/缓存
+prune Build/中间
+prune Build/临时
+global-exclude __pycache__ *.py[cod] .DS_Store
+
+# Original logical paths exist only in the staged compatibility view.
+include DEFENSIVE_SCOPE.md LICENSE ORIGIN.md README.md VALIDATION.md
