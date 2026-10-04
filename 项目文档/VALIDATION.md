@@ -1,6 +1,13 @@
 # Validation
 
-## Current 1.0.3 checks, 2026-10-02
+## Current 1.0.4 checks, 2026-10-04
+
+Recorded environment: macOS Apple Silicon, Python 3.12.13.
+
+- PASS: 319 project checks, including three new tests of exact-name generated `build` cleanup, `Build` staging preservation and symlink refusal.
+- The PE runtime source and fixed upstream comparisons have the 1.0.3 scope recorded below. The conditional risk involved direct full verification from a root containing `Build` on a case-insensitive filesystem; deletion was not observed in the normal `Build/源码` or existing CI path. The new cleanup checks exercise a case-insensitive local filesystem; Linux CI can additionally exercise distinct `Build` and `build` entries. CI and release evidence must be tied to the actual 1.0.4 commit and artifacts.
+
+## Historical 1.0.3 checks, 2026-10-02
 
 Recorded environment: macOS Apple Silicon, Python 3.12.13.
 

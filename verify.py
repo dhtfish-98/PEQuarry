@@ -38,6 +38,21 @@ def compare_observations(script,original_modules,new_modules,dataset,baseline):
     assert old==new,'Original and rewritten observations differ'
     return len(old)
 
+def clear_generated_build(root):
+    # On case-insensitive filesystems, root/'build' can refer to root/'Build'.
+    # Only remove an actual directory entry with the exact generated name.
+    with os.scandir(root) as entries:
+        for entry in entries:
+            if entry.name != 'build':
+                continue
+            if entry.is_symlink():
+                raise ValueError('Refusing to remove symlink: '+entry.path)
+            if not entry.is_dir(follow_symlinks=False):
+                raise ValueError('Refusing to remove non-directory: '+entry.path)
+            import shutil
+            shutil.rmtree(entry.path)
+            return
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--audit-only',action='store_true')
@@ -83,8 +98,7 @@ def main():
             run([sys.executable,'-m','pytest','checks','-q',*flags])
         checks['database_and_error_differences']=compare_observations('idb_observations.py',['idb','idb.analysis'],['idbmeadow','idbmeadow.semantic_views'],ROOT/'checks/data',baseline)
     # Remove only generated build output, so a prior cached copy cannot lose modes.
-    import shutil
-    shutil.rmtree(ROOT/'build',ignore_errors=True)
+    clear_generated_build(ROOT)
     # Build both directly from this tree: frontend sdist extraction normalizes modes.
     # Keep earlier generated versions separate from the current artifact gate.
     distribution_output=WORK/'dist'/json.loads((ROOT/'CURRENT_REVIEW.json').read_text())['version']

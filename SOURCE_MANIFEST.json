@@ -13,8 +13,8 @@
       "executable": false
     },
     "项目文档/CURRENT_REVIEW.json": {
-      "sha256": "6376ec04636ed99e7766f06a4b94a6e10ecc87daaf791cc3751bd0be9b4cf7a3",
-      "bytes": 6017,
+      "sha256": "0a25186c1e1227dbd9d32f9d422b7986803d0a1f29eec7e282ba2cc3900f0567",
+      "bytes": 6049,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -132,13 +132,18 @@
       "bytes": 6320,
       "executable": false
     },
+    "checks/test_verify_build_cleanup.py": {
+      "sha256": "241ffa43f6ae38fc2a8fec3a79282b4adcd89190fcfb6230ef124275e23916b5",
+      "bytes": 1566,
+      "executable": false
+    },
     "checks/version_byte_evidence.py": {
       "sha256": "aa1065ef2c092dadd8b495c5c61106dfe822be4caa6c0204ad0dab9ae7255733",
       "bytes": 4732,
       "executable": false
     },
     "checks/wheel_consumption.py": {
-      "sha256": "13fffed1c970e1b091cd5e6e3d19e9d7952e5d7348726528983402dacfa8d488",
+      "sha256": "83dd6e23d7ba9838129dcf7f63a6de242304b04ed6dea95b51b4d71d85cbb976",
       "bytes": 10315,
       "executable": false
     },
@@ -148,7 +153,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "40a997c8fd4d0a74e3e7cac63b78ec5426022e0cc112b3fcf842fef7d52a8e0c",
+      "sha256": "eb19043768aac2a80641d6db7a9e07d24d730200fa2f10b15f60fad0010651ca",
       "bytes": 892,
       "executable": false
     },
@@ -223,8 +228,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "448ca6084b977cf58ca3294f1b8168af0bec79fad1563c4e5f8fc663dd5d7108",
-      "bytes": 8941,
+      "sha256": "563d28ff9500122dc6a5060334ede47eee1d5ba9bd3ebffa64f3fd2b236397e1",
+      "bytes": 9555,
       "executable": true
     },
     "构建.py": {
@@ -233,13 +238,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "466aef020cfb399d07824da0b28ed7118f7904c2008061719256d90b52e031a8",
+      "sha256": "fad092f6fb96a0a4d9460d445118a4e060513cab2c882ba7805ea353933b4837",
       "bytes": 1679,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "79d92dae96cb0bf2d43819bb7c7de02a1434043380a9ebbc3bda42bf510119a7",
-      "bytes": 3459,
+      "sha256": "173e7b0bbe5328feb6c8f33299e7e6a77137a75215fc6d07950f6cd8b45d20a4",
+      "bytes": 4017,
       "executable": false
     },
     "项目文档/LICENSE": {
@@ -253,13 +258,13 @@
       "executable": false
     },
     "项目文档/README.md": {
-      "sha256": "f2aaeb8265633e846ec5d5142c6f74cfdc85d16796e70cf85baed858e6b88ee5",
-      "bytes": 8062,
+      "sha256": "1b098bb7d9000d7ef90d18aff076c65a76ef047863895254755d0683121ee1c4",
+      "bytes": 8587,
       "executable": false
     },
     "项目文档/VALIDATION.md": {
-      "sha256": "41e4075c0b48b7ebe2281836c52535ce2858834d064bb3f6ed812c98b5d911ad",
-      "bytes": 9457,
+      "sha256": "33a439fa9e57d56e5905710e2360c7c70e473fcd4cc4832c126b05000c369887",
+      "bytes": 10212,
       "executable": false
     },
     "项目文档/历史/目录更新20261003/SOURCE_MANIFEST.json.public-1716e4b10d2a.json": {

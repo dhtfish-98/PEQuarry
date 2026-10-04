@@ -112,7 +112,7 @@ elif consumption_name == 'PEQuarry':
     else:
         raise AssertionError('resource record bound was not enforced')
     consumption_metadata = consumption_importlib.import_module('importlib.metadata')
-    assert consumption_metadata.version('PEQuarry') == '1.0.3'
+    assert consumption_metadata.version('PEQuarry') == '1.0.4'
 else:
     consumption_views = consumption_importlib.import_module('idbmeadow.semantic_views')
     consumption_examples = [('empty/empty.idb','d41d8cd98f00b204e9800998ecf8427e',(0,1)),('v6.95/x32/kernel32.idb','00bf1bf1b779ce1af41371426821e0c2',(1754271744,1755177520))]
