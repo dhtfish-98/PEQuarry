@@ -29,6 +29,21 @@
       "original": "VALIDATION.md",
       "stored": "项目文档/VALIDATION.md",
       "sha256": "41e4075c0b48b7ebe2281836c52535ce2858834d064bb3f6ed812c98b5d911ad"
+    },
+    {
+      "original": "CURRENT_REVIEW.json",
+      "stored": "项目文档/CURRENT_REVIEW.json",
+      "sha256": "6376ec04636ed99e7766f06a4b94a6e10ecc87daaf791cc3751bd0be9b4cf7a3"
+    },
+    {
+      "original": "NAME_AUDIT.json",
+      "stored": "项目文档/NAME_AUDIT.json",
+      "sha256": "e3b3ec1ca80b8dc4648606150b14eb5bd36f72f7ff69df684c0aa7fb7321da36"
+    },
+    {
+      "original": "REVIEWED_VERSION_CHANGES.json",
+      "stored": "项目文档/REVIEWED_VERSION_CHANGES.json",
+      "sha256": "1e29839bf118859654489f810569059c4fd05bca189fa489b90d14e992b83b44"
     }
   ],
   "platform_entries": []

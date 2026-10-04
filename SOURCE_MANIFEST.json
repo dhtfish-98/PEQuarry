@@ -12,7 +12,7 @@
       "bytes": 205,
       "executable": false
     },
-    "CURRENT_REVIEW.json": {
+    "项目文档/CURRENT_REVIEW.json": {
       "sha256": "6376ec04636ed99e7766f06a4b94a6e10ecc87daaf791cc3751bd0be9b4cf7a3",
       "bytes": 6017,
       "executable": false
@@ -27,12 +27,12 @@
       "bytes": 925,
       "executable": false
     },
-    "NAME_AUDIT.json": {
+    "项目文档/NAME_AUDIT.json": {
       "sha256": "e3b3ec1ca80b8dc4648606150b14eb5bd36f72f7ff69df684c0aa7fb7321da36",
       "bytes": 2576,
       "executable": false
     },
-    "REVIEWED_VERSION_CHANGES.json": {
+    "项目文档/REVIEWED_VERSION_CHANGES.json": {
       "sha256": "1e29839bf118859654489f810569059c4fd05bca189fa489b90d14e992b83b44",
       "bytes": 191660,
       "executable": false
@@ -233,8 +233,8 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "834e7361b103d324a83d6047a9e06b05103a588d749597aa45fc2bdb5fd316bf",
-      "bytes": 1100,
+      "sha256": "466aef020cfb399d07824da0b28ed7118f7904c2008061719256d90b52e031a8",
+      "bytes": 1679,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
