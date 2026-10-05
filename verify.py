@@ -68,10 +68,7 @@ def main():
     checks['lexical_naming_audit']=json.loads(run([sys.executable,ROOT/'checks/naming_audit.py'],capture_output=True).stdout)
     baseline=args.baseline.resolve() if args.baseline else checkout(CONFIG['upstream'],CONFIG['commit'],'upstream')
     name=CONFIG['name']
-    if name=='GadgetHarbor':
-        run([sys.executable,ROOT/'checks/gadget_probe.py',baseline])
-        checks['static_cli_differences']=json.loads((WORK/'GadgetHarbor-differential.json').read_text())['case_count']
-    elif name=='PEQuarry':
+    if name=='PEQuarry':
         suite=args.pe_tests.resolve() if args.pe_tests else checkout('https://github.com/erocarrera/pefile-tests.git','7fb3461fda128b4f7864c0891e03babbe43f6d9b','pe-tests')
         if not args.skip_tests:
             run([sys.executable,'-m','pytest','checks','-q','-p','no:cacheprovider'])

@@ -13,8 +13,8 @@
       "executable": false
     },
     "项目文档/CURRENT_REVIEW.json": {
-      "sha256": "0a25186c1e1227dbd9d32f9d422b7986803d0a1f29eec7e282ba2cc3900f0567",
-      "bytes": 6049,
+      "sha256": "2e8236ce69e911afab665da6b76df2c80cab0b6f1d77fa4df411b00fc4582598",
+      "bytes": 6611,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -73,8 +73,8 @@
       "executable": false
     },
     "checks/naming_audit.py": {
-      "sha256": "b4411145a54db078d6153f8d9c53d270ad16aa8de15299f2314ff9888a7d69d0",
-      "bytes": 2439,
+      "sha256": "f58c7c2fbc31d275f9fdced456ed2f5795a0920f40a6ffaa48263932b5c2814e",
+      "bytes": 2415,
       "executable": false
     },
     "checks/observation_json.py": {
@@ -143,8 +143,8 @@
       "executable": false
     },
     "checks/wheel_consumption.py": {
-      "sha256": "83dd6e23d7ba9838129dcf7f63a6de242304b04ed6dea95b51b4d71d85cbb976",
-      "bytes": 10315,
+      "sha256": "24d4f65b342a38b49cb8f4f62a187ec1809f9d637bf257f69730bc394dda682b",
+      "bytes": 9329,
       "executable": false
     },
     "historical_checks/legacy_quarry_regression.py": {
@@ -153,7 +153,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "eb19043768aac2a80641d6db7a9e07d24d730200fa2f10b15f60fad0010651ca",
+      "sha256": "b66713a091f9128a17318da7a697e4346621c5703afca32b63579357c9be42c9",
       "bytes": 892,
       "executable": false
     },
@@ -228,8 +228,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "563d28ff9500122dc6a5060334ede47eee1d5ba9bd3ebffa64f3fd2b236397e1",
-      "bytes": 9555,
+      "sha256": "54c3936a3b88015e8c18e8296ad32076cad2c22f9e0e04e42ac5b9eb085d754c",
+      "bytes": 9336,
       "executable": true
     },
     "构建.py": {
@@ -238,13 +238,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "fad092f6fb96a0a4d9460d445118a4e060513cab2c882ba7805ea353933b4837",
+      "sha256": "f3f10ba1cd71a61de402e6b222ac8af83896cc632d991b73adba6c7c4641047a",
       "bytes": 1679,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "173e7b0bbe5328feb6c8f33299e7e6a77137a75215fc6d07950f6cd8b45d20a4",
-      "bytes": 4017,
+      "sha256": "0730c804d80eb6edf8ac6f065fff6f6fcd7239d97c81fa7c94712b436498bfc8",
+      "bytes": 4368,
       "executable": false
     },
     "项目文档/LICENSE": {
@@ -258,13 +258,13 @@
       "executable": false
     },
     "项目文档/README.md": {
-      "sha256": "1b098bb7d9000d7ef90d18aff076c65a76ef047863895254755d0683121ee1c4",
-      "bytes": 8587,
+      "sha256": "974803ffadf7aef5cd08b9a79800aa95a6a6b3502b7474aaddb72c51d5b8b2bd",
+      "bytes": 8809,
       "executable": false
     },
     "项目文档/VALIDATION.md": {
-      "sha256": "33a439fa9e57d56e5905710e2360c7c70e473fcd4cc4832c126b05000c369887",
-      "bytes": 10212,
+      "sha256": "483f1c756a7da3acf0431f64e8449e21ec8276b92682c88ef3d357a8bfc45bb0",
+      "bytes": 11519,
       "executable": false
     },
     "项目文档/历史/目录更新20261003/SOURCE_MANIFEST.json.public-1716e4b10d2a.json": {

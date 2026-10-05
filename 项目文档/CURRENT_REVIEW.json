@@ -1,7 +1,18 @@
 {
-  "version": "1.0.4",
-  "date": "2026-10-04",
-  "status": "PASS with stated OPEN scope",
+  "version": "1.0.5",
+  "date": "2026-10-05",
+  "status": "PASS local scoped maintenance; remote CI and release OPEN",
+  "historical_measurements_version": "1.0.4",
+  "maintenance_scope": "Remove unreachable private-project verification branches; PE runtime source unchanged; old stage 3 and complete deep review remain OPEN",
+  "maintenance_local_validation": {
+    "python": "3.14.6",
+    "source_manifest_files_verified": 55,
+    "project_tests_passed": 319,
+    "installed_runtime_files_identical": 14,
+    "installed_consumer_checks_passed": 10,
+    "private_project_name_hits_in_wheel_and_sdist": 0,
+    "full_deep_review_completed": false
+  },
   "upstream_commit": "e521f469b41abb074bae1cc0820396d6f7663cd9",
   "upstream_tree": "09c20c3324bfafdf9592379ed6028f0fd36f48d3",
   "test_commit": "7fb3461fda128b4f7864c0891e03babbe43f6d9b",

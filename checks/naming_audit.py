@@ -8,7 +8,7 @@ from libcst.metadata.scope_provider import FunctionScope as NamingFunction, Comp
 
 naming_root = NamingPath(__file__).resolve().parents[1]
 naming_record = naming_json.loads((naming_root/'NAME_AUDIT.json').read_text())
-naming_prefix = {'GadgetHarbor':'harbor','PEQuarry':'quarry','IDBMeadow':'meadow'}[naming_record['project']]
+naming_prefix = {'PEQuarry':'quarry','IDBMeadow':'meadow'}[naming_record['project']]
 naming_unrenamed = []
 naming_global_contracts = {}
 for naming_relative, naming_digest in naming_record['owned_python_source_sha256'].items():

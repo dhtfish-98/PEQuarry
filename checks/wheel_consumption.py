@@ -20,15 +20,7 @@ for consumption_file in (consumption_root / 'src' / consumption_package).rglob('
     assert bool(consumption_installed.stat().st_mode & 0o111) == bool(consumption_file.stat().st_mode & 0o111), str(consumption_relative)+' executable mode differs'
     consumption_file_count += 1
 consumption_cases = []
-if consumption_name == 'GadgetHarbor':
-    consumption_command = ConsumptionPath(consumption_sys.executable).with_name('GadgetHarbor')
-    consumption_help = consumption_subprocess.run([str(consumption_command), '--help'], capture_output=True, check=True, text=True)
-    assert '--binary' in consumption_help.stdout and '--depth' in consumption_help.stdout
-    consumption_cases.append('installed console help')
-    consumption_output = consumption_subprocess.run([str(consumption_command), '--binary', str(consumption_root/'fixtures/raw-x86.raw'), '--rawArch', 'x86', '--rawMode', '32', '--depth', '5'], capture_output=True, check=True, text=True).stdout
-    assert consumption_output == 'Gadgets information\n============================================================\n0x0000000e : mov dword ptr [ecx], eax ; xor eax, eax ; ret\n0x00000012 : ret\n0x00000010 : xor eax, eax ; ret\n\nUnique gadgets found: 3\n'
-    consumption_cases.append('installed raw-image static disassembly')
-elif consumption_name == 'PEQuarry':
+if consumption_name == 'PEQuarry':
     # The original export fixture is source-embedded; only its static bytes are used.
     import importlib.util as consumption_util
     consumption_spec = consumption_util.spec_from_file_location('embedded_export_fixtures', consumption_root/'checks/test_quarry_export_test.py')
@@ -112,7 +104,7 @@ elif consumption_name == 'PEQuarry':
     else:
         raise AssertionError('resource record bound was not enforced')
     consumption_metadata = consumption_importlib.import_module('importlib.metadata')
-    assert consumption_metadata.version('PEQuarry') == '1.0.4'
+    assert consumption_metadata.version('PEQuarry') == '1.0.5'
 else:
     consumption_views = consumption_importlib.import_module('idbmeadow.semantic_views')
     consumption_examples = [('empty/empty.idb','d41d8cd98f00b204e9800998ecf8427e',(0,1)),('v6.95/x32/kernel32.idb','00bf1bf1b779ce1af41371426821e0c2',(1754271744,1755177520))]

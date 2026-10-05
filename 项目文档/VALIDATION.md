@@ -1,6 +1,16 @@
 # Validation
 
-## Current 1.0.4 checks, 2026-10-04
+## Current 1.0.5 maintenance checks, 2026-10-05
+
+Recorded environment: macOS Apple Silicon, Python 3.14.6. The 1.0.5 change is limited to unreachable shared verification branches, their source-manifest entries, version metadata and current documentation. All 14 PE runtime Python files are byte-identical to 1.0.4.
+
+- PASS: 55 source-manifest files have matching bytes, hashes and modes; `verify.py --audit-only` and the lexical naming check pass in an isolated `Build` staging tree.
+- PASS: the existing 319 project checks pass in that staging tree. These are routine regression checks, not the interrupted 12-project deep review.
+- PASS: local 1.0.5 wheel and sdist build; all 55 tracked source files match the sdist, and all 14 runtime Python files match the wheel. The installed wheel consumer reports 14 identical runtime files and 10 passing offline operations.
+- PASS: both local packages contain zero occurrences of the unrelated private project's name and retain the original pefile MIT license; no old stage 3 report was added. Historical Git commits and 1.0.4 assets still carry their original bytes.
+- OPEN: exact-commit remote CI, final release assets and the unpublished old stage 3 have not been verified by these local checks. The system-interrupted full deep review remains incomplete.
+
+## Historical 1.0.4 checks, 2026-10-04
 
 Recorded environment: macOS Apple Silicon, Python 3.12.13.
 
