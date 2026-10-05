@@ -2270,8 +2270,9 @@ class quarry_PE:
                 quarry_dbg_type_data_32d2aa7 = quarry_self_53b64a2.__data__[quarry_dbg_type_offset_4076dc8:quarry_dbg_type_offset_4076dc8 + quarry_dbg_type_size_7ee93a4]
                 ___IMAGE_DEBUG_EX_DLLCHARACTERISTICS_format__ = ['IMAGE_DEBUG_EX_DLLCHARACTERISTICS', ['I,ExDllCharacteristics']]
                 quarry_dbg_type_c8f428e = quarry_self_53b64a2.__unpack_data__(___IMAGE_DEBUG_EX_DLLCHARACTERISTICS_format__, quarry_dbg_type_data_32d2aa7, quarry_dbg_type_offset_4076dc8)
-                quarry_ex_dll_characteristics_flags_8496ac6 = quarry_retrieve_flags(quarry_EX_DLL_CHARACTERISTICS, 'IMAGE_DLLCHARACTERISTICS_EX_')
-                quarry_set_flags(quarry_dbg_type_c8f428e, quarry_dbg_type_c8f428e.ExDllCharacteristics, quarry_ex_dll_characteristics_flags_8496ac6)
+                if quarry_dbg_type_c8f428e is not None:
+                    quarry_ex_dll_characteristics_flags_8496ac6 = quarry_retrieve_flags(quarry_EX_DLL_CHARACTERISTICS, 'IMAGE_DLLCHARACTERISTICS_EX_')
+                    quarry_set_flags(quarry_dbg_type_c8f428e, quarry_dbg_type_c8f428e.ExDllCharacteristics, quarry_ex_dll_characteristics_flags_8496ac6)
             quarry_debug_5ad0764.append(quarry_DebugData(struct=quarry_dbg_da0a32b, entry=quarry_dbg_type_c8f428e))
         return quarry_debug_5ad0764
 
@@ -2455,7 +2456,7 @@ class quarry_PE:
                 quarry_import_desc_ba0e10f.pIAT = _name_boundary.attributes(quarry_self_6de4e75)['normalize_import_va'](quarry_import_desc_ba0e10f.pIAT)
                 quarry_import_desc_ba0e10f.pINT = _name_boundary.attributes(quarry_self_6de4e75)['normalize_import_va'](quarry_import_desc_ba0e10f.pINT)
                 quarry_import_desc_ba0e10f.pUnloadIAT = _name_boundary.attributes(quarry_self_6de4e75)['normalize_import_va'](quarry_import_desc_ba0e10f.pUnloadIAT)
-                quarry_import_desc_ba0e10f.phmod = _name_boundary.attributes(quarry_self_6de4e75)['normalize_import_va'](quarry_import_desc_ba0e10f.pUnloadIAT)
+                quarry_import_desc_ba0e10f.phmod = _name_boundary.attributes(quarry_self_6de4e75)['normalize_import_va'](quarry_import_desc_ba0e10f.phmod)
                 quarry_import_desc_ba0e10f.szName = _name_boundary.attributes(quarry_self_6de4e75)['normalize_import_va'](quarry_import_desc_ba0e10f.szName)
                 quarry_contains_addresses_3152bd0 = True
             quarry_rva_d32ce71 += _name_boundary.attributes(quarry_import_desc_ba0e10f)['sizeof']()
@@ -3720,7 +3721,7 @@ class quarry_PE:
                 if _name_boundary.has_attribute(quarry_load_config_0af0c81, 'GuardRFFailureRoutine') and quarry_load_config_0af0c81.GuardRFFailureRoutine:
                     quarry_load_config_0af0c81.GuardRFFailureRoutine += quarry_relocation_difference_2b60726
                 if _name_boundary.has_attribute(quarry_load_config_0af0c81, 'GuardRFFailureRoutineFunctionPointer') and quarry_load_config_0af0c81.GuardRFFailureRoutineFunctionPointer:
-                    quarry_load_config_0af0c81.GuardRFVerifyStackPointerFunctionPointer += quarry_relocation_difference_2b60726
+                    quarry_load_config_0af0c81.GuardRFFailureRoutineFunctionPointer += quarry_relocation_difference_2b60726
                 if _name_boundary.has_attribute(quarry_load_config_0af0c81, 'GuardRFVerifyStackPointerFunctionPointer') and quarry_load_config_0af0c81.GuardRFVerifyStackPointerFunctionPointer:
                     quarry_load_config_0af0c81.GuardRFVerifyStackPointerFunctionPointer += quarry_relocation_difference_2b60726
                 if _name_boundary.has_attribute(quarry_load_config_0af0c81, 'EnclaveConfigurationPointer') and quarry_load_config_0af0c81.EnclaveConfigurationPointer:

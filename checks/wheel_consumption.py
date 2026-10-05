@@ -104,7 +104,7 @@ if consumption_name == 'PEQuarry':
     else:
         raise AssertionError('resource record bound was not enforced')
     consumption_metadata = consumption_importlib.import_module('importlib.metadata')
-    assert consumption_metadata.version('PEQuarry') == '1.0.6'
+    assert consumption_metadata.version('PEQuarry') == '1.0.7'
     consumption_image = consumption_reader.PE(data=consumption_fixture.quarry_PE_32, fast_load=True)
     for consumption_method, consumption_width in ((consumption_image.get_word_at_rva, 2), (consumption_image.get_qword_at_rva, 8)):
         consumption_section = consumption_image.sections[0]

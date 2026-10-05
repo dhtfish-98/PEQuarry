@@ -5,7 +5,7 @@
   "owned_python_source_sha256": {
     "checks/test_quarry_export_test.py": "e2501103003c94ea39cb211736967365e2cd7e12545cd02ed9aed05ff774a4db",
     "historical_checks/legacy_quarry_regression.py": "b92d71c39916902a2c56b3a58d4dddef9724d568aa9222034b46fd24ec8adfea",
-    "src/pequarry/image_reader.py": "517655039746e2bffe9c2fddf70d24dde408352371150f21ee61708945cf1fb0",
+    "src/pequarry/image_reader.py": "a915ea98b8716526c1a4b98498e4e04b29878d51eeb58b19d2162fd06fa41c4c",
     "src/pequarry/ordinal_catalog/__init__.py": "354ac42f9f05dcfdca50112ff4ccafea1cf0bc4f2b16438b4b20bdd56eae5e63",
     "src/pequarry/ordinal_catalog/automation_hash_names.py": "706d45e21943277f12898bd843b8cd0bc37d80370486926d256b4959b98e82b8",
     "src/pequarry/ordinal_catalog/automation_names.py": "364502e3e755245ae2ce74fab99fa6857d2109bbd64c5ce1e2958c27f988de00",

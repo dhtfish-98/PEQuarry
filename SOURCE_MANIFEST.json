@@ -13,8 +13,8 @@
       "executable": false
     },
     "项目文档/CURRENT_REVIEW.json": {
-      "sha256": "23c18bfcc5fd7f5093ac2874805bdba0bcd75ad77cb9e66424e1ff3b2186e8bc",
-      "bytes": 7201,
+      "sha256": "cff448b1eb6432aef0a1138ee3f3a82237c10d37d7aa6dfe4be1d7d0d8970413",
+      "bytes": 7559,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -23,12 +23,12 @@
       "executable": false
     },
     "MANIFEST.in": {
-      "sha256": "246eae6e0445ae4506070bddbc10ad67afdb7dc68275db97051cb02fa60a39e6",
+      "sha256": "0ccd96a3c601be3f3d619a2d037069bdf2cd140457b789641995f20791d15d71",
       "bytes": 962,
       "executable": false
     },
     "项目文档/NAME_AUDIT.json": {
-      "sha256": "d3468dc8f02a7566b9b053193924c15638a1f1c42b809fddb42a31bef66892ff",
+      "sha256": "f1edd37d60c8e3f161e8063a6719157d3cf0868d4dabf6be22b50cd859467229",
       "bytes": 2576,
       "executable": false
     },
@@ -143,7 +143,7 @@
       "executable": false
     },
     "checks/wheel_consumption.py": {
-      "sha256": "38433907803ed53d95100134b895cb2c4280301c2edbb85f4017eabe58de527c",
+      "sha256": "6bb14f20c7980de1653c35c1298fd3bd75a5a5d567c65d19d1f4dcf9e47b34d5",
       "bytes": 10616,
       "executable": false
     },
@@ -153,7 +153,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "e8aa19b838ddc2995601261481e473da5d571e94608b7f53d49d757288ae7130",
+      "sha256": "f2e55624f1879c91b8ecfd7147d08857b23a7280f04275f8a6697db2748dd5f8",
       "bytes": 932,
       "executable": false
     },
@@ -178,8 +178,8 @@
       "executable": false
     },
     "src/pequarry/image_reader.py": {
-      "sha256": "517655039746e2bffe9c2fddf70d24dde408352371150f21ee61708945cf1fb0",
-      "bytes": 346257,
+      "sha256": "a915ea98b8716526c1a4b98498e4e04b29878d51eeb58b19d2162fd06fa41c4c",
+      "bytes": 346312,
       "executable": false
     },
     "src/pequarry/ordinal_catalog/__init__.py": {
@@ -228,7 +228,7 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "0aff246d1907267bbe9796209662b47fdc50509a27fbb2666ad175b99d49f291",
+      "sha256": "730db369011ab77f0c3dd8e469fadcd3f9bf0fc21e1c88d4da5fbe2b56c9528d",
       "bytes": 9648,
       "executable": true
     },
@@ -238,13 +238,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "449827b5a8b842c354da9c84da36228d8aaa506825dabdcb00b0a968c69d75c5",
+      "sha256": "f208f18c9dbf4c7d2b144e123bd6faae9edf82ec6bb9a4ba3c9383a5093499e3",
       "bytes": 1679,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "8db610b39cbfc68411df278794ffa6e232225db8fe3c67014802e2ffa7e58c53",
-      "bytes": 4973,
+      "sha256": "3e477fd46f96f5775d5c3750a553a8c212102b1e2a825bbde8731ea7ff06c873",
+      "bytes": 5551,
       "executable": false
     },
     "项目文档/LICENSE": {
@@ -258,13 +258,13 @@
       "executable": false
     },
     "项目文档/README.md": {
-      "sha256": "8410c4372ab38e26e56785f37dc34d9005b96a2308b0bd977529756cebf99fd9",
-      "bytes": 9231,
+      "sha256": "5f2357a0e41add02922754b44b96de65462e576240c3303b4b8fe3d8d135a5fd",
+      "bytes": 9017,
       "executable": false
     },
     "项目文档/VALIDATION.md": {
-      "sha256": "d451fa40c5a435a2a40e04551e010a0357032b46e4278d6041aad151ecc35df7",
-      "bytes": 12983,
+      "sha256": "4a3bee43a09ebf706c241c3dfccde4fbdf258aa30a02c7e9de8c33534e67043c",
+      "bytes": 14379,
       "executable": false
     },
     "项目文档/历史/目录更新20261003/SOURCE_MANIFEST.json.public-1716e4b10d2a.json": {
@@ -280,6 +280,16 @@
     "项目文档/RELEASE_NOTES_v1.0.6.md": {
       "sha256": "d7fd38b34714ef1d545ddf73cfa648a1ed59252c796c22d5848618ecfb672332",
       "bytes": 1643,
+      "executable": false
+    },
+    "checks/test_directory_regressions.py": {
+      "sha256": "53093dc24c13caeb14ac011be1abed31407daf4d5c7c8a56f818af7e92bf4048",
+      "bytes": 5397,
+      "executable": false
+    },
+    "项目文档/RELEASE_NOTES_v1.0.7.md": {
+      "sha256": "7f554ebc40546aec7bcaa22d6edc5b7c7642259ed42a33c1f9e84b1c6a05816f",
+      "bytes": 1582,
       "executable": false
     }
   },

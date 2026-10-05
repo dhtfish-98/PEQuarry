@@ -1,13 +1,13 @@
 {
-  "version": "1.0.6",
+  "version": "1.0.7",
   "date": "2026-10-06",
-  "status": "PASS local candidate checks; remote CI and release OPEN",
+  "status": "PASS local source/package checks; remote CI and release OPEN",
   "historical_measurements_version": "1.0.4",
-  "maintenance_scope": "Three independently reproduced scalar/directory fixes from public v1.0.5 only; unpublished work excluded; complete deep rewrite remains OPEN",
+  "maintenance_scope": "Three independently reproduced debug/delay-import/Guard RF fixes from public v1.0.6 only; unpublished work excluded; complete deep rewrite remains OPEN",
   "maintenance_local_validation": {
     "python": "3.12.13",
-    "source_manifest_files_verified": 56,
-    "project_tests_passed": 329,
+    "source_manifest_files_verified": 58,
+    "project_tests_passed": 333,
     "installed_runtime_files_identical": 14,
     "installed_consumer_checks_passed": 13,
     "full_deep_review_completed": false
@@ -16,8 +16,8 @@
   "upstream_tree": "09c20c3324bfafdf9592379ed6028f0fd36f48d3",
   "test_commit": "7fb3461fda128b4f7864c0891e03babbe43f6d9b",
   "python": "3.12.13",
-  "local_project_tests": 329,
-  "new_boundary_tests": 317,
+  "local_project_tests": 333,
+  "new_boundary_tests": 321,
   "new_build_cleanup_tests": 3,
   "new_directory_tests": 84,
   "normal_directory_observations_equal": 149,
@@ -54,10 +54,10 @@
     },
     {
       "path": "src/pequarry/image_reader.py",
-      "sha256": "517655039746e2bffe9c2fddf70d24dde408352371150f21ee61708945cf1fb0",
+      "sha256": "a915ea98b8716526c1a4b98498e4e04b29878d51eeb58b19d2162fd06fa41c4c",
       "ast_parsed": true,
       "functions": 229,
-      "scope": "public-v1.0.5 core plus bounded 2/8-byte scalar RVA reads, negative int/subclass scalar offset rejection and present/absent/duplicate directory-list accounting; remaining algorithms OPEN"
+      "scope": "public-v1.0.6 core plus Type 20 short-debug tolerance, delay-import phmod field normalization and Guard RF pointer relocation; remaining algorithms OPEN"
     },
     {
       "path": "src/pequarry/ordinal_catalog/__init__.py",
@@ -159,11 +159,20 @@
   "pe_observations_compared": 372,
   "pe_observations_precise_reviewed_changes": 2,
   "reviewed_version_byte_evidence": "REVIEWED_VERSION_CHANGES.json",
-  "public_base_commit": "64e458d08db35fbafce2cdc2e48794a0f306b7dd",
+  "public_base_commit": "011ad5a9badae78e6eb7e1ebc8f714ea61c79036",
   "v1_0_6_new_regression_cases": 10,
   "historical_1_0_3_pe_observations_reported": {
     "compared": 373,
     "equal": 371,
     "exact_historical_file_set": "OPEN"
+  },
+  "v1_0_7_new_regression_cases": 4,
+  "v1_0_7_full_pe_scenarios": 5,
+  "v1_0_7_observation_refresh": "PASS: 372 compared, 370 equal, 2 previously reviewed version changes",
+  "v1_0_7_local_package_gate": {
+    "source_manifest_files_verified": 58,
+    "sdist_source_identity": "PASS",
+    "wheel_runtime_files_identical": 14,
+    "isolated_wheel_consumer_operations": 13
   }
 }
