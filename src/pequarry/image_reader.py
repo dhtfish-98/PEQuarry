@@ -2083,8 +2083,8 @@ class quarry_PE:
                             _name_boundary.attributes(quarry_self_f9106df)['__warnings'].append(f'Failed to process directory "{quarry_entry_f488000[0]}": {quarry_excp_0954240}')
                     if quarry_value_2e2aa22:
                         _name_boundary.write_attribute(quarry_self_f9106df, quarry_entry_f488000[0][6:], quarry_value_2e2aa22)
-            if quarry_directories_7fbbace is not None and isinstance(quarry_directories_7fbbace, list) and (quarry_entry_f488000[0] in quarry_directories_7fbbace):
-                quarry_directories_7fbbace.remove(quarry_directory_index_7e4d974)
+            if isinstance(quarry_directories_7fbbace, list) and quarry_dir_entry_556af8a.VirtualAddress and quarry_directory_index_7e4d974 in quarry_directories_7fbbace:
+                quarry_directories_7fbbace[:] = [quarry_requested_index_5aa524e for quarry_requested_index_5aa524e in quarry_directories_7fbbace if quarry_requested_index_5aa524e != quarry_directory_index_7e4d974]
 
     @_name_boundary.callable_contract({'self': 'quarry_self_826e310', 'rva': 'quarry_rva_1ffb12c', 'size': 'quarry_size_local_c5cc65a'}, 'parse_exceptions_directory')
     def quarry_parse_exceptions_directory(quarry_self_826e310, quarry_rva_1ffb12c, quarry_size_local_c5cc65a):
@@ -3445,6 +3445,8 @@ class quarry_PE:
 
         Returns None if the data can't be turned into a double word.
         """
+        if isinstance(quarry_offset_local_094af56, int) and quarry_offset_local_094af56 < 0:
+            return None
         if (quarry_offset_local_094af56 + 1) * 4 > len(quarry_data_local_f0b9285):
             return None
         return quarry_struct.unpack('<I', quarry_data_local_f0b9285[quarry_offset_local_094af56 * 4:(quarry_offset_local_094af56 + 1) * 4])[0]
@@ -3464,6 +3466,8 @@ class quarry_PE:
     @_name_boundary.callable_contract({'self': 'quarry_self_91d79d5', 'offset': 'quarry_offset_local_ae305ac'}, 'get_dword_from_offset')
     def quarry_get_dword_from_offset(quarry_self_91d79d5, quarry_offset_local_ae305ac):
         """Return the double word value at the given file offset. (little endian)"""
+        if isinstance(quarry_offset_local_ae305ac, int) and quarry_offset_local_ae305ac < 0:
+            return None
         if quarry_offset_local_ae305ac + 4 > len(quarry_self_91d79d5.__data__):
             return None
         return _name_boundary.attributes(quarry_self_91d79d5)['get_dword_from_data'](quarry_self_91d79d5.__data__[quarry_offset_local_ae305ac:quarry_offset_local_ae305ac + 4], 0)
@@ -3494,6 +3498,8 @@ class quarry_PE:
 
         Returns None if the data can't be turned into a word.
         """
+        if isinstance(quarry_offset_local_0581fdd, int) and quarry_offset_local_0581fdd < 0:
+            return None
         if (quarry_offset_local_0581fdd + 1) * 2 > len(quarry_data_local_f0bec91):
             return None
         return quarry_struct.unpack('<H', quarry_data_local_f0bec91[quarry_offset_local_0581fdd * 2:(quarry_offset_local_0581fdd + 1) * 2])[0]
@@ -3506,13 +3512,15 @@ class quarry_PE:
         to a file offset.
         """
         try:
-            return _name_boundary.attributes(quarry_self_d0561d4)['get_word_from_data'](_name_boundary.attributes(quarry_self_d0561d4)['get_data'](quarry_rva_197d618)[:2], 0)
+            return _name_boundary.attributes(quarry_self_d0561d4)['get_word_from_data'](_name_boundary.attributes(quarry_self_d0561d4)['get_data'](quarry_rva_197d618, 2), 0)
         except quarry_PEFormatError:
             return None
 
     @_name_boundary.callable_contract({'self': 'quarry_self_366ab23', 'offset': 'quarry_offset_local_e3b9a45'}, 'get_word_from_offset')
     def quarry_get_word_from_offset(quarry_self_366ab23, quarry_offset_local_e3b9a45):
         """Return the word value at the given file offset. (little endian)"""
+        if isinstance(quarry_offset_local_e3b9a45, int) and quarry_offset_local_e3b9a45 < 0:
+            return None
         if quarry_offset_local_e3b9a45 + 2 > len(quarry_self_366ab23.__data__):
             return None
         return _name_boundary.attributes(quarry_self_366ab23)['get_word_from_data'](quarry_self_366ab23.__data__[quarry_offset_local_e3b9a45:quarry_offset_local_e3b9a45 + 2], 0)
@@ -3543,6 +3551,8 @@ class quarry_PE:
 
         Returns None if the data can't be turned into a quad word.
         """
+        if isinstance(quarry_offset_local_ae3c3c1, int) and quarry_offset_local_ae3c3c1 < 0:
+            return None
         if (quarry_offset_local_ae3c3c1 + 1) * 8 > len(quarry_data_local_aae0718):
             return None
         return quarry_struct.unpack('<Q', quarry_data_local_aae0718[quarry_offset_local_ae3c3c1 * 8:(quarry_offset_local_ae3c3c1 + 1) * 8])[0]
@@ -3555,13 +3565,15 @@ class quarry_PE:
         to a file offset.
         """
         try:
-            return _name_boundary.attributes(quarry_self_3f8b111)['get_qword_from_data'](_name_boundary.attributes(quarry_self_3f8b111)['get_data'](quarry_rva_1e721aa)[:8], 0)
+            return _name_boundary.attributes(quarry_self_3f8b111)['get_qword_from_data'](_name_boundary.attributes(quarry_self_3f8b111)['get_data'](quarry_rva_1e721aa, 8), 0)
         except quarry_PEFormatError:
             return None
 
     @_name_boundary.callable_contract({'self': 'quarry_self_8eaced9', 'offset': 'quarry_offset_local_db5deaa'}, 'get_qword_from_offset')
     def quarry_get_qword_from_offset(quarry_self_8eaced9, quarry_offset_local_db5deaa):
         """Return the quad-word value at the given file offset. (little endian)"""
+        if isinstance(quarry_offset_local_db5deaa, int) and quarry_offset_local_db5deaa < 0:
+            return None
         if quarry_offset_local_db5deaa + 8 > len(quarry_self_8eaced9.__data__):
             return None
         return _name_boundary.attributes(quarry_self_8eaced9)['get_qword_from_data'](quarry_self_8eaced9.__data__[quarry_offset_local_db5deaa:quarry_offset_local_db5deaa + 8], 0)

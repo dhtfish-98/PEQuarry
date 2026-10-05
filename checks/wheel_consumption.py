@@ -104,7 +104,23 @@ if consumption_name == 'PEQuarry':
     else:
         raise AssertionError('resource record bound was not enforced')
     consumption_metadata = consumption_importlib.import_module('importlib.metadata')
-    assert consumption_metadata.version('PEQuarry') == '1.0.5'
+    assert consumption_metadata.version('PEQuarry') == '1.0.6'
+    consumption_image = consumption_reader.PE(data=consumption_fixture.quarry_PE_32, fast_load=True)
+    for consumption_method, consumption_width in ((consumption_image.get_word_at_rva, 2), (consumption_image.get_qword_at_rva, 8)):
+        consumption_section = consumption_image.sections[0]
+        consumption_offset = consumption_section.PointerToRawData
+        assert consumption_method(consumption_section.VirtualAddress) == int.from_bytes(consumption_fixture.quarry_PE_32[consumption_offset:consumption_offset + consumption_width], 'little')
+    consumption_cases.append('installed bounded scalar RVA results')
+    class ConsumptionNegativeIndex(int):
+        pass
+    for consumption_method in (consumption_image.get_word_from_offset, consumption_image.get_dword_from_offset, consumption_image.get_qword_from_offset):
+        assert consumption_method(-1) is None
+        assert consumption_method(ConsumptionNegativeIndex(-2)) is None
+    consumption_cases.append('installed negative scalar and int subclass offset rejection')
+    consumption_requested = [0, 0, 1, 6, 6]
+    consumption_image.parse_data_directories(consumption_requested)
+    assert consumption_requested == [1]
+    consumption_cases.append('installed present, absent and duplicate directory list accounting')
 else:
     consumption_views = consumption_importlib.import_module('idbmeadow.semantic_views')
     consumption_examples = [('empty/empty.idb','d41d8cd98f00b204e9800998ecf8427e',(0,1)),('v6.95/x32/kernel32.idb','00bf1bf1b779ce1af41371426821e0c2',(1754271744,1755177520))]

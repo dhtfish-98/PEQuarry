@@ -13,8 +13,8 @@
       "executable": false
     },
     "项目文档/CURRENT_REVIEW.json": {
-      "sha256": "2e8236ce69e911afab665da6b76df2c80cab0b6f1d77fa4df411b00fc4582598",
-      "bytes": 6611,
+      "sha256": "5eeb5a89baa01d9c505382f63cc57f84c14585ddefcf7270f0c8dfad824a45bf",
+      "bytes": 7118,
       "executable": false
     },
     "FILE_MAP.json": {
@@ -23,12 +23,12 @@
       "executable": false
     },
     "MANIFEST.in": {
-      "sha256": "76f674eb137dcda44fdaa776927a050c67ad93c09473c96c84ddd296d339519f",
-      "bytes": 925,
+      "sha256": "246eae6e0445ae4506070bddbc10ad67afdb7dc68275db97051cb02fa60a39e6",
+      "bytes": 962,
       "executable": false
     },
     "项目文档/NAME_AUDIT.json": {
-      "sha256": "e3b3ec1ca80b8dc4648606150b14eb5bd36f72f7ff69df684c0aa7fb7321da36",
+      "sha256": "d3468dc8f02a7566b9b053193924c15638a1f1c42b809fddb42a31bef66892ff",
       "bytes": 2576,
       "executable": false
     },
@@ -113,8 +113,8 @@
       "executable": false
     },
     "checks/test_quarry_boundaries.py": {
-      "sha256": "6cf68b4ae5e9ec0d4c47475d998348f0be7e9118874ea8975dcb7c950cc3e230",
-      "bytes": 16109,
+      "sha256": "58eca89f7e86f4ee761e043ea5eb642fc049970423fd362b309e7c80832ef0b1",
+      "bytes": 19342,
       "executable": false
     },
     "checks/test_quarry_export_test.py": {
@@ -143,8 +143,8 @@
       "executable": false
     },
     "checks/wheel_consumption.py": {
-      "sha256": "24d4f65b342a38b49cb8f4f62a187ec1809f9d637bf257f69730bc394dda682b",
-      "bytes": 9329,
+      "sha256": "38433907803ed53d95100134b895cb2c4280301c2edbb85f4017eabe58de527c",
+      "bytes": 10616,
       "executable": false
     },
     "historical_checks/legacy_quarry_regression.py": {
@@ -153,8 +153,8 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "b66713a091f9128a17318da7a697e4346621c5703afca32b63579357c9be42c9",
-      "bytes": 892,
+      "sha256": "e8aa19b838ddc2995601261481e473da5d571e94608b7f53d49d757288ae7130",
+      "bytes": 932,
       "executable": false
     },
     "src/pequarry/__init__.py": {
@@ -178,8 +178,8 @@
       "executable": false
     },
     "src/pequarry/image_reader.py": {
-      "sha256": "1d0a0b9a3f23771c76d625623ba0145e70740c89135e80c46e41038a31102cec",
-      "bytes": 345419,
+      "sha256": "517655039746e2bffe9c2fddf70d24dde408352371150f21ee61708945cf1fb0",
+      "bytes": 346257,
       "executable": false
     },
     "src/pequarry/ordinal_catalog/__init__.py": {
@@ -228,8 +228,8 @@
       "executable": false
     },
     "verify.py": {
-      "sha256": "54c3936a3b88015e8c18e8296ad32076cad2c22f9e0e04e42ac5b9eb085d754c",
-      "bytes": 9336,
+      "sha256": "0aff246d1907267bbe9796209662b47fdc50509a27fbb2666ad175b99d49f291",
+      "bytes": 9648,
       "executable": true
     },
     "构建.py": {
@@ -238,13 +238,13 @@
       "executable": false
     },
     "构建配置.json": {
-      "sha256": "f3f10ba1cd71a61de402e6b222ac8af83896cc632d991b73adba6c7c4641047a",
+      "sha256": "246232fbfc8281acf157ccfa05de621a610975b13471183d3060808cf78e2a19",
       "bytes": 1679,
       "executable": false
     },
     "项目文档/DEFENSIVE_SCOPE.md": {
-      "sha256": "0730c804d80eb6edf8ac6f065fff6f6fcd7239d97c81fa7c94712b436498bfc8",
-      "bytes": 4368,
+      "sha256": "8db610b39cbfc68411df278794ffa6e232225db8fe3c67014802e2ffa7e58c53",
+      "bytes": 4973,
       "executable": false
     },
     "项目文档/LICENSE": {
@@ -258,13 +258,13 @@
       "executable": false
     },
     "项目文档/README.md": {
-      "sha256": "974803ffadf7aef5cd08b9a79800aa95a6a6b3502b7474aaddb72c51d5b8b2bd",
-      "bytes": 8809,
+      "sha256": "8410c4372ab38e26e56785f37dc34d9005b96a2308b0bd977529756cebf99fd9",
+      "bytes": 9231,
       "executable": false
     },
     "项目文档/VALIDATION.md": {
-      "sha256": "483f1c756a7da3acf0431f64e8449e21ec8276b92682c88ef3d357a8bfc45bb0",
-      "bytes": 11519,
+      "sha256": "d451fa40c5a435a2a40e04551e010a0357032b46e4278d6041aad151ecc35df7",
+      "bytes": 12983,
       "executable": false
     },
     "项目文档/历史/目录更新20261003/SOURCE_MANIFEST.json.public-1716e4b10d2a.json": {
@@ -273,9 +273,14 @@
       "executable": false
     },
     "项目文档/目录与构建.md": {
-      "executable": false,
       "sha256": "3f7599e7a43cd47108377905ec46e6894317d8e574e3f865157e9fc9bc6d7c72",
-      "bytes": 816
+      "bytes": 816,
+      "executable": false
+    },
+    "项目文档/RELEASE_NOTES_v1.0.6.md": {
+      "sha256": "d7fd38b34714ef1d545ddf73cfa648a1ed59252c796c22d5848618ecfb672332",
+      "bytes": 1643,
+      "executable": false
     }
   },
   "directory_layout_maintenance": {

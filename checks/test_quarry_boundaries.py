@@ -4,8 +4,10 @@ from types import SimpleNamespace
 import hashlib
 import os
 import random
+import struct
 import subprocess
 import sys
+import tracemalloc
 import pytest
 from pequarry import image_reader as reader
 from pequarry import signature_tools as signatures
@@ -15,6 +17,84 @@ from checks.test_quarry_export_test import quarry_PE_32, quarry_PE_64
 
 def image(raw=quarry_PE_32, **options):
     return reader.PE(data=raw, **options)
+
+
+def test_scalar_rva_reads_do_not_copy_the_entire_section():
+    original = image(fast_load=True)
+    section_header_offset = original.sections[0].get_file_offset()
+    section_size = 8 * 1024 * 1024
+    raw = bytearray(quarry_PE_32) + bytearray(section_size)
+    struct.pack_into('<I', raw, section_header_offset + 16, section_size)
+    pe = image(raw, fast_load=True)
+    section = pe.sections[0]
+    for method, width in ((pe.get_word_at_rva, 2), (pe.get_qword_at_rva, 8)):
+        tracemalloc.start()
+        try:
+            result = method(section.VirtualAddress)
+            _, peak = tracemalloc.get_traced_memory()
+        finally:
+            tracemalloc.stop()
+        expected = int.from_bytes(raw[section.PointerToRawData:section.PointerToRawData + width], 'little')
+        assert result == expected
+        assert peak < 1024 * 1024
+
+
+@pytest.mark.parametrize(('width', 'data_method', 'file_method'), (
+    (2, 'get_word_from_data', 'get_word_from_offset'),
+    (4, 'get_dword_from_data', 'get_dword_from_offset'),
+    (8, 'get_qword_from_data', 'get_qword_from_offset'),
+))
+def test_negative_scalar_offsets_are_not_python_reverse_indexes(width, data_method, file_method):
+    data = bytes(range(width * 2))
+    from_data = getattr(reader.PE, data_method)
+    assert from_data(data, 0) == int.from_bytes(data[:width], 'little')
+    assert from_data(data, 1) == int.from_bytes(data[width:], 'little')
+    assert from_data(data, 2) is None
+    assert from_data(data, -1) is None
+    assert from_data(data, -2) is None
+    pe = image(fast_load=True)
+    from_file = getattr(pe, file_method)
+    assert from_file(0) == int.from_bytes(quarry_PE_32[:width], 'little')
+    assert from_file(len(quarry_PE_32) - width + 1) is None
+    assert from_file(-1) is None
+
+
+@pytest.mark.parametrize(('width', 'data_method', 'file_method'), (
+    (2, 'get_word_from_data', 'get_word_from_offset'),
+    (4, 'get_dword_from_data', 'get_dword_from_offset'),
+    (8, 'get_qword_from_data', 'get_qword_from_offset'),
+))
+def test_negative_int_subclass_offsets_are_rejected(width, data_method, file_method):
+    class NegativeIndex(int):
+        pass
+    data = bytes(range(width * 2))
+    assert getattr(reader.PE, data_method)(data, NegativeIndex(-2)) is None
+    pe = image(fast_load=True)
+    assert getattr(pe, file_method)(NegativeIndex(-2)) is None
+
+
+def test_directory_request_list_keeps_only_absent_entries():
+    pe = image(fast_load=True)
+    assert [pe.OPTIONAL_HEADER.DATA_DIRECTORY[index].VirtualAddress for index in (0, 1, 6)] == [496, 0, 464]
+    requested = [0, 1, 6]
+    pe.parse_data_directories(requested)
+    assert requested == [1]
+    assert hasattr(pe, 'DIRECTORY_ENTRY_EXPORT')
+
+
+def test_directory_request_list_removes_duplicate_present_indexes():
+    pe = image(fast_load=True)
+    requested = [0, 0, 1, 6, 6]
+    pe.parse_data_directories(requested)
+    assert requested == [1]
+
+
+def test_directory_request_names_do_not_trigger_wrong_type_removal():
+    pe = image(fast_load=True)
+    requested = ['IMAGE_DIRECTORY_ENTRY_EXPORT']
+    pe.parse_data_directories(requested)
+    assert requested == ['IMAGE_DIRECTORY_ENTRY_EXPORT']
+    assert not hasattr(pe, 'DIRECTORY_ENTRY_EXPORT')
 
 
 def record(name='one', pattern='41 42', ep=True, section=False):

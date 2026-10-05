@@ -1,28 +1,27 @@
 {
-  "version": "1.0.5",
-  "date": "2026-10-05",
-  "status": "PASS local scoped maintenance; remote CI and release OPEN",
+  "version": "1.0.6",
+  "date": "2026-10-06",
+  "status": "PASS local candidate checks; remote CI and release OPEN",
   "historical_measurements_version": "1.0.4",
-  "maintenance_scope": "Remove unreachable private-project verification branches; PE runtime source unchanged; old stage 3 and complete deep review remain OPEN",
+  "maintenance_scope": "Three independently reproduced scalar/directory fixes from public v1.0.5 only; unpublished work excluded; complete deep rewrite remains OPEN",
   "maintenance_local_validation": {
-    "python": "3.14.6",
-    "source_manifest_files_verified": 55,
-    "project_tests_passed": 319,
+    "python": "3.12.13",
+    "source_manifest_files_verified": 56,
+    "project_tests_passed": 329,
     "installed_runtime_files_identical": 14,
-    "installed_consumer_checks_passed": 10,
-    "private_project_name_hits_in_wheel_and_sdist": 0,
+    "installed_consumer_checks_passed": 13,
     "full_deep_review_completed": false
   },
   "upstream_commit": "e521f469b41abb074bae1cc0820396d6f7663cd9",
   "upstream_tree": "09c20c3324bfafdf9592379ed6028f0fd36f48d3",
   "test_commit": "7fb3461fda128b4f7864c0891e03babbe43f6d9b",
   "python": "3.12.13",
-  "local_project_tests": 319,
+  "local_project_tests": 329,
   "new_boundary_tests": 317,
   "new_build_cleanup_tests": 3,
   "new_directory_tests": 84,
   "normal_directory_observations_equal": 149,
-  "pe_observations_equal": 371,
+  "pe_observations_equal": 370,
   "ordinary_signature_observations_equal": 1204,
   "runtime_files": [
     {
@@ -55,10 +54,10 @@
     },
     {
       "path": "src/pequarry/image_reader.py",
-      "sha256": "1d0a0b9a3f23771c76d625623ba0145e70740c89135e80c46e41038a31102cec",
+      "sha256": "517655039746e2bffe9c2fddf70d24dde408352371150f21ee61708945cf1fb0",
       "ast_parsed": true,
       "functions": 229,
-      "scope": "core boundaries and directory/resource/version API bridges rewritten; remaining core algorithms OPEN"
+      "scope": "public-v1.0.5 core plus bounded 2/8-byte scalar RVA reads, negative int/subclass scalar offset rejection and present/absent/duplicate directory-list accounting; remaining algorithms OPEN"
     },
     {
       "path": "src/pequarry/ordinal_catalog/__init__.py",
@@ -147,7 +146,8 @@
     "Import/export/debug/TLS/bound-import/load-config algorithms, relocation application, unwind opcode/optional-chain/IA64 semantics, structure/alias/formatting remain OPEN.",
     "Resource/version completeness markers describe traversal/byte scope, not every Windows semantic rule or loader acceptance.",
     "Mediated counters and byte caps do not establish total CPU, memory, output or wall-clock bounds.",
-    "Actual CVP identity, organizational authorization and blocked legitimate task evidence remain unverified."
+    "Actual CVP identity, organizational authorization and blocked legitimate task evidence remain unverified.",
+    "The historical 1.0.3 observation count was 373/371/2; the clean fixed checkout in this run selected 362 files plus 10 short inputs, giving 372/370/2. The one-file count difference has not been traced to historical input paths."
   ],
   "new_resource_tests": 58,
   "new_version_tests": 43,
@@ -156,7 +156,14 @@
   "independent_source_control_tests": 366,
   "independent_runtime_tests_passed": 364,
   "independent_runtime_strict_reviewed_legacy_differences": 2,
-  "pe_observations_compared": 373,
+  "pe_observations_compared": 372,
   "pe_observations_precise_reviewed_changes": 2,
-  "reviewed_version_byte_evidence": "REVIEWED_VERSION_CHANGES.json"
+  "reviewed_version_byte_evidence": "REVIEWED_VERSION_CHANGES.json",
+  "public_base_commit": "64e458d08db35fbafce2cdc2e48794a0f306b7dd",
+  "v1_0_6_new_regression_cases": 10,
+  "historical_1_0_3_pe_observations_reported": {
+    "compared": 373,
+    "equal": 371,
+    "exact_historical_file_set": "OPEN"
+  }
 }

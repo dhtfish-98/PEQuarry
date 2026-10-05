@@ -1,6 +1,10 @@
 # Validation
 
-## Current 1.0.5 maintenance checks, 2026-10-05
+## Current 1.0.6 local candidate, 2026-10-06
+
+The candidate originates only from public v1.0.5 commit `64e458d08db35fbafce2cdc2e48794a0f306b7dd`. It contains the three scalar/directory boundary corrections and their direct regressions described in `RELEASE_NOTES_v1.0.6.md`. The macOS Python 3.12 isolated gate passed 329 project checks: one bounded-copy regression, six width-parameterized negative-offset cases (including `int` subclasses) and three directory-list cases were added. The fixed pefile source control passed 366 tests; the maintained suite passed 364 with 2 strict reviewed legacy snapshot differences. In the clean fixed test checkout, 362 selected sample files plus 10 short inputs produced 372 PE observations: 370 identical and the same 2 precisely reviewed version corrections. Another 149 directory, 128 resource/version and 1,204 signature observations remained equal. The historical 1.0.3 record reported 373/371 from the same nominal test commit; the one-observation count difference has not been traced to an exact historical file set and remains OPEN. Historical comparisons below describe their original runs. Local sdist/wheel identity and an isolated wheel installation passed: 56 manifest files and 14 runtime Python files matched exactly; 13 installed offline consumer operations passed. Exact final package hashes belong in the local validation receipt tied to the final commit. No remote CI or public release is claimed here.
+
+## Historical 1.0.5 maintenance checks, 2026-10-05
 
 Recorded environment: macOS Apple Silicon, Python 3.14.6. The 1.0.5 change is limited to unreachable shared verification branches, their source-manifest entries, version metadata and current documentation. All 14 PE runtime Python files are byte-identical to 1.0.4.
 

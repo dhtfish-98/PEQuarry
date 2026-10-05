@@ -1,5 +1,5 @@
 include .github/workflows/check.yml .gitignore
-include 项目文档/DEFENSIVE_SCOPE.md NAME_AUDIT.json 项目文档/README.md 项目文档/ORIGIN.md 项目文档/VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json CURRENT_REVIEW.json REVIEWED_VERSION_CHANGES.json verify.py
+include 项目文档/DEFENSIVE_SCOPE.md 项目文档/RELEASE_NOTES_v1.0.6.md NAME_AUDIT.json 项目文档/README.md 项目文档/ORIGIN.md 项目文档/VALIDATION.md SYMBOL_MAP.json FILE_MAP.json SOURCE_MANIFEST.json CURRENT_REVIEW.json REVIEWED_VERSION_CHANGES.json verify.py
 recursive-include src *.py
 recursive-include checks *
 recursive-include historical_checks *.py

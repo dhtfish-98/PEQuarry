@@ -108,6 +108,9 @@ def main():
         for document in ('README.md','ORIGIN.md','VALIDATION.md','DEFENSIVE_SCOPE.md','NAME_AUDIT.json','CURRENT_REVIEW.json','REVIEWED_VERSION_CHANGES.json'):
             members=[path for path in archive.namelist() if path.endswith('/share/'+CONFIG['name']+'/'+document)]
             assert len(members)==1 and archive.read(members[0])==(ROOT/document).read_bytes(),'Wheel provenance differs: '+document
+        release_note='RELEASE_NOTES_v1.0.6.md'
+        members=[path for path in archive.namelist() if path.endswith('/share/'+CONFIG['name']+'/'+release_note)]
+        assert len(members)==1 and archive.read(members[0])==(ROOT/'项目文档'/release_note).read_bytes(),'Wheel provenance differs: '+release_note
     checks['wheel_source_identity']='PASS'
     sources=list(distribution_output.glob('*.tar.gz'));assert len(sources)==1
     with tarfile.open(sources[0]) as source_archive:
